@@ -1,0 +1,28 @@
+name = "camera-review-api"
+main = "src/index.ts"
+compatibility_date = "2025-02-17"
+
+# D1 데이터베이스 (wrangler d1 create camera-review-db 실행 후 database_id 교체)
+[[d1_databases]]
+binding = "DB"
+database_name = "camera-review-db"
+database_id = "97b99cdf-1193-4f3f-b67d-214bc89aa446"
+
+
+# R2 버킷 (이미지 업로드)
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "camera-review-images"
+
+# 허용 관리자 이메일. Worker를 Access로 보호하면 헤더로 전달됨.
+# Worker Access 제거 시 아래도 비워두면 쓰기 허용 (/admin만 Access로 보호)
+# [vars]
+# ALLOWED_EMAILS = "chs4413@gmail.com, test@test.com"
+
+# 유튜브 최신 영상 조회용. 설정: wrangler secret put YOUTUBE_API_KEY
+# [Google Cloud Console] → API 및 서비스 → 사용자 인증 정보 → API 키 생성
+# YouTube Data API v3 활성화 필요
+
+# 네이버 블로그 총 방문자 수 (수동 업데이트)
+[vars]
+NAVER_BLOG_VISITORS = "657550"

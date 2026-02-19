@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="고객 후기 - 올라포토">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+    <h1 class="mb-8 text-2xl font-bold sm:mb-10 sm:text-3xl">고객 후기</h1>
+    <div id="reviews-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+      <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+      <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+    </div>
+    <div id="reviews-empty" class="hidden py-16 text-center text-gray-500">
+      등록된 고객 후기가 없습니다.
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { fetchPosts, type Post } from '../../lib/api';
+
+  const grid = document.getElementById('reviews-grid')!;
+  const emptyEl = document.getElementById('reviews-empty')!;
+
+  const PLACEHOLDER_IMG = '/placeholder.svg';
+
+  function getYoutubeThumbnail(url: string | null): string | null {
+    if (!url) return null;
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
+  }
+
+  function getFirstImageFromContent(html: string | null): string | null {
+    if (!html || !html.trim().startsWith('<')) return null;
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const img = div.querySelector('img');
+    const src = img?.src || img?.getAttribute('src');
+    if (!src || src.startsWith('data:')) return null;
+    return src;
+  }
+
+  function getThumbnailUrl(post: Post): string {
+    return post.thumbnail_url
+      || getFirstImageFromContent(post.content)
+      || getYoutubeThumbnail(post.youtube_url)
+      || PLACEHOLDER_IMG;
+  }
+
+  function stripHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || '').trim();
+  }
+
+  function escapeHtml(s: string) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function renderPostCard(post: Post) {
+    const thumbUrl = getThumbnailUrl(post);
+    const thumb = `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(post.title)}" class="aspect-video w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy" decoding="async" onload="this.classList.add('opacity-100')" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" />`;
+    const desc = post.content ? stripHtml(post.content).slice(0, 100) + (stripHtml(post.content).length > 100 ? '...' : '') : (post.youtube_url ? '유튜브 영상' : '');
+    const dateStr = new Date(post.created_at).toLocaleDateString('ko-KR');
+    return `
+      <article class="flex min-h-[320px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+        <a href="/post?id=${post.id}" class="flex min-h-0 flex-1 flex-col">
+          ${thumb}
+          <div class="flex min-h-0 flex-1 flex-col p-4">
+            <h3 class="shrink-0 break-words text-lg font-bold line-clamp-2">${escapeHtml(post.title)}</h3>
+            <div class="flex flex-1 items-center py-3">
+              <p class="line-clamp-2 w-full break-words text-sm text-gray-500">${escapeHtml(desc)}</p>
+            </div>
+            <p class="mt-auto shrink-0 border-t border-gray-100 pt-2 text-xs text-gray-400">${dateStr}</p>
+          </div>
+        </a>
+      </article>
+    `;
+  }
+
+  async function load() {
+    try {
+      const posts = await fetchPosts();
+      if (posts.length === 0) {
+        grid.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      grid.classList.remove('hidden');
+      emptyEl.classList.add('hidden');
+      grid.innerHTML = posts.map((p) => renderPostCard(p)).join('');
+    } catch (e) {
+      grid.innerHTML = `<p class="col-span-full text-center text-red-600">고객 후기를 불러올 수 없습니다: ${(e as Error).message}</p>`;
+    }
+  }
+
+  load();
+</script>

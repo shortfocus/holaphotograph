@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <!-- Hero Carousel (100vh - 헤더, 스크롤 시 유튜브 섹션으로) -->
+  <section class="relative overflow-hidden" style="height: calc(100vh - 4rem); background: linear-gradient(165deg, #fdf8f3 0%, #f5ebe0 50%, #ede4d9 100%);">
+    <div class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(251,191,36,0.12),transparent)] pointer-events-none" aria-hidden="true" />
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(180,160,140,0.25)_0.5px,transparent_0.5px),linear-gradient(to_bottom,rgba(180,160,140,0.25)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_110%)] opacity-60 pointer-events-none" aria-hidden="true" />
+
+    <div id="hero-carousel" class="relative flex h-full flex-col overflow-hidden">
+      <div class="hero-carousel-track flex h-full flex-1 items-center transition-transform duration-500 ease-out" style="transform: translateX(0);">
+        <!-- Slide 1 -->
+        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
+          <div class="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-items-center gap-3 px-3 sm:gap-6 sm:px-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:justify-items-stretch lg:gap-10 lg:px-6">
+            <div class="min-w-0 w-full max-w-full overflow-visible text-center order-2 lg:order-1 lg:text-left">
+              <span class="hero-animate inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs text-amber-900/90 backdrop-blur sm:px-5 sm:py-2 sm:text-sm md:text-base" style="animation-delay: 0ms; opacity: 0">📷 올라포토</span>
+              <h1 class="hero-animate mt-3 break-keep text-2xl font-bold leading-tight tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl" style="animation-delay: 100ms; opacity: 0">실사용 중심<br class="sm:hidden" /><span class="text-amber-700">카메라 리뷰</span> & 촬영 가이드</h1>
+              <p class="hero-animate mx-auto mt-2 max-w-xl break-words text-sm leading-relaxed text-stone-600 sm:mt-6 sm:text-lg lg:mx-0 lg:text-xl" style="animation-delay: 200ms; opacity: 0">장비 선택이 쉬워지는 리뷰 · 실제 촬영 기반 비교 분석</p>
+              <div class="hero-animate mt-4 flex items-center justify-center gap-4 sm:mt-8 sm:gap-6 lg:justify-start" style="animation-delay: 300ms; opacity: 0">
+                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="인스타그램"><img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
+                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="네이버 블로그"><img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
+                <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="유튜브"><img src="/icons/youtube.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
+                <a href="mailto:holaphotographer@gmail.com" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="문의하기"><img src="/icons/contact.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
+              </div>
+            </div>
+            <div class="min-w-0 order-first lg:order-last">
+              <div class="overflow-hidden rounded-xl shadow-xl sm:rounded-2xl"><iframe src="https://www.youtube.com/embed/jMMTLjQLTWg?rel=0&autoplay=1&mute=1" title="올라포토 유튜브 영상" class="aspect-video w-full min-h-[140px] sm:min-h-[200px] lg:min-h-[260px]" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen /></div>
+            </div>
+          </div>
+        </div>
+        <!-- Slide 2: 올라포토 2월 프로모션 -->
+        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
+          <div class="mx-auto max-w-2xl px-3 sm:px-4 text-center">
+            <span class="inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs font-medium text-amber-900/90 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">2월 한정</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+              <span class="text-amber-700">올라포토</span> 2월 프로모션
+            </h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-stone-600 sm:mt-4 sm:text-lg lg:text-xl">
+              카메라 리뷰 · 촬영 가이드 · 위클리 포커스까지<br />
+              지금 구독하고 다양한 콘텐츠를 만나보세요
+            </p>
+            <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-red-500 sm:mt-6 sm:px-6 sm:py-3 sm:text-base">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              유튜브에서 보기
+            </a>
+          </div>
+        </div>
+        <!-- Slide 3: 고객 리뷰 확인하기 -->
+        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
+          <div class="mx-auto max-w-2xl px-3 sm:px-4 text-center">
+            <span class="inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs font-medium text-amber-900/90 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">실제 이용 후기</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+              <span class="text-amber-700">고객 리뷰</span> 확인하기
+            </h2>
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-stone-600 sm:mt-4 sm:text-lg lg:text-xl">
+              올라포토와 함께한 고객님들의 솔직한 후기를 확인해보세요.<br />
+              카메라 리뷰 · 촬영 서비스 만족도
+            </p>
+            <a href="/reviews" class="mt-4 inline-flex items-center gap-2 rounded-xl border-2 border-amber-600 bg-white px-5 py-2.5 text-sm font-semibold text-amber-700 transition-all hover:bg-amber-50 sm:mt-6 sm:px-6 sm:py-3 sm:text-base">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              리뷰 보러 가기
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인디케이터 (클릭으로 슬라이드 이동) -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+        <button type="button" data-hero-dot="0" class="h-2 w-6 rounded-full bg-amber-600 transition-all" aria-label="슬라이드 1" aria-current="page"></button>
+        <button type="button" data-hero-dot="1" class="h-2 w-2 rounded-full bg-stone-300 transition-all" aria-label="슬라이드 2"></button>
+        <button type="button" data-hero-dot="2" class="h-2 w-2 rounded-full bg-stone-300 transition-all" aria-label="슬라이드 3"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. 유튜브 (넷플릭스 스타일 가로 스크롤) -->
+  <section id="youtube-long" class="py-10 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-4 sm:mb-6">
+      <h2 class="text-xl font-bold sm:text-2xl">유튜브</h2>
+    </div>
+    <div id="youtube-long-grid" class="scroll-row flex gap-3 sm:gap-4 pl-4 sm:pl-6 pr-4 sm:pr-6 pb-2">
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+    </div>
+  </section>
+
+  <!-- 2. Shorts (넷플릭스 스타일 가로 스크롤) -->
+  <section id="youtube-shorts" class="border-t border-gray-200 bg-gray-50 py-10 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-4 sm:mb-6">
+      <h2 class="text-xl font-bold sm:text-2xl">Shorts</h2>
+    </div>
+    <div id="youtube-shorts-grid" class="scroll-row flex gap-3 sm:gap-4 pl-4 sm:pl-6 pr-4 sm:pr-6 pb-2">
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+    </div>
+  </section>
+
+  <!-- 3. 최신 블로그 -->
+  <section id="blog" class="border-t border-gray-200 bg-white py-10 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="mb-6 text-xl font-bold sm:mb-10 sm:text-2xl">최신 블로그</h2>
+      <div id="blog-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+        <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+        <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 협업 / 광고 안내 -->
+  <section id="about" class="border-t border-gray-200 py-10 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="mb-10 text-2xl font-bold">협업 / 광고 안내</h2>
+      <div class="grid gap-4 sm:gap-6 sm:grid-cols-3">
+        <div id="stats-youtube-subscribers" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
+          <p class="text-2xl font-bold text-gray-900">—</p>
+          <p class="mt-1 text-sm text-gray-500">유튜브 구독자</p>
+        </div>
+        <div id="stats-youtube-views" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
+          <p class="text-2xl font-bold text-gray-900">—</p>
+          <p class="mt-1 text-sm text-gray-500">영상 누적 조회수</p>
+        </div>
+        <div id="stats-naver-visitors" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
+          <p class="text-2xl font-bold text-gray-900">—</p>
+          <p class="mt-1 text-sm text-gray-500">네이버 블로그 총 방문자</p>
+        </div>
+      </div>
+      <p class="mt-6 text-center text-lg font-bold text-gray-600">문의 메일: <a href="mailto:holaphotographer@gmail.com" class="text-amber-700 hover:underline">holaphotographer@gmail.com</a></p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { fetchNaverRss, fetchYoutubeLatest, fetchChannelStats, getRssThumbnailUrl, type NaverRssItem, type YoutubeVideoItem } from '../lib/api';
+
+  // Hero Carousel
+  (function initHeroCarousel() {
+    const track = document.querySelector('.hero-carousel-track') as HTMLElement;
+    const dots = document.querySelectorAll('[data-hero-dot]');
+    const total = 3;
+    let current = 0;
+    let autoplayTimer: ReturnType<typeof setInterval> | null = null;
+    const AUTOPLAY_MS = 3000;
+
+    function goTo(i: number) {
+      current = ((i % total) + total) % total;
+      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, idx) => {
+        if (idx === current) {
+          d.setAttribute('aria-current', 'page');
+          d.classList.add('bg-amber-600', 'w-6');
+          d.classList.remove('bg-stone-300', 'w-2');
+        } else {
+          d.removeAttribute('aria-current');
+          d.classList.add('bg-stone-300', 'w-2');
+          d.classList.remove('bg-amber-600', 'w-6');
+        }
+      });
+    }
+
+    function next() {
+      goTo(current + 1);
+    }
+    function prev() {
+      goTo(current - 1);
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      autoplayTimer = setInterval(next, AUTOPLAY_MS);
+    }
+    function stopAutoplay() {
+      if (autoplayTimer) clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+
+    dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); startAutoplay(); }));
+    const carousel = track?.closest('#hero-carousel');
+    carousel?.addEventListener('mouseenter', stopAutoplay);
+    carousel?.addEventListener('mouseleave', startAutoplay);
+
+    let touchStartX = 0;
+    carousel?.addEventListener('touchstart', (e) => { touchStartX = (e as TouchEvent).touches[0].clientX; }, { passive: true });
+    carousel?.addEventListener('touchend', (e) => {
+      const te = e as TouchEvent;
+      const dx = te.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) {
+        dx < 0 ? next() : prev();
+        startAutoplay();
+      }
+    }, { passive: true });
+
+    startAutoplay();
+  })();
+
+  const youtubeLongGrid = document.getElementById('youtube-long-grid')!;
+  const youtubeShortsGrid = document.getElementById('youtube-shorts-grid')!;
+  const blogGrid = document.getElementById('blog-grid')!;
+  const LIMIT = 6;
+
+  function formatCount(n: string | number): string {
+    const num = typeof n === 'string' ? parseInt(n, 10) : n;
+    if (isNaN(num)) return '—';
+    if (num >= 100000000) return (num / 100000000).toFixed(1).replace(/\.0$/, '') + '억';
+    if (num >= 10000) return (num / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+    return num.toLocaleString();
+  }
+
+  function escapeHtml(s: string) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function stripHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || '').trim();
+  }
+
+  function renderRssCard(item: NaverRssItem, options?: { priority?: 'high' | 'low' }) {
+    const imgUrl = getRssThumbnailUrl(item);
+    const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
+    const thumb = imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="aspect-square w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-square bg-gray-200" />';
+    const desc = stripHtml(item.description).slice(0, 100) + (stripHtml(item.description).length > 100 ? '...' : '');
+    return `
+      <article class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="block min-w-0">
+          ${thumb}
+          <div class="min-w-0 p-4">
+            <h3 class="break-words font-semibold line-clamp-2">${escapeHtml(item.title)}</h3>
+            <p class="mt-1 line-clamp-2 break-words text-sm text-gray-500">${escapeHtml(desc)}</p>
+          </div>
+        </a>
+      </article>
+    `;
+  }
+
+  function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string }) {
+    const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
+    const thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="aspect-video w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-video bg-gray-200" />';
+    const label = options?.label ?? '유튜브 보기 →';
+    return `
+      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
+        ${thumb}
+        <div class="p-3 bg-white">
+          <h3 class="font-semibold line-clamp-2 text-sm sm:text-base">${escapeHtml(v.title)}</h3>
+          <p class="mt-0.5 text-xs text-red-600">${escapeHtml(label)}</p>
+        </div>
+      </a>
+    `;
+  }
+
+  function renderRssSection(grid: HTMLElement, items: NaverRssItem[], emptyMsg: string, priority: 'high' | 'low' = 'low') {
+    if (items.length === 0) {
+      grid.innerHTML = `<p class="col-span-full text-center text-gray-500">${emptyMsg}</p>`;
+    } else {
+      const toShow = items.slice(0, LIMIT);
+      grid.innerHTML = toShow.map((item, i) => renderRssCard(item, { priority: priority === 'high' && i < 3 ? 'high' : 'low' })).join('');
+    }
+  }
+
+  function renderYoutubeSection(grid: HTMLElement, items: YoutubeVideoItem[], emptyMsg: string, label: string) {
+    if (items.length === 0) {
+      grid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-gray-500">${emptyMsg}</p>`;
+    } else {
+      const toShow = items.slice(0, LIMIT);
+      grid.innerHTML = toShow.map((v, i) => renderYoutubeCard(v, { priority: i < 3 ? 'high' : 'low', label })).join('');
+    }
+  }
+
+  async function load() {
+    try {
+      const [rssRes, youtubeRes, statsRes] = await Promise.all([
+        fetchNaverRss(),
+        fetchYoutubeLatest(),
+        fetchChannelStats().catch(() => null),
+      ]);
+
+      if (statsRes) {
+        const subEl = document.getElementById('stats-youtube-subscribers')?.querySelector('p:first-child');
+        const viewsEl = document.getElementById('stats-youtube-views')?.querySelector('p:first-child');
+        const naverEl = document.getElementById('stats-naver-visitors')?.querySelector('p:first-child');
+        if (subEl) subEl.textContent = formatCount(statsRes.youtubeSubscribers ?? '');
+        if (viewsEl) viewsEl.textContent = formatCount(statsRes.youtubeViewCount ?? '');
+        if (naverEl) naverEl.textContent = statsRes.naverBlogVisitors ? formatCount(statsRes.naverBlogVisitors) : '—';
+      }
+
+      const videos = youtubeRes.videos || [];
+      const shorts = youtubeRes.shorts || [];
+      const youtubeError = youtubeRes.error;
+
+      renderYoutubeSection(youtubeLongGrid, videos, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 롱폼 영상이 없습니다.', '유튜브 보기 →');
+      setTimeout(() => {
+        renderYoutubeSection(youtubeShortsGrid, shorts, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 Shorts가 없습니다.', 'Shorts 보기 →');
+      }, 80);
+
+      const allBlog = [...rssRes.reviews, ...rssRes.guides, ...rssRes.models]
+        .filter((item) => !item.title.includes('보금자리론'))
+        .sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
+        .slice(0, 6);
+      setTimeout(() => {
+        renderRssSection(blogGrid, allBlog, '등록된 블로그 글이 없습니다.', 'high');
+      }, 160);
+    } catch (e) {
+      youtubeLongGrid.innerHTML = `<p class="col-span-full text-center text-red-600">영상을 불러올 수 없습니다: ${(e as Error).message}</p>`;
+      youtubeShortsGrid.innerHTML = '<p class="col-span-full text-center text-red-600">Shorts를 불러올 수 없습니다</p>';
+      blogGrid.innerHTML = '<p class="col-span-full text-center text-red-600">블로그를 불러올 수 없습니다</p>';
+    }
+  }
+
+  load();
+</script>

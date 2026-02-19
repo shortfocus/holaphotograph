@@ -1,0 +1,141 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="관리자 - 고객 후기">
+  <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+    <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-xl font-bold sm:text-2xl">관리자 - 고객 후기 관리</h1>
+      <div class="flex flex-wrap items-center gap-3">
+        <div id="bulk-actions" class="hidden items-center gap-3">
+          <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" id="select-all" class="rounded border-gray-300" />
+            전체 선택
+          </label>
+          <button type="button" id="bulk-delete-btn" class="rounded bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50">
+            선택 삭제
+          </button>
+        </div>
+        <a
+          href="/admin/new"
+          class="w-full rounded-lg bg-red-600 px-4 py-2 text-center font-medium text-white hover:bg-red-700 sm:w-auto"
+        >
+          새 후기 작성
+        </a>
+      </div>
+    </div>
+
+    <div id="posts-list" class="space-y-4">
+      <p class="text-gray-500">로딩 중...</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { fetchPosts, deletePost, type Post } from '../../lib/api';
+
+  const listEl = document.getElementById('posts-list')!;
+
+  async function loadPosts() {
+    try {
+      const posts = await fetchPosts();
+      if (posts.length === 0) {
+        listEl.innerHTML = '<p class="text-gray-500">등록된 고객 후기가 없습니다.</p>';
+        const ba = document.getElementById('bulk-actions');
+        if (ba) {
+          ba.classList.add('hidden');
+          ba.classList.remove('flex');
+        }
+        return;
+      }
+      const sectionLabels: Record<string, string> = { reviews: '고객 후기', guides: '위클리 포커스 & 카메라 소식', models: '렌즈 & 액세서리', youtube: '유튜브 영상' };
+      listEl.innerHTML = posts
+        .map(
+          (p: Post) => `
+        <article class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex min-w-0 flex-1 items-start gap-3">
+            <input type="checkbox" class="post-checkbox mt-1 rounded border-gray-300" data-id="${p.id}" />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="truncate font-semibold">${escapeHtml(p.title)}</h3>
+                <span class="shrink-0 rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">${sectionLabels[p.section || 'reviews'] || p.section}</span>
+              </div>
+              <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(p.youtube_url || p.content?.slice(0, 50) || '-')}${(p.content?.length || 0) > 50 ? '...' : ''}</p>
+              <p class="text-xs text-gray-400">${new Date(p.created_at).toLocaleDateString('ko-KR')}</p>
+            </div>
+          </div>
+          <div class="flex shrink-0 gap-2 pl-7 sm:pl-0">
+            <a href="/admin/edit?id=${p.id}" class="rounded bg-gray-100 px-3 py-1.5 text-sm hover:bg-gray-200">수정</a>
+            <button data-id="${p.id}" class="delete-btn rounded bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200">삭제</button>
+          </div>
+        </article>
+      `
+        )
+        .join('');
+
+      const bulkActions = document.getElementById('bulk-actions')!;
+      const selectAll = document.getElementById('select-all') as HTMLInputElement;
+      const bulkDeleteBtn = document.getElementById('bulk-delete-btn')!;
+
+      bulkActions.classList.remove('hidden');
+      bulkActions.classList.add('flex');
+
+      selectAll.checked = false;
+      selectAll.addEventListener('change', () => {
+        listEl.querySelectorAll<HTMLInputElement>('.post-checkbox').forEach((cb) => {
+          cb.checked = selectAll.checked;
+        });
+      });
+
+      listEl.querySelectorAll('.post-checkbox').forEach((cb) => {
+        cb.addEventListener('change', () => {
+          const all = listEl.querySelectorAll<HTMLInputElement>('.post-checkbox');
+          const checked = listEl.querySelectorAll<HTMLInputElement>('.post-checkbox:checked');
+          selectAll.checked = all.length > 0 && checked.length === all.length;
+        });
+      });
+
+      bulkDeleteBtn.addEventListener('click', async () => {
+        const checked = listEl.querySelectorAll<HTMLInputElement>('.post-checkbox:checked');
+        const ids = Array.from(checked).map((cb) => parseInt(cb.dataset.id!, 10));
+        if (ids.length === 0) {
+          alert('삭제할 후기를 선택해주세요.');
+          return;
+        }
+        if (!confirm(`선택한 ${ids.length}개의 후기를 삭제하시겠습니까?`)) return;
+        bulkDeleteBtn.setAttribute('disabled', 'disabled');
+        try {
+          await Promise.all(ids.map((id) => deletePost(id)));
+          loadPosts();
+        } catch (e) {
+          alert((e as Error).message);
+        } finally {
+          bulkDeleteBtn.removeAttribute('disabled');
+        }
+      });
+
+      listEl.querySelectorAll('.delete-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('정말 삭제하시겠습니까?')) return;
+          const id = parseInt((btn as HTMLButtonElement).dataset.id!, 10);
+          try {
+            await deletePost(id);
+            loadPosts();
+          } catch (e) {
+            alert((e as Error).message);
+          }
+        });
+      });
+    } catch (e) {
+      listEl.innerHTML = `<p class="text-red-600">오류: ${(e as Error).message}</p>`;
+    }
+  }
+
+  function escapeHtml(s: string) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  loadPosts();
+</script>

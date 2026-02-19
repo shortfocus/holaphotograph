@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="새 고객 후기 작성 - 관리자">
+  <Fragment slot="head">
+    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css" />
+    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+  </Fragment>
+  <div class="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
+    <h1 class="mb-6 text-xl font-bold sm:mb-8 sm:text-2xl">새 고객 후기 작성</h1>
+    <form id="post-form" class="space-y-6">
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+          placeholder="예: Sony A7C 실사용 후기"
+        />
+      </div>
+      <div id="field-content">
+        <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
+        <input id="content" name="content" type="hidden" required />
+        <trix-editor input="content" class="trix-content mt-1 min-h-[400px] rounded-lg border border-gray-300 bg-white px-3 py-2" placeholder="후기 내용을 입력하세요"></trix-editor>
+      </div>
+      <div id="field-thumbnail">
+        <label class="block text-sm font-medium text-gray-700">썸네일 이미지</label>
+        <input
+          type="file"
+          id="thumbnail"
+          name="thumbnail"
+          accept="image/*"
+          class="mt-1 block w-full cursor-pointer text-sm text-gray-500 file:cursor-pointer file:mr-4 file:rounded file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium"
+        />
+        <div id="thumb-preview" class="mt-2 hidden">
+          <img src="" alt="미리보기" class="max-h-40 rounded-lg border" />
+        </div>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <button
+          type="submit"
+          id="submit-btn"
+          class="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 sm:py-2"
+        >
+          <span id="submit-text">등록</span>
+          <svg id="submit-spinner" class="hidden h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12H4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        </button>
+        <a
+          href="/admin"
+          id="cancel-btn"
+          class="rounded-lg border border-gray-300 px-6 py-2.5 text-center font-medium hover:bg-gray-50 transition-opacity sm:py-2"
+        >
+          취소
+        </a>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { createPost, uploadImage, deleteImage } from '../../lib/api';
+
+  const form = document.getElementById('post-form') as HTMLFormElement;
+  const thumbInput = document.getElementById('thumbnail') as HTMLInputElement;
+  const thumbPreview = document.getElementById('thumb-preview')!;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const submitText = document.getElementById('submit-text')!;
+  const submitSpinner = document.getElementById('submit-spinner')!;
+  const cancelBtn = document.getElementById('cancel-btn') as HTMLAnchorElement;
+  const contentInput = document.getElementById('content') as HTMLInputElement;
+
+  // Trix 에디터 이미지 첨부 시 R2 업로드 후 URL로 치환 (blob/base64 → 실제 URL)
+  document.addEventListener('trix-attachment-add', async (e: Event) => {
+    const attachment = (e as CustomEvent & { attachment: { file?: File; setAttributes: (a: { url: string }) => void; remove: () => void } }).attachment;
+    if (!attachment.file) return;
+    try {
+      const result = await uploadImage(attachment.file);
+      attachment.setAttributes({ url: result.url });
+    } catch (err) {
+      console.error('이미지 업로드 실패:', err);
+      attachment.remove();
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    }
+  });
+
+  function setLoading(loading: boolean) {
+    submitBtn.disabled = loading;
+    submitText.classList.toggle('hidden', loading);
+    submitSpinner.classList.toggle('hidden', !loading);
+    cancelBtn.classList.toggle('pointer-events-none', loading);
+    cancelBtn.classList.toggle('opacity-50', loading);
+    cancelBtn.classList.toggle('cursor-not-allowed', loading);
+  }
+
+  cancelBtn?.addEventListener('click', (e) => {
+    if (submitBtn.disabled) e.preventDefault();
+  });
+
+  thumbInput?.addEventListener('change', () => {
+    const file = thumbInput.files?.[0];
+    if (file) {
+      const img = thumbPreview.querySelector('img')!;
+      img.src = URL.createObjectURL(file);
+      thumbPreview.classList.remove('hidden');
+    } else {
+      thumbPreview.classList.add('hidden');
+    }
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const title = (fd.get('title') as string)?.trim();
+    const content = (fd.get('content') as string)?.trim() || '';
+
+    if (!content) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+
+    setLoading(true);
+    let uploadResult: { url: string; key: string } | null = null;
+
+    const file = thumbInput.files?.[0];
+    if (file) {
+      try {
+        uploadResult = await uploadImage(file);
+      } catch (err) {
+        setLoading(false);
+        alert((err as Error).message);
+        return;
+      }
+    }
+
+    try {
+      await createPost({
+        title: title || '',
+        content,
+        thumbnail_url: uploadResult?.url ?? null,
+        youtube_url: null,
+        section: 'reviews',
+      });
+      window.location.href = '/admin';
+    } catch (err) {
+      if (uploadResult) {
+        try {
+          await deleteImage(uploadResult.key);
+        } catch {
+          console.warn('Upload rollback failed');
+        }
+      }
+      setLoading(false);
+      alert((err as Error).message);
+    }
+  });
+</script>

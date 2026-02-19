@@ -1,0 +1,90 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-screen flex-col overflow-x-hidden bg-gray-50 text-gray-900 antialiased">
+    <header class="sticky top-0 z-50 border-b border-gray-200 bg-white">
+      <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <a href="/" class="flex items-center gap-2">
+          <img src="/logo.png" alt="올라포토" class="h-8 sm:h-9" />
+          <span class="logo-wave text-lg font-bold sm:text-xl" aria-label="올라포토">
+            <span class="logo-char logo-char-1">올</span>
+            <span class="logo-char logo-char-2">라</span>
+            <span class="logo-char logo-char-3">포</span>
+            <span class="logo-char logo-char-4">토</span>
+            <span class="logo-char logo-char-5 logo-char-dot">．</span>
+            <span class="logo-cursor ml-0.5" aria-hidden="true"><span class="logo-cursor-inner">|</span></span>
+          </span>
+        </a>
+        <button
+          type="button"
+          id="nav-toggle"
+          class="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:hidden"
+          aria-label="메뉴 열기"
+        >
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <ul id="nav-menu" class="absolute right-4 top-full mt-1 hidden flex-col gap-2 rounded-lg border border-gray-200 bg-white py-2 shadow-lg md:static md:mt-0 md:flex md:flex-row md:gap-6 md:border-0 md:bg-transparent md:py-0 md:shadow-none">
+          <li><a href="#youtube-long" class="nav-link block px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 md:px-0 md:py-0 md:hover:bg-transparent">유튜브</a></li>
+          <li><a href="#youtube-shorts" class="nav-link block px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 md:px-0 md:py-0 md:hover:bg-transparent">Shorts</a></li>
+          <li><a href="#blog" class="nav-link block px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 md:px-0 md:py-0 md:hover:bg-transparent">최신 블로그</a></li>
+          <li><a href="/reviews" class="nav-link block px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 md:px-0 md:py-0 md:hover:bg-transparent">고객 후기</a></li>
+          <li><a href="#about" class="nav-link block px-4 py-2 font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-900 md:px-0 md:py-0 md:hover:bg-transparent">소개</a></li>
+        </ul>
+      </nav>
+    </header>
+    <script>
+      const toggle = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-menu');
+      toggle?.addEventListener('click', () => {
+        menu?.classList.toggle('hidden');
+        menu?.classList.toggle('flex');
+      });
+      document.querySelectorAll('#nav-menu a').forEach((a) => {
+        a.addEventListener('click', () => {
+          if (window.innerWidth < 768) menu?.classList.add('hidden');
+        });
+      });
+    </script>
+    <main class="flex-1">
+      <slot />
+    </main>
+    <footer class="border-t border-gray-200 bg-white py-6 sm:py-8">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-center">
+          <p class="text-sm text-gray-500 sm:order-1">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
+          <div class="flex items-center gap-4 sm:flex-row sm:gap-6 sm:order-2">
+            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900" aria-label="인스타그램">
+              <img src="/icons/instagram.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            </a>
+            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900" aria-label="네이버 블로그">
+              <img src="/icons/naver-blog.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            </a>
+            <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA?themeRefresh=1" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900" aria-label="유튜브">
+              <img src="/icons/youtube.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            </a>
+            <a href="mailto:holaphotographer@gmail.com" class="text-gray-600 hover:text-gray-900" aria-label="문의하기">
+              <img src="/icons/contact.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
