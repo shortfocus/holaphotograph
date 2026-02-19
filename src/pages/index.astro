@@ -91,9 +91,9 @@ import Layout from '../layouts/Layout.astro';
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">Shorts</h2>
       <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-3 sm:gap-4 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
+        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
+        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
       </div>
     </div>
   </section>
@@ -239,9 +239,10 @@ import Layout from '../layouts/Layout.astro';
     `;
   }
 
-  function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string }) {
+  function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string; isShort?: boolean }) {
     const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
-    const thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="aspect-video w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-video bg-gray-200" />';
+    const aspectClass = options?.isShort ? 'aspect-[9/16]' : 'aspect-video';
+    const thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="${aspectClass} w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : `<div class="${aspectClass} bg-gray-200" />`;
     const label = options?.label ?? '유튜브 보기 →';
     return `
       <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
@@ -263,12 +264,12 @@ import Layout from '../layouts/Layout.astro';
     }
   }
 
-  function renderYoutubeSection(grid: HTMLElement, items: YoutubeVideoItem[], emptyMsg: string, label: string) {
+  function renderYoutubeSection(grid: HTMLElement, items: YoutubeVideoItem[], emptyMsg: string, label: string, isShort = false) {
     if (items.length === 0) {
       grid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-gray-500">${emptyMsg}</p>`;
     } else {
       const toShow = items.slice(0, LIMIT);
-      grid.innerHTML = toShow.map((v, i) => renderYoutubeCard(v, { priority: i < 3 ? 'high' : 'low', label })).join('');
+      grid.innerHTML = toShow.map((v, i) => renderYoutubeCard(v, { priority: i < 3 ? 'high' : 'low', label, isShort })).join('');
     }
   }
 
@@ -295,7 +296,7 @@ import Layout from '../layouts/Layout.astro';
 
       renderYoutubeSection(youtubeLongGrid, videos, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 롱폼 영상이 없습니다.', '유튜브 보기 →');
       setTimeout(() => {
-        renderYoutubeSection(youtubeShortsGrid, shorts, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 Shorts가 없습니다.', 'Shorts 보기 →');
+        renderYoutubeSection(youtubeShortsGrid, shorts, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 Shorts가 없습니다.', 'Shorts 보기 →', true);
       }, 80);
 
       const allBlog = [...rssRes.reviews, ...rssRes.guides, ...rssRes.models]
