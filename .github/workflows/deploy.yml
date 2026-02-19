@@ -27,18 +27,15 @@ jobs:
         working-directory: worker
 
       - name: Deploy Worker
-        uses: cloudflare/wrangler-action@v3
-        with:
-          command: deploy
-          working-directory: worker
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
+        working-directory: worker
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          command: pages deploy dist --project-name=camera-review
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler pages deploy ../dist --project-name=camera-review
+        working-directory: worker
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
