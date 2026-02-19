@@ -75,26 +75,26 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 1. 유튜브 (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-long" class="py-10 sm:py-16">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-4 sm:mb-6">
+  <section id="youtube-long" class="py-14 sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-5 sm:mb-6">
       <h2 class="text-xl font-bold sm:text-2xl">유튜브</h2>
     </div>
     <div id="youtube-long-grid" class="scroll-row flex gap-3 sm:gap-4 pl-4 sm:pl-6 pr-4 sm:pr-6 pb-2">
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
     </div>
   </section>
 
   <!-- 2. Shorts (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-shorts" class="border-t border-gray-200 bg-gray-50 py-10 sm:py-16">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-4 sm:mb-6">
+  <section id="youtube-shorts" class="border-t border-gray-200 bg-gray-50 py-14 sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-5 sm:mb-6">
       <h2 class="text-xl font-bold sm:text-2xl">Shorts</h2>
     </div>
     <div id="youtube-shorts-grid" class="scroll-row flex gap-3 sm:gap-4 pl-4 sm:pl-6 pr-4 sm:pr-6 pb-2">
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-      <div class="animate-pulse shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
     </div>
   </section>
 
@@ -244,7 +244,7 @@ import Layout from '../layouts/Layout.astro';
     const thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="aspect-video w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-video bg-gray-200" />';
     const label = options?.label ?? '유튜브 보기 →';
     return `
-      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[260px] sm:w-[300px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
+      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
         ${thumb}
         <div class="p-3 bg-white">
           <h3 class="font-semibold line-clamp-2 text-sm sm:text-base">${escapeHtml(v.title)}</h3>
