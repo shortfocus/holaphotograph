@@ -70,6 +70,7 @@ export interface YoutubeVideoItem {
   link: string;
   thumbnail_url: string | null;
   publishedAt: string;
+  viewCount?: string;
 }
 
 export interface YoutubeLatestResponse {

@@ -310,17 +310,17 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const videoIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
     if (videoIds.length === 0) return jsonResponse({ videos: [], shorts: [] }, 200, request);
 
-    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoIds.join(",")}&key=${key}`;
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
       const err = await detailsRes.json();
       return errorResponse(err?.error?.message || "YouTube API error", detailsRes.status, request);
     }
-    const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string } }> };
+    const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
     const items = detailsData.items || [];
 
-    const videos: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string }> = [];
-    const shorts: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string }> = [];
+    const videos: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
+    const shorts: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
 
     for (const it of items) {
       const vid = it.id;
@@ -332,6 +332,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
         link: vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "",
         thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
         publishedAt: sn?.publishedAt || "",
+        viewCount: it.statistics?.viewCount,
       };
       if (!item.link) continue;
       if (isShort) shorts.push(item);
