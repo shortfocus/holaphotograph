@@ -77,7 +77,7 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 1. 유튜브 (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-long" class="py-14 sm:py-20">
+  <section id="youtube-long" class="bg-[#f8f9fa] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">유튜브</h2>
       <div id="youtube-long-grid" class="scroll-row flex w-full min-w-0 gap-3 sm:gap-4 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
@@ -89,10 +89,10 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 2. Shorts (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-shorts" class="border-t border-gray-200 bg-gray-50 py-14 sm:py-20">
+  <section id="youtube-shorts" class="border-t border-gray-200/60 bg-[#f8f9fa] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">Shorts</h2>
-      <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-3 sm:gap-4 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
+      <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-5 sm:gap-6 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
         <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
         <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
         <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
@@ -101,10 +101,10 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 3. 최신 블로그 -->
-  <section id="blog" class="border-t border-gray-200 bg-white py-10 sm:py-16">
+  <section id="blog" class="border-t border-gray-200/60 bg-[#f8f9fa] pt-20 pb-12 sm:pt-28 sm:pb-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-6 text-xl font-bold sm:mb-10 sm:text-2xl">최신 블로그</h2>
-      <div id="blog-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div id="blog-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
         <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
         <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
         <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
@@ -112,25 +112,25 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
-  <!-- 협업 / 광고 안내 -->
-  <section id="about" class="border-t border-gray-200 py-10 sm:py-16">
+  <!-- 협업 / 광고 안내 (성과 지표) -->
+  <section id="about" class="border-t border-gray-200/60 bg-[#f8f9fa] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-10 text-2xl font-bold">협업 / 광고 안내</h2>
       <div class="grid gap-4 sm:gap-6 sm:grid-cols-3">
-        <div id="stats-youtube-subscribers" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
-          <p class="text-2xl font-bold text-gray-900">—</p>
-          <p class="mt-1 text-sm text-gray-500">유튜브 구독자</p>
+        <div id="stats-youtube-subscribers" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+          <p class="mt-1 text-sm font-medium text-gray-600">유튜브 구독자</p>
         </div>
-        <div id="stats-youtube-views" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
-          <p class="text-2xl font-bold text-gray-900">—</p>
-          <p class="mt-1 text-sm text-gray-500">영상 누적 조회수</p>
+        <div id="stats-youtube-views" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+          <p class="mt-1 text-sm font-medium text-gray-600">영상 누적 조회수</p>
         </div>
-        <div id="stats-naver-visitors" class="rounded-lg border border-gray-200 bg-white p-6 text-center">
-          <p class="text-2xl font-bold text-gray-900">—</p>
-          <p class="mt-1 text-sm text-gray-500">네이버 블로그 총 방문자</p>
+        <div id="stats-naver-visitors" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+          <p class="mt-1 text-sm font-medium text-gray-600">네이버 블로그 총 방문자</p>
         </div>
       </div>
-      <p class="mt-6 text-center text-lg font-bold text-gray-600">문의 메일: <a href="mailto:holaphotographer@gmail.com" class="text-amber-700 hover:underline">holaphotographer@gmail.com</a></p>
+      <p class="mt-6 text-center text-lg font-bold text-gray-600">문의 메일: <a href="mailto:holaphotographer@gmail.com" class="text-amber-700 underline-offset-2 transition-colors hover:text-amber-600 hover:underline">holaphotographer@gmail.com</a></p>
     </div>
   </section>
 </Layout>
@@ -236,12 +236,12 @@ import Layout from '../layouts/Layout.astro';
     const thumb = imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="aspect-square w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-square bg-gray-200" />';
     const desc = stripHtml(item.description).slice(0, 100) + (stripHtml(item.description).length > 100 ? '...' : '');
     return `
-      <article class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="block min-w-0">
-          ${thumb}
-          <div class="min-w-0 p-4">
-            <h3 class="break-words font-semibold line-clamp-2">${escapeHtml(item.title)}</h3>
-            <p class="mt-1 line-clamp-2 break-words text-sm text-gray-500">${escapeHtml(desc)}</p>
+      <article class="blog-card flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div class="overflow-hidden rounded-t-[14px] shrink-0">${thumb}</div>
+          <div class="flex min-h-0 flex-1 flex-col p-4">
+            <h3 class="font-semibold line-clamp-2 break-words text-gray-900">${escapeHtml(item.title)}</h3>
+            <p class="mt-1.5 line-clamp-2 break-words text-sm text-gray-500">${escapeHtml(desc)}</p>
           </div>
         </a>
       </article>
@@ -252,6 +252,9 @@ import Layout from '../layouts/Layout.astro';
     const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
     const label = options?.label ?? '유튜브 보기 →';
     const cardWidth = options?.isShort ? 'w-[209px]' : 'w-[280px] sm:w-[340px]';
+    const shadowClass = options?.isShort ? 'shadow-lg hover:shadow-2xl' : 'shadow-md hover:shadow-xl';
+    const metaPadding = options?.isShort ? 'px-4 py-2' : 'px-3 py-1.5';
+    const contentPadding = options?.isShort ? 'p-4' : 'p-3';
     const viewStr = v.viewCount ? formatCount(v.viewCount) + ' 회' : '';
     const dateStr = formatVideoDate(v.publishedAt);
     const metaStr = [viewStr, dateStr].filter(Boolean).join(' · ');
@@ -268,10 +271,10 @@ import Layout from '../layouts/Layout.astro';
         : `<div class="${aspect} bg-gray-200" />`;
     }
     return `
-      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="yt-card group scroll-row-item shrink-0 ${cardWidth} rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
+      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="yt-card group scroll-row-item shrink-0 ${cardWidth} rounded-lg overflow-hidden bg-white ${shadowClass} transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
         ${thumb}
-        ${metaStr ? `<div class="px-3 py-1.5 bg-gray-50 border-b border-gray-100"><p class="text-xs text-gray-500">${escapeHtml(metaStr)}</p></div>` : ''}
-        <div class="p-3 bg-white">
+        ${metaStr ? `<div class="${metaPadding} bg-gray-50 border-b border-gray-100"><p class="text-xs text-gray-500">${escapeHtml(metaStr)}</p></div>` : ''}
+        <div class="${contentPadding} bg-white">
           <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm sm:text-base">${escapeHtml(v.title)}</h3>
           <p class="mt-1 text-xs text-red-600">${escapeHtml(label)}</p>
         </div>
