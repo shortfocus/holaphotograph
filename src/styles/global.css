@@ -107,19 +107,64 @@ body {
   animation: logo-cursor-blink 0.7s step-end infinite;
 }
 
-/* 헤더 네비게이션 호버 애니메이션 */
-@keyframes nav-link-wiggle {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-8deg) scale(1.08); }
-  50% { transform: rotate(8deg) scale(1.08); }
-  75% { transform: rotate(-4deg) scale(1.04); }
+/* Premium 헤더: 투명 → 스크롤 시 네이비 + blur */
+.header-transparent {
+  background: transparent;
 }
+.header-transparent .header-logo { filter: brightness(0) invert(1); }
+.header-transparent .header-logo-text { color: white; }
+.header-transparent .header-toggle { color: white; }
+.header-transparent .nav-link-premium { color: rgba(255,255,255,0.9); }
+.header-transparent .nav-link-premium:hover { color: white; }
+.header-transparent .nav-link-premium.text-slate-400 { color: rgba(255,255,255,0.6); }
+
+.header-scrolled {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.header-scrolled .header-logo { filter: brightness(0) invert(1); }
+.header-scrolled .header-logo-text { color: white; }
+.header-scrolled .header-toggle { color: white; }
+.header-scrolled .nav-link-premium { color: rgba(255,255,255,0.85); }
+.header-scrolled .nav-link-premium:hover { color: white; }
+.header-scrolled .nav-link-premium.text-slate-400 { color: rgba(255,255,255,0.5); }
+
+.nav-link-premium {
+  position: relative;
+  padding: 0.25rem 0;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: color 0.2s;
+}
+.nav-link-premium::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #E11D48;
+  transition: width 0.25s ease;
+}
+.nav-link-premium:hover::after {
+  width: 100%;
+}
+
+/* 기존 nav-link (호버 wiggle) - 하위 호환 */
 .nav-link {
   transition: color 0.2s, background-color 0.2s;
   transform-origin: center center;
 }
 .nav-link:hover {
   animation: nav-link-wiggle 0.5s ease-in-out;
+}
+@keyframes nav-link-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.08); }
+  50% { transform: rotate(8deg) scale(1.08); }
+  75% { transform: rotate(-4deg) scale(1.04); }
 }
 
 /* Trix 에디터 스타일 보정 */
@@ -167,3 +212,16 @@ trix-editor.trix-content:empty:not(:focus)::before {
 .scroll-row > * {
   scroll-snap-align: start;
 }
+
+/* 여백 시스템 (docs/DESIGN_IMPROVEMENT.md) */
+.section-spacing {
+  margin-top: 120px;
+}
+.section-spacing:first-of-type {
+  margin-top: 0;
+}
+.section-title {
+  margin-bottom: 40px;
+}
+
+/* 카드 hover는 각 카드의 Tailwind hover:-translate-y-1로 처리 */
