@@ -91,9 +91,9 @@ import Layout from '../layouts/Layout.astro';
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">Shorts</h2>
       <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-3 sm:gap-4 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]" />
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
       </div>
     </div>
   </section>
@@ -242,9 +242,10 @@ import Layout from '../layouts/Layout.astro';
   function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string; isShort?: boolean }) {
     const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
     const label = options?.label ?? '유튜브 보기 →';
+    const cardWidth = options?.isShort ? 'w-[209px]' : 'w-[280px] sm:w-[340px]';
     let thumb: string;
     if (options?.isShort) {
-      const aspect = 'aspect-[9/16]';
+      const aspect = 'aspect-[209/314]';
       thumb = v.thumbnail_url
         ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
         : `<div class="${aspect} w-full bg-gray-200" />`;
@@ -253,7 +254,7 @@ import Layout from '../layouts/Layout.astro';
       thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="${aspect} w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : `<div class="${aspect} bg-gray-200" />`;
     }
     return `
-      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
+      <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 ${cardWidth} rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
         ${thumb}
         <div class="p-3 bg-white">
           <h3 class="font-semibold line-clamp-2 text-sm sm:text-base">${escapeHtml(v.title)}</h3>
