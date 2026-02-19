@@ -6,6 +6,13 @@ html {
 }
 body {
   overflow-wrap: break-word;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+/* 히어로 섹션: 브라우저 끝까지 풀브리드 */
+.hero-section {
+  width: 100%;
+  min-width: 100%;
 }
 
 /* Hero 섹션 애니메이션 */
@@ -28,6 +35,24 @@ body {
 }
 .hero-glow {
   animation: hero-glow 4s ease-in-out infinite;
+}
+
+/* 히어로 채널 아이콘: 기본 흰색, 호버 시 원본 색상 */
+.hero-channel-icon img {
+  filter: brightness(0) invert(1);
+  transition: filter 0.25s ease;
+}
+.hero-channel-icon:hover img {
+  filter: none;
+}
+
+/* 푸터 채널 아이콘: 기본 흰색, 호버 시 원본 색상 */
+.footer-channel-icon img {
+  filter: brightness(0) invert(1);
+  transition: filter 0.25s ease;
+}
+.footer-channel-icon:hover img {
+  filter: none;
 }
 
 /* 히어로 섹션 미세 노이즈 (딥 네이비 배경용 - 밝은 노이즈) */
@@ -111,7 +136,6 @@ body {
 .header-transparent {
   background: transparent;
 }
-.header-transparent .header-logo { filter: brightness(0) invert(1); }
 .header-transparent .header-logo-text { color: white; }
 .header-transparent .header-toggle { color: white; }
 .header-transparent .nav-link-premium { color: rgba(255,255,255,0.9); }
@@ -124,7 +148,6 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.header-scrolled .header-logo { filter: brightness(0) invert(1); }
 .header-scrolled .header-logo-text { color: white; }
 .header-scrolled .header-toggle { color: white; }
 .header-scrolled .nav-link-premium { color: rgba(255,255,255,0.85); }

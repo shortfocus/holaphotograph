@@ -184,6 +184,13 @@ export default {
 const NAVER_RSS_URL = "https://rss.blog.naver.com/holaphotograph.xml";
 const YOUTUBE_CHANNEL_ID = "UCsD5VP6TvRMt-sq0q25HlIA";
 
+/** 장비 비교 & 상세 분석: 제목·카테고리에 비교/분석 관련 키워드 포함 시 true */
+const COMPARE_KEYWORDS = /비교|상세|분석|vs|대비|대조|스펙|후보|추천|가이드|구매/i;
+
+function isCompareLike(title: string, category: string): boolean {
+  return COMPARE_KEYWORDS.test(title) || COMPARE_KEYWORDS.test(category);
+}
+
 /** RSS item → section 매핑 (guides, models, reviews) */
 function getRssSection(category: string): "reviews" | "guides" | "models" {
   const c = category.toLowerCase();
@@ -271,10 +278,12 @@ async function handleNaverRss(request: Request): Promise<Response> {
       }
     }
     const bySection = (s: string) => items.filter((i) => i.section === s);
+    const compare = items.filter((i) => isCompareLike(i.title, i.category));
     return jsonResponse({
       reviews: bySection("reviews"),
       guides: bySection("guides"),
       models: bySection("models"),
+      compare,
     }, 200, request);
   } catch (err) {
     console.error("naver-rss error:", err);
@@ -293,14 +302,28 @@ function parseDurationSeconds(duration: string | undefined): number {
   return h * 3600 + min * 60 + s;
 }
 
-/** 60초 이하 = Shorts */
+/** 60초 이하 = Shorts (빠르게 보는 장비 팁) */
 const SHORTS_MAX_SECONDS = 60;
+
+/** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
+const REVIEW_KEYWORDS = /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
+
+/** 빠르게 보는 장비 팁: 제목에 팁/꿀팁 등 포함 시 우선 배치 */
+const TIP_KEYWORDS = /팁|꿀팁|tip|핵심|정리/i;
+
+function isReviewLike(title: string): boolean {
+  return REVIEW_KEYWORDS.test(title);
+}
+
+function isTipLike(title: string): boolean {
+  return TIP_KEYWORDS.test(title);
+}
 
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
   const key = env.YOUTUBE_API_KEY;
   if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured" }, 200, request);
   try {
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=15&order=date&type=video&key=${key}`;
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
       const err = await searchRes.json();
@@ -321,25 +344,40 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
 
     const videos: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
     const shorts: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
+    const shortsMatching: typeof shorts = [];
+    const shortsOther: typeof shorts = [];
 
     for (const it of items) {
       const vid = it.id;
       const sn = it.snippet;
+      const title = sn?.title || "";
       const durationSec = parseDurationSeconds(it.contentDetails?.duration);
       const isShort = durationSec > 0 && durationSec <= SHORTS_MAX_SECONDS;
       const item = {
-        title: sn?.title || "",
+        title,
         link: vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "",
         thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
         publishedAt: sn?.publishedAt || "",
         viewCount: it.statistics?.viewCount,
       };
       if (!item.link) continue;
-      if (isShort) shorts.push(item);
-      else videos.push(item);
+      if (isShort) {
+        if (isTipLike(title)) shortsMatching.push(item);
+        else shortsOther.push(item);
+      } else {
+        videos.push(item);
+      }
     }
 
-    return jsonResponse({ videos: videos.slice(0, 6), shorts: shorts.slice(0, 6) }, 200, request);
+    const videosSorted = videos.sort((a, b) => {
+      const aMatch = isReviewLike(a.title) ? 1 : 0;
+      const bMatch = isReviewLike(b.title) ? 1 : 0;
+      if (aMatch !== bMatch) return bMatch - aMatch;
+      return 0;
+    });
+    const shortsMerged = [...shortsMatching, ...shortsOther];
+
+    return jsonResponse({ videos: videosSorted.slice(0, 6), shorts: shortsMerged.slice(0, 6) }, 200, request);
   } catch (err) {
     console.error("youtube-latest error:", err);
     return errorResponse("YouTube fetch failed", 502, request);

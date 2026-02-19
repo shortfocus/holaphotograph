@@ -13,14 +13,15 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin="anonymous" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <slot name="head" />
   </head>
-  <body class="flex min-h-screen flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased">
+  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased">
     <header id="main-header" class="header-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
-          <img src="/favicon.svg" alt="올라포토" class="h-9 sm:h-10 header-logo" />
+          <img src="/logo.png" alt="올라포토" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
           <span class="logo-wave text-xl font-bold text-white sm:text-2xl header-logo-text" aria-label="올라포토">
             <span class="logo-char logo-char-1">올</span>
             <span class="logo-char logo-char-2">라</span>
@@ -77,32 +78,31 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
         });
       });
     </script>
-    <main class="flex-1">
+    <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
-    <footer class="border-t border-slate-200 bg-white py-12 sm:py-16">
+    <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
-        <p class="text-center text-lg font-medium text-[#111827] leading-relaxed">
-          좋은 장비는 결과를 바꾸고,<br />
-          정확한 정보는 선택을 바꿉니다.
-        </p>
-        <div class="mt-8 flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-center">
-          <p class="text-sm text-[#6B7280] sm:order-1">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
-          <div class="flex items-center gap-6 sm:order-2">
-            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="text-[#6B7280] transition-colors hover:text-[#E11D48]" aria-label="인스타그램">
-              <img src="/icons/instagram.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+        <div class="text-center">
+          <p class="text-xl font-semibold text-white sm:text-2xl">
+            장비 선택부터 촬영까지, 실전 기반 가이드.
+          </p>
+          <div class="mt-6 flex justify-center gap-8">
+            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="인스타그램">
+              <img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
             </a>
-            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="text-[#6B7280] transition-colors hover:text-[#E11D48]" aria-label="네이버 블로그">
-              <img src="/icons/naver-blog.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="네이버 블로그">
+              <img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
             </a>
-            <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA?themeRefresh=1" target="_blank" rel="noopener noreferrer" class="text-[#6B7280] transition-colors hover:text-[#E11D48]" aria-label="유튜브">
-              <img src="/icons/youtube.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA?themeRefresh=1" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="유튜브">
+              <img src="/icons/youtube.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
             </a>
-            <a href="mailto:holaphotographer@gmail.com" class="text-[#6B7280] transition-colors hover:text-[#E11D48]" aria-label="문의하기">
-              <img src="/icons/contact.svg" alt="" class="h-5 w-5" aria-hidden="true" />
+            <a href="mailto:holaphotographer@gmail.com" class="footer-channel-icon" aria-label="문의하기">
+              <img src="/icons/contact.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
             </a>
           </div>
         </div>
+        <p class="mt-10 text-center text-sm text-slate-500">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
       </div>
     </footer>
   </body>

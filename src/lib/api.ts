@@ -48,6 +48,8 @@ export interface NaverRssResponse {
   reviews: NaverRssItem[];
   guides: NaverRssItem[];
   models: NaverRssItem[];
+  /** 장비 비교 & 상세 분석 (제목·카테고리에 비교/분석 키워드 포함) */
+  compare: NaverRssItem[];
 }
 
 export async function fetchNaverRss(): Promise<NaverRssResponse> {
