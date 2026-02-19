@@ -3,12 +3,10 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <!-- Hero Carousel (100vh - 헤더, 스크롤 시 유튜브 섹션으로) -->
-  <section class="hero-section relative overflow-hidden" style="height: calc(100vh - 4rem);">
-    <div class="absolute inset-0 bg-[linear-gradient(165deg,#fdf8f3_0%,#f8f0e8_25%,#f5ebe0_50%,#ede4d9_75%,#e8dfd4_100%)] pointer-events-none" aria-hidden="true" />
-    <div class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(251,191,36,0.15),transparent)] pointer-events-none" aria-hidden="true" />
+  <!-- Hero Carousel (딥 네이비 + 레드 포인트) -->
+  <section class="hero-section relative overflow-hidden bg-[#0F172A]" style="height: calc(100vh - 4rem);">
+    <div class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(225,29,72,0.12),transparent)] pointer-events-none" aria-hidden="true" />
     <div class="hero-noise absolute inset-0 pointer-events-none" aria-hidden="true" />
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(180,160,140,0.2)_0.5px,transparent_0.5px),linear-gradient(to_bottom,rgba(180,160,140,0.2)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_110%)] opacity-50 pointer-events-none" aria-hidden="true" />
 
     <div id="hero-carousel" class="relative flex h-full flex-col overflow-hidden">
       <div class="hero-carousel-track flex h-full flex-1 items-center transition-transform duration-500 ease-out" style="transform: translateX(0);">
@@ -16,14 +14,14 @@ import Layout from '../layouts/Layout.astro';
         <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
           <div class="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-items-center gap-3 px-2 sm:gap-6 sm:px-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:justify-items-stretch lg:gap-10 lg:px-6">
             <div class="min-w-0 w-full max-w-full overflow-visible text-center order-2 lg:order-1 lg:text-left">
-              <span class="hero-animate inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs text-amber-900/90 backdrop-blur sm:px-5 sm:py-2 sm:text-sm md:text-base" style="animation-delay: 0ms; opacity: 0">📷 올라포토</span>
-              <h1 class="hero-animate mt-3 break-keep text-2xl font-bold leading-tight tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl" style="animation-delay: 100ms; opacity: 0">실사용 중심<br class="sm:hidden" /><span class="text-amber-700">카메라 리뷰</span> & 촬영 가이드</h1>
-              <p class="hero-animate mx-auto mt-2 max-w-xl break-words text-sm leading-relaxed text-stone-600 sm:mt-6 sm:text-lg lg:mx-0 lg:text-xl" style="animation-delay: 200ms; opacity: 0">장비 선택이 쉬워지는 리뷰 · 실제 촬영 기반 비교 분석</p>
+              <span class="hero-animate inline-block rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs text-red-300 backdrop-blur sm:px-5 sm:py-2 sm:text-sm md:text-base" style="animation-delay: 0ms; opacity: 0">📷 올라포토</span>
+              <h1 class="hero-animate mt-3 break-keep text-2xl font-bold leading-tight tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl" style="animation-delay: 100ms; opacity: 0">실사용 중심<br class="sm:hidden" /><span class="text-[#F43F5E]">카메라 리뷰</span> & 촬영 가이드</h1>
+              <p class="hero-animate mx-auto mt-2 max-w-xl break-words text-sm leading-relaxed text-slate-400 sm:mt-6 sm:text-lg lg:mx-0 lg:text-xl" style="animation-delay: 200ms; opacity: 0">장비 선택이 쉬워지는 리뷰 · 실제 촬영 기반 비교 분석</p>
               <div class="hero-animate mt-4 flex items-center justify-center gap-4 sm:mt-8 sm:gap-6 lg:justify-start" style="animation-delay: 300ms; opacity: 0">
-                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="인스타그램"><img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
-                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="네이버 블로그"><img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
-                <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="유튜브"><img src="/icons/youtube.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
-                <a href="mailto:holaphotographer@gmail.com" target="_blank" rel="noopener noreferrer" class="text-stone-600 transition-colors hover:text-amber-700" aria-label="문의하기"><img src="/icons/contact.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11" aria-hidden="true" /></a>
+                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="text-slate-400 transition-colors hover:text-[#F43F5E]" aria-label="인스타그램"><img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11 invert opacity-80 hover:opacity-100" aria-hidden="true" /></a>
+                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="text-slate-400 transition-colors hover:text-[#F43F5E]" aria-label="네이버 블로그"><img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11 opacity-80 hover:opacity-100" aria-hidden="true" /></a>
+                <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="text-slate-400 transition-colors hover:text-[#F43F5E]" aria-label="유튜브"><img src="/icons/youtube.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11 opacity-80 hover:opacity-100" aria-hidden="true" /></a>
+                <a href="mailto:holaphotographer@gmail.com" target="_blank" rel="noopener noreferrer" class="text-slate-400 transition-colors hover:text-[#F43F5E]" aria-label="문의하기"><img src="/icons/contact.svg" alt="" class="h-8 w-8 sm:h-10 sm:w-10 lg:h-11 lg:w-11 invert opacity-80 hover:opacity-100" aria-hidden="true" /></a>
               </div>
             </div>
             <div class="min-w-0 w-full max-w-full order-first lg:order-last">
@@ -34,15 +32,15 @@ import Layout from '../layouts/Layout.astro';
         <!-- Slide 2: 올라포토 2월 프로모션 -->
         <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
           <div class="mx-auto max-w-2xl px-3 sm:px-4 text-center">
-            <span class="inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs font-medium text-amber-900/90 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">2월 한정</span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-              <span class="text-amber-700">올라포토</span> 2월 프로모션
+            <span class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">2월 한정</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+              <span class="text-[#F43F5E]">올라포토</span> 2월 프로모션
             </h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-stone-600 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
               카메라 리뷰 · 촬영 가이드 · 위클리 포커스까지<br />
               지금 구독하고 다양한 콘텐츠를 만나보세요
             </p>
-            <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl bg-red-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-red-500 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
+            <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
               유튜브에서 보기
             </a>
@@ -51,15 +49,15 @@ import Layout from '../layouts/Layout.astro';
         <!-- Slide 3: 고객 리뷰 확인하기 -->
         <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
           <div class="mx-auto max-w-2xl px-3 sm:px-4 text-center">
-            <span class="inline-block rounded-full border border-amber-700/30 bg-amber-50/90 px-3 py-1 text-xs font-medium text-amber-900/90 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">실제 이용 후기</span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-stone-800 sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-              <span class="text-amber-700">고객 리뷰</span> 확인하기
+            <span class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">실제 이용 후기</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+              <span class="text-[#F43F5E]">고객 리뷰</span> 확인하기
             </h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-stone-600 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
+            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
               올라포토와 함께한 고객님들의 솔직한 후기를 확인해보세요.<br />
               카메라 리뷰 · 촬영 서비스 만족도
             </p>
-            <a href="/reviews" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl border-2 border-amber-600 bg-white px-6 py-3 text-base font-semibold text-amber-700 shadow-md transition-transform duration-200 hover:scale-105 hover:bg-amber-50 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
+            <a href="/reviews" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl border-2 border-[#E11D48] bg-transparent px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#E11D48]/20 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               리뷰 보러 가기
             </a>
@@ -68,18 +66,18 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <!-- 인디케이터 (클릭으로 슬라이드 이동) -->
-      <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm shadow-lg border border-stone-200/60">
-        <button type="button" data-hero-dot="0" class="hero-dot h-2.5 w-7 rounded-full bg-amber-600 shadow-sm transition-all" aria-label="슬라이드 1" aria-current="page"></button>
-        <button type="button" data-hero-dot="1" class="hero-dot h-2.5 w-2.5 rounded-full bg-stone-300 transition-all hover:bg-stone-400" aria-label="슬라이드 2"></button>
-        <button type="button" data-hero-dot="2" class="hero-dot h-2.5 w-2.5 rounded-full bg-stone-300 transition-all hover:bg-stone-400" aria-label="슬라이드 3"></button>
+      <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-800/80 backdrop-blur-sm shadow-lg border border-slate-600/40">
+        <button type="button" data-hero-dot="0" class="hero-dot h-2.5 w-7 rounded-full bg-[#E11D48] shadow-sm transition-all" aria-label="슬라이드 1" aria-current="page"></button>
+        <button type="button" data-hero-dot="1" class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400" aria-label="슬라이드 2"></button>
+        <button type="button" data-hero-dot="2" class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400" aria-label="슬라이드 3"></button>
       </div>
     </div>
   </section>
 
   <!-- 1. 유튜브 (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-long" class="bg-[#f8f9fa] py-16 sm:py-24">
+  <section id="youtube-long" class="bg-[#F8FAFC] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">유튜브</h2>
+      <h2 class="mb-5 sm:mb-6 text-xl font-bold text-slate-900 sm:text-2xl">유튜브</h2>
       <div id="youtube-long-grid" class="scroll-row flex w-full min-w-0 gap-3 sm:gap-4 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
         <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
         <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
@@ -89,9 +87,9 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 2. Shorts (넷플릭스 스타일 가로 스크롤) -->
-  <section id="youtube-shorts" class="border-t border-gray-200/60 bg-[#f8f9fa] py-16 sm:py-24">
+  <section id="youtube-shorts" class="border-t border-slate-200/60 bg-[#F8FAFC] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="mb-5 sm:mb-6 text-xl font-bold sm:text-2xl">Shorts</h2>
+      <h2 class="mb-5 sm:mb-6 text-xl font-bold text-slate-900 sm:text-2xl">Shorts</h2>
       <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-5 sm:gap-6 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
         <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
         <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
@@ -101,9 +99,9 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 3. 최신 블로그 -->
-  <section id="blog" class="border-t border-gray-200/60 bg-[#f8f9fa] pt-20 pb-12 sm:pt-28 sm:pb-20">
+  <section id="blog" class="border-t border-slate-200/60 bg-[#F8FAFC] pt-20 pb-12 sm:pt-28 sm:pb-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="mb-6 text-xl font-bold sm:mb-10 sm:text-2xl">최신 블로그</h2>
+      <h2 class="mb-6 text-xl font-bold text-slate-900 sm:mb-10 sm:text-2xl">최신 블로그</h2>
       <div id="blog-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
         <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
         <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
@@ -113,24 +111,24 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 협업 / 광고 안내 (성과 지표) -->
-  <section id="about" class="border-t border-gray-200/60 bg-[#f8f9fa] py-16 sm:py-24">
+  <section id="about" class="border-t border-slate-200/60 bg-[#F8FAFC] py-16 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="mb-10 text-2xl font-bold">협업 / 광고 안내</h2>
+      <h2 class="mb-10 text-2xl font-bold text-slate-900">협업 / 광고 안내</h2>
       <div class="grid gap-4 sm:gap-6 sm:grid-cols-3">
-        <div id="stats-youtube-subscribers" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
-          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+        <div id="stats-youtube-subscribers" class="stats-card rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-[#E11D48] sm:text-4xl">—</p>
           <p class="mt-1 text-sm font-medium text-gray-600">유튜브 구독자</p>
         </div>
-        <div id="stats-youtube-views" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
-          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+        <div id="stats-youtube-views" class="stats-card rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-[#E11D48] sm:text-4xl">—</p>
           <p class="mt-1 text-sm font-medium text-gray-600">영상 누적 조회수</p>
         </div>
-        <div id="stats-naver-visitors" class="stats-card rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white p-6 text-center shadow-sm">
-          <p class="stats-number text-3xl font-bold text-amber-600 sm:text-4xl">—</p>
+        <div id="stats-naver-visitors" class="stats-card rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+          <p class="stats-number text-3xl font-bold text-[#E11D48] sm:text-4xl">—</p>
           <p class="mt-1 text-sm font-medium text-gray-600">네이버 블로그 총 방문자</p>
         </div>
       </div>
-      <p class="mt-6 text-center text-lg font-bold text-gray-600">문의 메일: <a href="mailto:holaphotographer@gmail.com" class="text-amber-700 underline-offset-2 transition-colors hover:text-amber-600 hover:underline">holaphotographer@gmail.com</a></p>
+      <p class="mt-6 text-center text-lg font-bold text-gray-600">문의 메일: <a href="mailto:holaphotographer@gmail.com" class="text-[#E11D48] underline-offset-2 transition-colors hover:text-[#be123c] hover:underline">holaphotographer@gmail.com</a></p>
     </div>
   </section>
 </Layout>
@@ -153,12 +151,12 @@ import Layout from '../layouts/Layout.astro';
       dots.forEach((d, idx) => {
         if (idx === current) {
           d.setAttribute('aria-current', 'page');
-          d.classList.add('bg-amber-600', 'w-7');
-          d.classList.remove('bg-stone-300', 'w-2.5');
+          d.classList.add('bg-[#E11D48]', 'w-7');
+          d.classList.remove('bg-slate-500', 'w-2.5');
         } else {
           d.removeAttribute('aria-current');
-          d.classList.add('bg-stone-300', 'w-2.5');
-          d.classList.remove('bg-amber-600', 'w-7');
+          d.classList.add('bg-slate-500', 'w-2.5');
+          d.classList.remove('bg-[#E11D48]', 'w-7');
         }
       });
     }
@@ -276,7 +274,7 @@ import Layout from '../layouts/Layout.astro';
         ${metaStr ? `<div class="${metaPadding} bg-gray-50 border-b border-gray-100"><p class="text-xs text-gray-500">${escapeHtml(metaStr)}</p></div>` : ''}
         <div class="${contentPadding} bg-white">
           <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm sm:text-base">${escapeHtml(v.title)}</h3>
-          <p class="mt-1 text-xs text-red-600">${escapeHtml(label)}</p>
+          <p class="mt-1 text-xs text-[#E11D48] font-medium">${escapeHtml(label)}</p>
         </div>
       </a>
     `;
