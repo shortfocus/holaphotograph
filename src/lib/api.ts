@@ -48,7 +48,7 @@ export interface NaverRssResponse {
   reviews: NaverRssItem[];
   guides: NaverRssItem[];
   models: NaverRssItem[];
-  /** 장비 비교 & 상세 분석 (제목·카테고리에 비교/분석 키워드 포함) */
+  /** 장비 비교 & 상세 분석 (제목·카테고리에 '렌즈 리뷰' 또는 '카메라 리뷰' 포함) */
   compare: NaverRssItem[];
 }
 

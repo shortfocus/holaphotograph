@@ -184,11 +184,11 @@ export default {
 const NAVER_RSS_URL = "https://rss.blog.naver.com/holaphotograph.xml";
 const YOUTUBE_CHANNEL_ID = "UCsD5VP6TvRMt-sq0q25HlIA";
 
-/** 장비 비교 & 상세 분석: 제목·카테고리에 비교/분석 관련 키워드 포함 시 true */
-const COMPARE_KEYWORDS = /비교|상세|분석|vs|대비|대조|스펙|후보|추천|가이드|구매/i;
-
+/** 장비 비교 & 상세 분석: 제목·카테고리에 '렌즈 리뷰' 또는 '카메라 리뷰' 포함 시 true */
 function isCompareLike(title: string, category: string): boolean {
-  return COMPARE_KEYWORDS.test(title) || COMPARE_KEYWORDS.test(category);
+  const t = title.toLowerCase();
+  const c = category.toLowerCase();
+  return t.includes("렌즈 리뷰") || t.includes("카메라 리뷰") || c.includes("렌즈 리뷰") || c.includes("카메라 리뷰");
 }
 
 /** RSS item → section 매핑 (guides, models, reviews) */
@@ -362,6 +362,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       };
       if (!item.link) continue;
       if (isShort) {
+        if (title.includes("[대여]")) continue; // 빠르게 보는 장비 팁에서 대여 영상 제외
         if (isTipLike(title)) shortsMatching.push(item);
         else shortsOther.push(item);
       } else {
