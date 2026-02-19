@@ -241,9 +241,17 @@ import Layout from '../layouts/Layout.astro';
 
   function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string; isShort?: boolean }) {
     const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
-    const aspectClass = options?.isShort ? 'aspect-[9/16]' : 'aspect-video';
-    const thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="${aspectClass} w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : `<div class="${aspectClass} bg-gray-200" />`;
     const label = options?.label ?? '유튜브 보기 →';
+    let thumb: string;
+    if (options?.isShort) {
+      const aspect = 'aspect-[9/16]';
+      thumb = v.thumbnail_url
+        ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
+        : `<div class="${aspect} w-full bg-gray-200" />`;
+    } else {
+      const aspect = 'aspect-video';
+      thumb = v.thumbnail_url ? `<img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="${aspect} w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : `<div class="${aspect} bg-gray-200" />`;
+    }
     return `
       <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="scroll-row-item shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-white shadow-sm transition-transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]">
         ${thumb}
