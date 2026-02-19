@@ -73,6 +73,7 @@ export default {
           "GET /api/image-proxy?url=...": "네이버 썸네일 이미지 프록시",
           "GET /api/youtube-latest": "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
           "GET /api/channel-stats": "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
+          "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
           "GET /api/posts": "리뷰 목록 (최신순)",
           "GET /api/posts/:id": "리뷰 상세",
           "POST /api/posts": "리뷰 작성 (관리자)",
@@ -103,6 +104,11 @@ export default {
     // GET /api/channel-stats - 채널 통계 (협업/광고 섹션용)
     if (url.pathname === "/api/channel-stats" && request.method === "GET") {
       return handleChannelStats(request, env);
+    }
+
+    // POST /api/lecture-signup - 강의 소식 수신 신청 (이메일 수집)
+    if (url.pathname === "/api/lecture-signup" && request.method === "POST") {
+      return handleLectureSignup(request, env);
     }
 
     const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
@@ -414,6 +420,45 @@ async function handleChannelStats(request: Request, env: Env): Promise<Response>
     youtubeViewCount,
     naverBlogVisitors,
   }, 200, request);
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function handleLectureSignup(request: Request, env: Env): Promise<Response> {
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!contentType.includes("application/json")) {
+    return errorResponse("Content-Type must be application/json", 400, request);
+  }
+  let body: { email?: string };
+  try {
+    body = (await request.json()) as { email?: string };
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+  const email = String(body.email ?? "").trim().toLowerCase();
+  if (!email) return errorResponse("email required", 400, request);
+  if (!EMAIL_REGEX.test(email)) return errorResponse("Invalid email format", 400, request);
+
+  try {
+    await env.DB.prepare(
+      "INSERT INTO lecture_signups (email) VALUES (?)"
+    ).bind(email).run();
+    return jsonResponse({ success: true, message: "등록되었습니다." }, 201, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("UNIQUE constraint failed") || msg.includes("SQLITE_CONSTRAINT_UNIQUE")) {
+      return jsonResponse({ success: true, message: "이미 등록된 이메일입니다." }, 200, request);
+    }
+    if (msg.includes("no such table")) {
+      return errorResponse(
+        "Database error: lecture_signups table not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request
+      );
+    }
+    console.error("lecture-signup error:", err);
+    return errorResponse("Failed to save", 500, request);
+  }
 }
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {

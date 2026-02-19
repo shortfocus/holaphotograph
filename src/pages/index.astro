@@ -214,19 +214,37 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
-  <!-- 8. 강의 티저 섹션 -->
-  <section id="lecture" class="section-spacing border-t border-slate-700/50 bg-[#0F172A] py-24">
-    <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
-      <h2 class="text-2xl font-bold text-white sm:text-3xl">카메라 입문 & 실전 강의 준비 중</h2>
-      <p class="mt-4 text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
-      <a href="mailto:holaphotographer@gmail.com?subject=강의%20소식%20받기" class="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#E11D48] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#be123c]">
-        강의 소식 받기
-      </a>
-    </div>
-  </section>
+  <!-- 8. 강의 티저 섹션 (래퍼로 하단 여백까지 #0E172A 채움) -->
+  <div class="section-spacing bg-[#0E172A] py-[120px]">
+    <section id="lecture">
+      <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
+        <h2 class="text-2xl font-bold text-white sm:text-3xl">카메라 입문 & 실전 강의 준비 중</h2>
+        <p class="mt-4 text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
+        <form id="lecture-signup-form" class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <input
+            type="email"
+            name="email"
+            id="lecture-email"
+            placeholder="이메일 주소"
+            required
+            autocomplete="email"
+            class="w-full max-w-md rounded-xl border border-slate-600 bg-slate-800/50 px-4 py-3.5 text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:max-w-[280px]"
+          />
+          <button
+            type="submit"
+            id="lecture-signup-btn"
+            class="w-full shrink-0 rounded-xl bg-[#E11D48] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:opacity-70 disabled:hover:scale-100 sm:w-auto"
+          >
+            강의 소식 받기
+          </button>
+        </form>
+        <p id="lecture-signup-status" class="mt-3 min-h-[24px] text-sm text-slate-400" aria-live="polite"></p>
+      </div>
+    </section>
+  </div>
 
   <!-- 9. 협업 / 광고 문의 -->
-  <section id="about" class="section-spacing border-t border-slate-200/60 bg-white py-24">
+  <section id="about" class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-24">
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
       <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">협업 및 광고 문의</h2>
       <p class="mb-12 text-[#6B7280]">브랜드 협업·광고 문의를 환영합니다</p>
@@ -250,7 +268,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { fetchNaverRss, fetchYoutubeLatest, fetchChannelStats, getRssThumbnailUrl, type NaverRssItem, type YoutubeVideoItem } from '../lib/api';
+  import { fetchNaverRss, fetchYoutubeLatest, fetchChannelStats, getRssThumbnailUrl, submitLectureSignup, type NaverRssItem, type YoutubeVideoItem } from '../lib/api';
 
   // Hero Carousel
   (function initHeroCarousel() {
@@ -478,6 +496,41 @@ import Layout from '../layouts/Layout.astro';
       blogGrid.innerHTML = '<p class="col-span-full text-center text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
     }
   }
+
+  // 강의 소식 수신 신청 폼
+  (function initLectureSignup() {
+    const form = document.getElementById('lecture-signup-form') as HTMLFormElement;
+    const input = document.getElementById('lecture-email') as HTMLInputElement;
+    const btn = document.getElementById('lecture-signup-btn') as HTMLButtonElement;
+    const status = document.getElementById('lecture-signup-status') as HTMLElement;
+    if (!form || !input || !btn || !status) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = input.value.trim();
+      if (!email) {
+        status.textContent = '이메일을 입력해주세요.';
+        status.classList.add('text-amber-400');
+        status.classList.remove('text-emerald-400');
+        return;
+      }
+      btn.disabled = true;
+      status.textContent = '';
+      try {
+        const res = await submitLectureSignup(email);
+        status.textContent = res.message;
+        status.classList.add('text-emerald-400');
+        status.classList.remove('text-amber-400');
+        input.value = '';
+      } catch (err) {
+        status.textContent = err instanceof Error ? err.message : '등록에 실패했습니다.';
+        status.classList.add('text-amber-400');
+        status.classList.remove('text-emerald-400');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  })();
 
   load();
 </script>

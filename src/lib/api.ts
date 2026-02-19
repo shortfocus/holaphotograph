@@ -99,6 +99,22 @@ export async function fetchChannelStats(): Promise<ChannelStatsResponse> {
   return res.json();
 }
 
+export interface LectureSignupResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function submitLectureSignup(email: string): Promise<LectureSignupResponse> {
+  const res = await fetch(`${API_BASE}/api/lecture-signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "등록에 실패했습니다.");
+  return data;
+}
+
 export async function fetchPost(id: number): Promise<Post | null> {
   const res = await fetch(`${API_BASE}/api/posts/${id}`);
   if (!res.ok) return null;
