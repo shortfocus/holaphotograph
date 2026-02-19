@@ -75,7 +75,13 @@ npm run build
 
 ## 배포
 
-전체 배포 (프론트엔드 + Worker):
+### 자동 배포 (GitHub Actions)
+
+`main` 브랜치에 푸시하면 Cloudflare Worker + Pages가 자동 배포됩니다.
+
+**필수 설정**: GitHub Repository → Settings → Secrets에 `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` 추가
+
+### 수동 배포
 
 ```bash
 npm run build && cd worker && npx wrangler deploy && cd .. && npx wrangler pages deploy dist --project-name=camera-review
