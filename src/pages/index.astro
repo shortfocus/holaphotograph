@@ -88,77 +88,7 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
-  <!-- 3. 전문가 소개 섹션 (Authority Builder) -->
-  <section id="expert" class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">전문가 소개</h2>
-      <p class="mb-12 text-[#6B7280]">실사용 기반 장비 분석과 촬영 노하우를 공유합니다.</p>
-      <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-16">
-        <div class="flex-shrink-0">
-          <div class="relative h-48 w-48 overflow-hidden rounded-2xl bg-slate-200 shadow-lg ring-2 ring-white sm:h-56 sm:w-56">
-            <img src="/logo.png" alt="올라포토" class="h-full w-full object-cover object-center" />
-          </div>
-          <div class="mt-4 flex justify-center gap-3 lg:justify-start">
-            <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#E11D48] hover:text-white" aria-label="유튜브"><img src="/icons/youtube.svg" alt="" class="h-5 w-5" /></a>
-            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="group relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#03C75A] hover:text-white" aria-label="네이버 블로그">
-              <img src="/icons/naver-blog.svg" alt="" class="h-5 w-5 block transition-opacity duration-250 group-hover:opacity-0" />
-              <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-5 w-5 opacity-0 transition-opacity duration-250 group-hover:opacity-100" />
-            </a>
-            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#E4405F] hover:text-white" aria-label="인스타그램"><img src="/icons/instagram.svg" alt="" class="h-5 w-5" /></a>
-          </div>
-        </div>
-        <div class="flex-1 space-y-8 text-center lg:text-left">
-          <div>
-            <p class="text-[#111827] leading-relaxed">
-              안녕하세요, <strong class="text-[#E11D48]">올라포토</strong>입니다. 실제로 장비를 사용하고 비교한 경험을 바탕으로, 카메라 선택부터 촬영 노하우까지 실전 중심의 콘텐츠를 제작하고 있습니다.
-            </p>
-          </div>
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-              <p class="text-sm font-semibold text-[#6B7280]">유튜브</p>
-              <p class="mt-1 text-2xl font-bold text-[#E11D48]"><span id="stats-expert-subs">2,550</span>명</p>
-              <p class="mt-0.5 text-sm text-[#6B7280]">구독자</p>
-            </div>
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-              <p class="text-sm font-semibold text-[#6B7280]">네이버 블로그</p>
-              <p class="mt-1 text-2xl font-bold text-[#E11D48]"><span id="stats-expert-blog">65만+</span></p>
-              <p class="mt-0.5 text-sm text-[#6B7280]">누적 방문자</p>
-            </div>
-          </div>
-          <div>
-            <p class="mb-3 text-sm font-semibold text-[#111827]">주요 콘텐츠</p>
-            <div class="flex flex-wrap gap-2">
-              <span class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#6B7280] shadow-sm ring-1 ring-slate-200/60">장비 언박싱 & 리뷰</span>
-              <span class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#6B7280] shadow-sm ring-1 ring-slate-200/60">실사용 비교 분석</span>
-              <span class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#6B7280] shadow-sm ring-1 ring-slate-200/60">구매 가이드</span>
-              <span class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#6B7280] shadow-sm ring-1 ring-slate-200/60">촬영 노하우</span>
-            </div>
-          </div>
-          <div>
-            <ul class="space-y-3 text-[#6B7280]">
-              <li class="flex items-start gap-3">
-                <span class="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#E11D48]" />
-                <span>카메라 리뷰 전문 채널 운영</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#E11D48]" />
-                <span>실제 사용 후 비교 분석 콘텐츠 제작</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#E11D48]" />
-                <span>브랜드 협업·광고·제품 리뷰 문의 환영</span>
-              </li>
-            </ul>
-          </div>
-          <a href="#about" class="inline-flex items-center gap-2 rounded-xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#be123c]">
-            협업 제안
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. 실전 영상 리뷰 섹션 -->
+  <!-- 3. 실전 영상 리뷰 섹션 -->
   <section id="youtube-long" class="section-spacing border-t border-slate-200/60 bg-white py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">📺 실전 영상 리뷰</h2>
@@ -189,10 +119,10 @@ import Layout from '../layouts/Layout.astro';
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">✍ 장비 비교 & 상세 분석</h2>
       <p class="mb-10 text-[#6B7280]">구매 전 꼭 확인해야 할 비교 분석 콘텐츠</p>
-      <div id="blog-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-        <div class="animate-pulse rounded-xl border border-slate-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
-        <div class="animate-pulse rounded-xl border border-slate-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
-        <div class="animate-pulse rounded-xl border border-slate-200 bg-white overflow-hidden"><div class="aspect-square bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
+      <div id="blog-grid" class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
       </div>
     </div>
   </section>
@@ -395,18 +325,17 @@ import Layout from '../layouts/Layout.astro';
   function renderRssCard(item: NaverRssItem, options?: { priority?: 'high' | 'low' }) {
     const imgUrl = getRssThumbnailUrl(item);
     const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
-    const thumb = imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="aspect-square w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" />` : '<div class="aspect-square bg-gray-200" />';
-    const desc = stripHtml(item.description).slice(0, 100) + (stripHtml(item.description).length > 100 ? '...' : '');
+    const thumb = imgUrl ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>` : '<div class="aspect-[209/314] w-full bg-gray-200" />';
+    const desc = stripHtml(item.description).slice(0, 80) + (stripHtml(item.description).length > 80 ? '...' : '');
     return `
-      <article class="blog-card flex h-full min-h-[320px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="flex min-h-0 min-w-0 flex-1 flex-col">
-          <div class="overflow-hidden rounded-t-xl shrink-0">${thumb}</div>
-          <div class="flex min-h-0 flex-1 flex-col p-4">
-            <h3 class="font-semibold line-clamp-2 break-words text-[#111827]">${escapeHtml(item.title)}</h3>
-            <p class="mt-1.5 line-clamp-2 break-words text-sm text-[#6B7280]">${escapeHtml(desc)}</p>
-          </div>
-        </a>
-      </article>
+      <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
+        ${thumb}
+        <div class="p-4 bg-white">
+          <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm text-[#111827]">${escapeHtml(item.title)}</h3>
+          <p class="mt-1 line-clamp-2 text-xs text-[#6B7280]">${escapeHtml(desc)}</p>
+          <p class="mt-2 text-xs text-[#E11D48] font-medium">블로그 보기 →</p>
+        </div>
+      </a>
     `;
   }
 
@@ -443,7 +372,7 @@ import Layout from '../layouts/Layout.astro';
 
   function renderRssSection(grid: HTMLElement, items: NaverRssItem[], emptyMsg: string, priority: 'high' | 'low' = 'low') {
     if (items.length === 0) {
-      grid.innerHTML = `<p class="col-span-full text-center text-[#6B7280]">${emptyMsg}</p>`;
+      grid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-[#6B7280]">${emptyMsg}</p>`;
     } else {
       const toShow = items.slice(0, LIMIT);
       grid.innerHTML = toShow.map((item, i) => renderRssCard(item, { priority: priority === 'high' && i < 3 ? 'high' : 'low' })).join('');
@@ -471,8 +400,6 @@ import Layout from '../layouts/Layout.astro';
         const subEl = document.getElementById('stats-youtube-subscribers');
         const viewsEl = document.getElementById('stats-youtube-views');
         const naverEl = document.getElementById('stats-naver-visitors');
-        const expertSubs = document.getElementById('stats-expert-subs');
-        const expertBlog = document.getElementById('stats-expert-blog');
 
         const subs = parseInt(statsRes.youtubeSubscribers ?? '0', 10);
         const views = parseInt(statsRes.youtubeViewCount ?? '0', 10);
@@ -481,8 +408,6 @@ import Layout from '../layouts/Layout.astro';
         if (subEl && !isNaN(subs)) animateCount(subEl, subs);
         if (viewsEl && !isNaN(views)) viewsEl.textContent = formatCount(views);
         if (naverEl && !isNaN(naver)) animateCount(naverEl, naver);
-        if (expertSubs) expertSubs.textContent = formatCount(subs);
-        if (expertBlog) expertBlog.textContent = statsRes.naverBlogVisitors ? formatCount(statsRes.naverBlogVisitors) + '+' : '65만+';
       }
 
       const videos = youtubeRes.videos || [];
@@ -502,9 +427,9 @@ import Layout from '../layouts/Layout.astro';
         renderRssSection(blogGrid, compareBlog, '장비 비교·상세 분석 콘텐츠가 없습니다.', 'high');
       }, 160);
     } catch (e) {
-      youtubeLongGrid.innerHTML = `<p class="col-span-full text-center text-[#E11D48]">영상을 불러올 수 없습니다</p>`;
-      youtubeShortsGrid.innerHTML = '<p class="col-span-full text-center text-[#E11D48]">Shorts를 불러올 수 없습니다</p>';
-      blogGrid.innerHTML = '<p class="col-span-full text-center text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
+      youtubeLongGrid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">영상을 불러올 수 없습니다</p>`;
+      youtubeShortsGrid.innerHTML = '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">Shorts를 불러올 수 없습니다</p>';
+      blogGrid.innerHTML = '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
     }
   }
 
