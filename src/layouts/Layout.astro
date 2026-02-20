@@ -17,7 +17,7 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <slot name="head" />
   </head>
-  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased">
+  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased pb-24 sm:pb-20">
     <header id="main-header" class="header-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
@@ -74,6 +74,37 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
     <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
+    <!-- 강의 소식 플로팅 CTA (화면 하단 고정) -->
+    <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm py-4 px-4 sm:py-3 sm:px-6 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+      <div class="mx-auto flex max-w-4xl flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
+        <div class="text-center sm:text-left">
+          <p class="font-semibold text-white">카메라 입문 & 실전 강의 준비 중</p>
+          <p class="text-sm text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
+        </div>
+        <div class="flex w-full max-w-md flex-col gap-2 sm:w-auto sm:flex-shrink-0">
+          <form id="lecture-signup-form" class="flex flex-col gap-2 sm:flex-row">
+            <input
+              type="email"
+              name="email"
+              id="lecture-email"
+              placeholder="이메일 주소"
+              required
+              autocomplete="email"
+              class="rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30"
+            />
+            <button
+              type="submit"
+              id="lecture-signup-btn"
+              class="shrink-0 rounded-lg bg-[#E11D48] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:opacity-70"
+            >
+              강의 소식 받기
+            </button>
+          </form>
+          <p id="lecture-signup-status" class="min-h-[20px] text-center text-sm text-slate-400 sm:text-left" aria-live="polite"></p>
+        </div>
+      </div>
+    </aside>
+
     <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
         <div class="text-center">
