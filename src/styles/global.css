@@ -45,6 +45,11 @@ body {
 .hero-channel-icon:hover img {
   filter: none;
 }
+/* 네이버 블로그: 밝은 배경용 SVG라 filter 미적용 (어두운 배경에서 바로 보이도록) */
+.hero-channel-icon img[src*="naver-blog"],
+.footer-channel-icon img[src*="naver-blog"] {
+  filter: none;
+}
 
 /* 푸터 채널 아이콘: 기본 흰색, 호버 시 원본 색상 */
 .footer-channel-icon img {
@@ -60,76 +65,6 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   opacity: 0.04;
   filter: invert(1);
-}
-
-/* 헤더 로고 타이핑 애니메이션 (타이핑 → 표시 → 지우기 → 반복) */
-/* 전체 사이클 2s: 0-15% 타입, 15-50% 표시, 50-65% 지우기, 65-100% 대기(0.7s) */
-/* steps(1)로 한 글자씩 또박또박 인쇄되는 느낌 */
-@keyframes logo-char-올 {
-  0% { opacity: 0; }
-  2% { opacity: 1; }
-  63% { opacity: 1; }
-  65% { opacity: 0; }
-  100% { opacity: 0; }
-}
-@keyframes logo-char-라 {
-  0% { opacity: 0; }
-  5% { opacity: 1; }
-  61% { opacity: 1; }
-  63% { opacity: 0; }
-  100% { opacity: 0; }
-}
-@keyframes logo-char-포 {
-  0% { opacity: 0; }
-  8% { opacity: 1; }
-  59% { opacity: 1; }
-  61% { opacity: 0; }
-  100% { opacity: 0; }
-}
-@keyframes logo-char-토 {
-  0% { opacity: 0; }
-  11% { opacity: 1; }
-  57% { opacity: 1; }
-  59% { opacity: 0; }
-  100% { opacity: 0; }
-}
-@keyframes logo-char-dot {
-  0% { opacity: 0; }
-  14% { opacity: 1; }
-  55% { opacity: 1; }
-  57% { opacity: 0; }
-  100% { opacity: 0; }
-}
-@keyframes logo-cursor-show {
-  0%, 14% { opacity: 0; }
-  14.1%, 55% { opacity: 1; }
-  55.1%, 100% { opacity: 0; }
-}
-@keyframes logo-cursor-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-.logo-char {
-  display: inline-block;
-  opacity: 0;
-  animation-timing-function: steps(1);
-  animation-iteration-count: infinite;
-  animation-duration: 2s;
-}
-.logo-char-1 { animation-name: logo-char-올; }
-.logo-char-2 { animation-name: logo-char-라; }
-.logo-char-3 { animation-name: logo-char-포; }
-.logo-char-4 { animation-name: logo-char-토; }
-.logo-char-5 { animation-name: logo-char-dot; }
-.logo-char-dot { font-size: 1.15em; }
-.logo-cursor {
-  display: inline-block;
-  opacity: 0;
-  animation: logo-cursor-show 2s step-end infinite;
-}
-.logo-cursor-inner {
-  display: inline-block;
-  animation: logo-cursor-blink 0.7s step-end infinite;
 }
 
 /* Premium 헤더: 투명 → 스크롤 시 네이비 + blur */

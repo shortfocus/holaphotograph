@@ -3,11 +3,11 @@
  * - PUBLIC_API_URL: 메인 페이지용 (GET)
  * - PUBLIC_ADMIN_API_URL: 관리자용 (POST/PUT/DELETE/upload). 없으면 PUBLIC_API_URL 사용
  */
-const env = typeof import.meta.env !== "undefined" ? import.meta.env : {};
+const env = (typeof import.meta.env !== "undefined" ? import.meta.env : {}) as { PUBLIC_API_URL?: string; PUBLIC_ADMIN_API_URL?: string };
 const isProd = typeof window !== "undefined" && !window.location.hostname.includes("localhost");
 const defaultUrl = isProd ? "https://camera-review-api.chs4413.workers.dev" : "http://localhost:8787";
-const PUBLIC = env?.PUBLIC_API_URL || defaultUrl;
-const ADMIN = env?.PUBLIC_ADMIN_API_URL || PUBLIC;
+const PUBLIC = env.PUBLIC_API_URL || defaultUrl;
+const ADMIN = env.PUBLIC_ADMIN_API_URL || PUBLIC;
 
 export const API_BASE = PUBLIC;
 const ADMIN_API_BASE = ADMIN;
@@ -28,7 +28,7 @@ export interface Post {
 export async function fetchPosts(): Promise<Post[]> {
   const res = await fetch(`${API_BASE}/api/posts`);
   if (!res.ok) throw new Error("Failed to fetch posts");
-  const data = await res.json();
+  const data = (await res.json()) as { posts?: Post[] };
   return data.posts ?? [];
 }
 
@@ -110,7 +110,7 @@ export async function submitLectureSignup(email: string): Promise<LectureSignupR
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: email.trim().toLowerCase() }),
   });
-  const data = await res.json();
+  const data = (await res.json()) as LectureSignupResponse & { error?: string };
   if (!res.ok) throw new Error(data.error || "등록에 실패했습니다.");
   return data;
 }
@@ -129,7 +129,7 @@ export async function createPost(body: Partial<Post>): Promise<Post> {
     credentials: "include",
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Failed to create");
   }
   return res.json();
@@ -143,7 +143,7 @@ export async function updatePost(id: number, body: Partial<Post> & { thumbnail_u
     credentials: "include",
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Failed to update");
   }
   return res.json();
@@ -155,7 +155,7 @@ export async function deletePost(id: number): Promise<void> {
     credentials: "include",
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Failed to delete");
   }
 }
@@ -174,11 +174,11 @@ export async function uploadImage(file: File): Promise<UploadResult> {
     credentials: "include",
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Upload failed");
   }
-  const data = await res.json();
-  return { url: data.url, key: data.key };
+  const data = (await res.json()) as UploadResult;
+  return data;
 }
 
 export async function deleteImage(key: string): Promise<void> {
@@ -187,7 +187,7 @@ export async function deleteImage(key: string): Promise<void> {
     credentials: "include",
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Delete failed");
   }
 }

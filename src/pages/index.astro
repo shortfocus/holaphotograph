@@ -21,14 +21,15 @@ import Layout from '../layouts/Layout.astro';
               </h1>
               <p class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg lg:mx-0 lg:text-xl" style="animation-delay: 200ms; opacity: 0"><span class="whitespace-nowrap">장비 비교</span> · <span class="whitespace-nowrap">실사용 테스트</span> · <span class="whitespace-nowrap">구매 가이드</span></p>
               <div class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start" style="animation-delay: 300ms; opacity: 0">
-                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="인스타그램">
-                  <img src="/icons/instagram.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
-                </a>
-                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="네이버 블로그">
-                  <img src="/icons/naver-blog.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
-                </a>
                 <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="유튜브">
                   <img src="/icons/youtube.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
+                </a>
+                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group relative inline-flex" aria-label="네이버 블로그">
+                  <img src="/icons/naver-blog.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10 block transition-opacity duration-250 group-hover:opacity-0" aria-hidden="true" />
+                  <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-9 w-9 sm:h-10 sm:w-10 opacity-0 transition-opacity duration-250 group-hover:opacity-100" aria-hidden="true" />
+                </a>
+                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="인스타그램">
+                  <img src="/icons/instagram.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
                 </a>
                 <a href="mailto:holaphotographer@gmail.com" class="hero-channel-icon group" aria-label="문의하기">
                   <img src="/icons/contact.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
@@ -99,7 +100,10 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <div class="mt-4 flex justify-center gap-3 lg:justify-start">
             <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#E11D48] hover:text-white" aria-label="유튜브"><img src="/icons/youtube.svg" alt="" class="h-5 w-5" /></a>
-            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#03C75A] hover:text-white" aria-label="네이버 블로그"><img src="/icons/naver-blog.svg" alt="" class="h-5 w-5" /></a>
+            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="group relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#03C75A] hover:text-white" aria-label="네이버 블로그">
+              <img src="/icons/naver-blog.svg" alt="" class="h-5 w-5 block transition-opacity duration-250 group-hover:opacity-0" />
+              <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-5 w-5 opacity-0 transition-opacity duration-250 group-hover:opacity-100" />
+            </a>
             <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6B7280] shadow-md transition-all hover:bg-[#E4405F] hover:text-white" aria-label="인스타그램"><img src="/icons/instagram.svg" alt="" class="h-5 w-5" /></a>
           </div>
         </div>
@@ -249,18 +253,25 @@ import Layout from '../layouts/Layout.astro';
       <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">협업 및 광고 문의</h2>
       <p class="mb-12 text-[#6B7280]">브랜드 협업·광고 문의를 환영합니다</p>
       <div class="flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center sm:gap-6">
-        <a href="mailto:holaphotographer@gmail.com" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]">
-          <img src="/icons/contact.svg" alt="" class="h-6 w-6 shrink-0 opacity-70" aria-hidden="true" />
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">이메일</span>
-          <span class="text-xs text-[#6B7280] break-all group-hover:text-[#E11D48]/90">holaphotographer@gmail.com</span>
+        <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="유튜브">
+          <img src="/icons/youtube.svg" alt="" class="h-6 w-6 shrink-0" aria-hidden="true" />
+          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">유튜브</span>
+        </a>
+        <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="네이버 블로그">
+          <span class="relative inline-flex h-6 w-6 shrink-0">
+            <img src="/icons/naver-blog.svg" alt="" class="h-6 w-6 block transition-opacity duration-250 group-hover:opacity-0" aria-hidden="true" />
+            <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-6 w-6 opacity-0 transition-opacity duration-250 group-hover:opacity-100" aria-hidden="true" />
+          </span>
+          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">네이버 블로그</span>
         </a>
         <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="인스타그램">
           <img src="/icons/instagram.svg" alt="" class="h-6 w-6 shrink-0" aria-hidden="true" />
           <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">인스타그램</span>
         </a>
-        <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="유튜브">
-          <img src="/icons/youtube.svg" alt="" class="h-6 w-6 shrink-0" aria-hidden="true" />
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">유튜브</span>
+        <a href="mailto:holaphotographer@gmail.com" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]">
+          <img src="/icons/contact.svg" alt="" class="h-6 w-6 shrink-0 opacity-70" aria-hidden="true" />
+          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">이메일</span>
+          <span class="text-xs text-[#6B7280] break-all group-hover:text-[#E11D48]/90">holaphotographer@gmail.com</span>
         </a>
       </div>
     </div>

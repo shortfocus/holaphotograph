@@ -332,7 +332,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
-      const err = await searchRes.json();
+      const err = (await searchRes.json()) as { error?: { message?: string } };
       return errorResponse(err?.error?.message || "YouTube API error", searchRes.status, request);
     }
     const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string }; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } } }> };
@@ -342,7 +342,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
-      const err = await detailsRes.json();
+      const err = (await detailsRes.json()) as { error?: { message?: string } };
       return errorResponse(err?.error?.message || "YouTube API error", detailsRes.status, request);
     }
     const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };

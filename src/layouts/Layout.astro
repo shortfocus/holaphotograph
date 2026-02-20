@@ -22,14 +22,7 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
           <img src="/logo.png" alt="올라포토" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
-          <span class="logo-wave text-xl font-bold text-white sm:text-2xl header-logo-text" aria-label="올라포토">
-            <span class="logo-char logo-char-1">올</span>
-            <span class="logo-char logo-char-2">라</span>
-            <span class="logo-char logo-char-3">포</span>
-            <span class="logo-char logo-char-4">토</span>
-            <span class="logo-char logo-char-5 logo-char-dot">．</span>
-            <span class="logo-cursor ml-0.5" aria-hidden="true"><span class="logo-cursor-inner">|</span></span>
-          </span>
+          <span class="text-xl font-bold text-white sm:text-2xl header-logo-text" aria-label="올라포토">올라포토</span>
         </a>
         <button
           type="button"
@@ -88,14 +81,15 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
             장비 선택부터 촬영까지, 실전 기반 가이드.
           </p>
           <div class="mt-6 flex justify-center gap-8">
-            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="인스타그램">
-              <img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
-            </a>
-            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="네이버 블로그">
-              <img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
-            </a>
             <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA?themeRefresh=1" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="유튜브">
               <img src="/icons/youtube.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
+            </a>
+            <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="footer-channel-icon group relative inline-flex" aria-label="네이버 블로그">
+              <img src="/icons/naver-blog.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9 block transition-opacity duration-250 group-hover:opacity-0" aria-hidden="true" />
+              <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-8 w-8 sm:h-9 sm:w-9 opacity-0 transition-opacity duration-250 group-hover:opacity-100" aria-hidden="true" />
+            </a>
+            <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="인스타그램">
+              <img src="/icons/instagram.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
             </a>
             <a href="mailto:holaphotographer@gmail.com" class="footer-channel-icon" aria-label="문의하기">
               <img src="/icons/contact.svg" alt="" class="h-8 w-8 sm:h-9 sm:w-9" aria-hidden="true" />
