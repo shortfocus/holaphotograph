@@ -12,6 +12,45 @@
     --lecture-bar-height: calc(var(--lecture-bar-base) + env(safe-area-inset-bottom, 0px));
   }
 }
+/* 플로팅 바 접었을 때: 펼치기 탭이 바 상단에 붙음 (접기 탭과 동일 방식) */
+:root {
+  --lecture-bar-collapsed-height: 44px;
+  --lecture-bar-tab-height: 36px;
+}
+body.lecture-bar-collapsed {
+  /* 플로팅 바 접힌 상태: 히어로가 뷰포트 전체 사용, 탭은 하단에 오버레이 */
+  --lecture-bar-height: 0;
+}
+#lecture .lecture-bar-tab {
+  display: none;
+}
+body.lecture-bar-collapsed #lecture .lecture-bar-content {
+  display: none;
+}
+body.lecture-bar-collapsed #lecture .lecture-bar-tab {
+  display: flex;
+}
+body.lecture-bar-collapsed #lecture {
+  min-height: 0;
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: transparent;
+  border-top-color: transparent;
+  box-shadow: none;
+}
+body.lecture-bar-collapsed #lecture .lecture-bar-tab {
+  bottom: 0;
+  top: auto;
+  right: 1rem;
+  transform: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: none;
+}
+@media (min-width: 640px) {
+  body.lecture-bar-collapsed #lecture .lecture-bar-tab {
+    right: 1.5rem;
+  }
+}
 
 /* 반응형 텍스트 줄바꿈 (한글/긴 단어) */
 html {
@@ -29,6 +68,10 @@ body {
   min-height: unset;
   height: calc(100vh - var(--lecture-bar-height));
   height: calc(100dvh - var(--lecture-bar-height));
+}
+/* 플로팅 바 접힌 상태: 히어로가 뷰포트 전체 사용 */
+body.lecture-bar-collapsed .hero-section {
+  height: 100dvh;
 }
 
 /* Hero 섹션 애니메이션 */

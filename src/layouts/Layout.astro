@@ -80,36 +80,66 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hid
     <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
-    <!-- 강의 소식 플로팅 CTA (화면 하단 고정, 높이 95px) -->
-    <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] items-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-4 pb-[env(safe-area-inset-bottom,0px)] sm:min-h-[var(--lecture-bar-base)] sm:pt-0 sm:px-6 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
-      <div class="mx-auto flex w-full max-w-4xl flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <div class="text-center sm:text-left">
-          <p class="font-semibold text-white">카메라 입문 & 실전 강의 준비 중</p>
-          <p class="text-sm text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
-        </div>
-        <div class="flex w-full flex-col gap-2 sm:w-auto sm:max-w-md sm:flex-shrink-0">
-          <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <input
-              type="email"
-              name="email"
-              id="lecture-email"
-              placeholder="이메일 주소"
-              required
-              autocomplete="email"
-              class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:flex-1"
-            />
-            <button
-              type="submit"
-              id="lecture-signup-btn"
-              class="w-full shrink-0 rounded-lg bg-[#E11D48] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:opacity-70 sm:w-auto"
-            >
-              강의 소식 받기
-            </button>
-          </form>
-          <p id="lecture-signup-status" class="min-h-[20px] text-center text-sm text-slate-400 sm:text-left" aria-live="polite"></p>
+    <!-- 강의 소식 플로팅 CTA (토글 가능) -->
+    <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+      <!-- 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 (bottom: 100%), CTA 오른쪽에 맞춤 -->
+      <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="플로팅 바 접기">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg>
+        <span>접기</span>
+      </button>
+      <div class="lecture-bar-content mx-auto flex w-full max-w-4xl flex-1 flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div class="text-center sm:text-left">
+            <p class="font-semibold text-white">카메라 입문 & 실전 강의 준비 중</p>
+            <p class="text-sm text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
+          </div>
+          <div class="flex w-full flex-col gap-2 sm:w-auto sm:max-w-md sm:flex-shrink-0">
+            <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <input
+                type="email"
+                name="email"
+                id="lecture-email"
+                placeholder="이메일 주소"
+                required
+                autocomplete="email"
+                class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:flex-1"
+              />
+              <button
+                type="submit"
+                id="lecture-signup-btn"
+                class="w-full shrink-0 rounded-lg bg-[#E11D48] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:opacity-70 sm:w-auto"
+              >
+                강의 소식 받기
+              </button>
+            </form>
+            <p id="lecture-signup-status" class="min-h-0 text-center text-sm text-slate-400 sm:text-left" aria-live="polite"></p>
+          </div>
         </div>
       </div>
+      <!-- 펼치기 탭: 접었을 때 플로팅 바 상단 경계에 하단이 딱 붙음 (접기 탭과 동일 방식) -->
+      <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="강의 소식 바 펼치기">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
+        <span>열기</span>
+      </button>
     </aside>
+    <script>
+      (function lectureBarToggle() {
+        const STORAGE_KEY = 'lecture-bar-collapsed';
+        const bar = document.getElementById('lecture');
+        const collapseBtn = document.getElementById('lecture-bar-collapse');
+        const expandBtn = document.getElementById('lecture-bar-expand');
+
+        function isCollapsed() { return document.body.classList.contains('lecture-bar-collapsed'); }
+        function setCollapsed(collapsed: boolean) {
+          document.body.classList.toggle('lecture-bar-collapsed', collapsed);
+          try { sessionStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch (_) {}
+        }
+
+        /* 최초 상태는 항상 플로팅 바 펼침(복원하지 않음) */
+        collapseBtn?.addEventListener('click', () => setCollapsed(true));
+        expandBtn?.addEventListener('click', () => setCollapsed(false));
+      })();
+    </script>
 
     {!hideFooter && (
     <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
