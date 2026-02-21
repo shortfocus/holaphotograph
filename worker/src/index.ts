@@ -323,6 +323,9 @@ const YOUTUBE_LONG_ORDER = [
 /** 롱폼 검색 키워드: 제목이 '따.라.해' 패턴(따라해 등) 포함 시만 노출 */
 const LONG_FORM_TITLE_KEYWORD = /따.라.해/;
 
+/** 숏츠 검색 키워드: 제목에 '후지필름' 포함 시만 노출 */
+const SHORTS_TITLE_KEYWORD = /후지필름/;
+
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
 const REVIEW_KEYWORDS = /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
 
@@ -377,17 +380,17 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("따라해")}&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
       return errorResponse("YouTube search failed", searchRes.status, request);
     }
     const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
     const searchIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
-    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
+    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
 
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${searchIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
       return errorResponse("YouTube API error", detailsRes.status, request);
     }
     const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
@@ -395,17 +398,10 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const preferredSet = new Set(YOUTUBE_LONG_ORDER);
 
     const restLong: YoutubeVideoItem[] = [];
-    const shortsMatching: YoutubeVideoItem[] = [];
-    const shortsOther: YoutubeVideoItem[] = [];
     for (const it of items) {
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (!item) continue;
-      if (item.link.includes("/shorts/")) {
-        if (!item.title.includes("[대여]")) {
-          if (isTipLike(item.title)) shortsMatching.push(item);
-          else shortsOther.push(item);
-        }
-      } else {
+      if (!item.link.includes("/shorts/")) {
         const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
         if (vid && !preferredSet.has(vid) && LONG_FORM_TITLE_KEYWORD.test(item.title)) restLong.push(item);
       }
@@ -417,9 +413,34 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       return vb - va;
     });
 
-    const videos = [...preferredVideos, ...restLong].slice(0, 6);
-    const shortsMerged = [...shortsMatching, ...shortsOther];
-    return jsonResponse({ videos, shorts: shortsMerged.slice(0, 6) }, 200, request);
+    const videos = [...preferredVideos, ...restLong].slice(0, 5);
+
+    const shortsSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("후지필름")}&key=${key}`;
+    const shortsSearchRes = await fetch(shortsSearchUrl);
+    const shortsList: YoutubeVideoItem[] = [];
+    if (shortsSearchRes.ok) {
+      const shortsSearchData = (await shortsSearchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
+      const shortsIds = (shortsSearchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
+      if (shortsIds.length > 0) {
+        const shortsDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${shortsIds.join(",")}&key=${key}`;
+        const shortsDetailsRes = await fetch(shortsDetailsUrl);
+        if (shortsDetailsRes.ok) {
+          const shortsDetailsData = (await shortsDetailsRes.json()) as { items?: Array<Parameters<typeof buildVideoItem>[0]> };
+          for (const it of shortsDetailsData.items || []) {
+            const item = buildVideoItem(it);
+            if (!item) continue;
+            if (item.link.includes("/shorts/") && SHORTS_TITLE_KEYWORD.test(item.title) && !item.title.includes("[대여]")) shortsList.push(item);
+          }
+          shortsList.sort((a, b) => {
+            const va = parseInt(a.viewCount ?? "0", 10) || 0;
+            const vb = parseInt(b.viewCount ?? "0", 10) || 0;
+            return vb - va;
+          });
+        }
+      }
+    }
+
+    return jsonResponse({ videos, shorts: shortsList.slice(0, 5) }, 200, request);
   } catch (err) {
     console.error("youtube-latest error:", err);
     return errorResponse("YouTube fetch failed", 502, request);
