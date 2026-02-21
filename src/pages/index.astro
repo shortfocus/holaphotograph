@@ -491,7 +491,6 @@ import Layout from "../layouts/Layout.astro";
     fetchYoutubeLatest,
     fetchChannelStats,
     getRssThumbnailUrl,
-    submitLectureSignup,
     type NaverRssItem,
     type YoutubeVideoItem,
   } from "../lib/api";
@@ -827,48 +826,6 @@ import Layout from "../layouts/Layout.astro";
         '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
     }
   }
-
-  // 강의 소식 수신 신청 폼
-  (function initLectureSignup() {
-    const form = document.getElementById(
-      "lecture-signup-form",
-    ) as HTMLFormElement;
-    const input = document.getElementById("lecture-email") as HTMLInputElement;
-    const btn = document.getElementById(
-      "lecture-signup-btn",
-    ) as HTMLButtonElement;
-    const status = document.getElementById(
-      "lecture-signup-status",
-    ) as HTMLElement;
-    if (!form || !input || !btn || !status) return;
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = input.value.trim();
-      if (!email) {
-        status.textContent = "이메일을 입력해주세요.";
-        status.classList.add("text-amber-400");
-        status.classList.remove("text-emerald-400");
-        return;
-      }
-      btn.disabled = true;
-      status.textContent = "";
-      try {
-        const res = await submitLectureSignup(email);
-        status.textContent = res.message;
-        status.classList.add("text-emerald-400");
-        status.classList.remove("text-amber-400");
-        input.value = "";
-      } catch (err) {
-        status.textContent =
-          err instanceof Error ? err.message : "등록에 실패했습니다.";
-        status.classList.add("text-amber-400");
-        status.classList.remove("text-emerald-400");
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  })();
 
   load();
 </script>

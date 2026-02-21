@@ -132,7 +132,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
                 강의 소식 받기
               </button>
             </form>
-            <p id="lecture-signup-status" class="min-h-0 text-center text-sm text-slate-400 sm:text-left" aria-live="polite"></p>
+            <p id="lecture-signup-status" class="min-h-6 text-center text-sm sm:text-left" aria-live="polite" role="status"></p>
           </div>
         </div>
       </div>
@@ -158,6 +158,52 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         /* 최초 상태는 항상 플로팅 바 펼침(복원하지 않음) */
         collapseBtn?.addEventListener('click', () => setCollapsed(true));
         expandBtn?.addEventListener('click', () => setCollapsed(false));
+      })();
+
+      // 강의 소식 수신 신청 폼 (모든 페이지에서 동작)
+      (function initLectureSignup() {
+        const form = document.getElementById('lecture-signup-form') as HTMLFormElement | null;
+        const input = document.getElementById('lecture-email') as HTMLInputElement | null;
+        const btn = document.getElementById('lecture-signup-btn') as HTMLButtonElement | null;
+        const status = document.getElementById('lecture-signup-status') as HTMLElement | null;
+        if (!form || !input || !btn || !status) return;
+
+        const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
+        const API_BASE = isProd ? 'https://holaphotograph-api.chs4413.workers.dev' : 'http://localhost:8787';
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = input.value.trim();
+          if (!email) {
+            status.textContent = '이메일을 입력해주세요.';
+            status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+            return;
+          }
+          btn.disabled = true;
+          status.textContent = '등록 중…';
+          status.className = 'min-h-6 text-center text-sm sm:text-left text-slate-400';
+          try {
+            const res = await fetch(`${API_BASE}/api/lecture-signup`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email.toLowerCase() }),
+            });
+            const data = (await res.json().catch(() => ({}))) as { message?: string; error?: string };
+            if (res.ok) {
+              status.textContent = '✓ ' + (data.message || '등록되었습니다.');
+              status.className = 'min-h-6 text-center text-sm sm:text-left text-emerald-400 font-medium';
+              input.value = '';
+            } else {
+              status.textContent = '✗ ' + (data.error || '등록에 실패했습니다. 다시 시도해주세요.');
+              status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+            }
+          } catch (_) {
+            status.textContent = '✗ 네트워크 오류. 다시 시도해주세요.';
+            status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+          } finally {
+            btn.disabled = false;
+          }
+        });
       })();
     </script>
 
