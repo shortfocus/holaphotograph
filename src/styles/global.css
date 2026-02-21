@@ -60,6 +60,66 @@ body {
   overflow-wrap: break-word;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
+body.nav-open {
+  overflow: hidden;
+}
+
+/* 모바일 네비 메뉴: 풀폭 패널 + 백드롭 (가독성·디자인) */
+@media (max-width: 767px) {
+  .nav-menu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 4rem;
+    z-index: 50;
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0;
+    background: #0F172A;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
+  }
+  .nav-menu.hidden {
+    display: none !important;
+  }
+  .nav-menu.flex {
+    display: flex !important;
+  }
+  .nav-menu li {
+    list-style: none;
+  }
+  .nav-link-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    min-height: 2.75rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    text-align: center;
+  }
+  .nav-link-mobile:hover,
+  .nav-link-mobile:active {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+  .nav-link-mobile.text-slate-400 {
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .nav-link-mobile.text-slate-400:hover {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .nav-link-mobile::after {
+    display: none;
+  }
+}
 
 /* 히어로 섹션: 플로팅 바 상단에 맞춤 (모바일/PC 동일) */
 .hero-section {

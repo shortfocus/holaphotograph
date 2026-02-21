@@ -33,22 +33,27 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hid
           id="nav-toggle"
           class="header-toggle inline-flex items-center justify-center rounded-lg p-2 text-white hover:bg-white/10 md:hidden"
           aria-label="메뉴 열기"
+          aria-expanded="false"
         >
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg id="nav-icon-menu" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
+          <svg id="nav-icon-close" class="h-6 w-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
-        <ul id="nav-menu" class="nav-menu absolute right-4 top-full mt-1 hidden flex-col gap-2 rounded-lg border border-slate-600 bg-slate-800 py-2 shadow-lg md:static md:mt-0 md:flex md:flex-row md:gap-8 md:border-0 md:bg-transparent md:py-0 md:shadow-none">
-          <li><a href="#youtube-long" class="nav-link-premium">영상 리뷰</a></li>
-          <li><a href="#blog" class="nav-link-premium">장비 분석</a></li>
-          <li><a href="#youtube-shorts" class="nav-link-premium">Shorts</a></li>
-          <li><a href="#blog" class="nav-link-premium">블로그</a></li>
-          <li><a href="#lecture" class="nav-link-premium text-slate-400">강의 (예정)</a></li>
-          <li><a href="#about" class="nav-link-premium">협업 문의</a></li>
-          <li><a href="/reviews" target="_blank" rel="noopener noreferrer" class="nav-link-premium">고객 후기</a></li>
+        <ul id="nav-menu" class="nav-menu hidden md:static md:mt-0 md:flex md:flex-row md:gap-8 md:border-0 md:bg-transparent md:py-0 md:shadow-none">
+          <li><a href="#youtube-long" class="nav-link-premium nav-link-mobile">영상 리뷰</a></li>
+          <li><a href="#blog" class="nav-link-premium nav-link-mobile">장비 분석</a></li>
+          <li><a href="#youtube-shorts" class="nav-link-premium nav-link-mobile">Shorts</a></li>
+          <li><a href="#blog" class="nav-link-premium nav-link-mobile">블로그</a></li>
+          <li><a href="#lecture" class="nav-link-premium nav-link-mobile text-slate-400">강의 (예정)</a></li>
+          <li><a href="#about" class="nav-link-premium nav-link-mobile">협업 문의</a></li>
+          <li><a href="/reviews" target="_blank" rel="noopener noreferrer" class="nav-link-premium nav-link-mobile">고객 후기</a></li>
         </ul>
       </nav>
     </header>
+    <div id="nav-backdrop" class="nav-backdrop fixed inset-0 z-40 bg-black/60 backdrop-blur-sm hidden md:hidden" aria-hidden="true"></div>
     <script>
       const header = document.getElementById('main-header');
       const toggle = document.getElementById('nav-toggle');
@@ -67,14 +72,29 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hid
       window.addEventListener('scroll', updateHeader, { passive: true });
       updateHeader();
 
+      const backdrop = document.getElementById('nav-backdrop');
+      const iconMenu = document.getElementById('nav-icon-menu');
+      const iconClose = document.getElementById('nav-icon-close');
+
+      function setMenuOpen(open: boolean) {
+        const isOpen = open && (window.innerWidth < 768);
+        menu?.classList.toggle('hidden', !isOpen);
+        menu?.classList.toggle('flex', isOpen);
+        backdrop?.classList.toggle('hidden', !isOpen);
+        document.body.classList.toggle('nav-open', isOpen);
+        toggle?.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+        toggle?.setAttribute('aria-expanded', String(isOpen));
+        iconMenu?.classList.toggle('hidden', isOpen);
+        iconClose?.classList.toggle('hidden', !isOpen);
+      }
+
       toggle?.addEventListener('click', () => {
-        menu?.classList.toggle('hidden');
-        menu?.classList.toggle('flex');
+        const isOpen = menu?.classList.contains('flex') && window.innerWidth < 768;
+        setMenuOpen(!isOpen);
       });
+      backdrop?.addEventListener('click', () => setMenuOpen(false));
       document.querySelectorAll('#nav-menu a').forEach((a) => {
-        a.addEventListener('click', () => {
-          if (window.innerWidth < 768) menu?.classList.add('hidden');
-        });
+        a.addEventListener('click', () => { if (window.innerWidth < 768) setMenuOpen(false); });
       });
     </script>
     <main class="flex-1 w-full min-w-0">
