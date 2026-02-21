@@ -73,6 +73,8 @@ export interface YoutubeVideoItem {
   thumbnail_url: string | null;
   publishedAt: string;
   viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
 }
 
 export interface YoutubeLatestResponse {

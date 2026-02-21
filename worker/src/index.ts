@@ -340,9 +340,19 @@ function isTipLike(title: string): boolean {
   return TIP_KEYWORDS.test(title);
 }
 
-type YoutubeVideoItem = { title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string };
+type YoutubeVideoItem = {
+  title: string;
+  link: string;
+  thumbnail_url: string | null;
+  publishedAt: string;
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
+};
 
-function buildVideoItem(it: { id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }): YoutubeVideoItem | null {
+type YoutubeApiStatistics = { viewCount?: string; likeCount?: string; commentCount?: string };
+
+function buildVideoItem(it: { id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: YoutubeApiStatistics }): YoutubeVideoItem | null {
   const vid = it.id;
   const sn = it.snippet;
   const title = sn?.title || "";
@@ -350,12 +360,15 @@ function buildVideoItem(it: { id?: string; snippet?: { title?: string; published
   const isShort = durationSec > 0 && durationSec <= SHORTS_MAX_SECONDS;
   const link = vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "";
   if (!link) return null;
+  const stats = it.statistics;
   return {
     title,
     link,
     thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
     publishedAt: sn?.publishedAt || "",
-    viewCount: it.statistics?.viewCount,
+    viewCount: stats?.viewCount,
+    likeCount: stats?.likeCount,
+    commentCount: stats?.commentCount,
   };
 }
 

@@ -689,8 +689,10 @@ import Layout from "../layouts/Layout.astro";
     const label = options?.label ?? "유튜브 보기 →";
     const cardWidth = options?.isShort ? "w-[209px]" : "w-[280px] sm:w-[340px]";
     const viewStr = v.viewCount ? formatCount(v.viewCount) + " 회" : "";
+    const likeStr = v.likeCount ? "좋아요 " + formatCount(v.likeCount) : "";
+    const commentStr = v.commentCount ? "댓글 " + formatCount(v.commentCount) : "";
     const dateStr = formatVideoDate(v.publishedAt);
-    const metaStr = [viewStr, dateStr].filter(Boolean).join(" · ");
+    const metaStr = [viewStr, likeStr, commentStr, dateStr].filter(Boolean).join(" · ");
     let thumb: string;
     if (options?.isShort) {
       const aspect = "aspect-[209/314]";
