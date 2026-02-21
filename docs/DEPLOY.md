@@ -15,14 +15,14 @@ Repository → **Settings** → **Secrets and variables** → **Actions**에서 
 
 ### 2. Pages 프로젝트 사전 생성
 
-Cloudflare 대시보드에서 **Pages** → **Create project** → **Direct Upload**로 `camera-review` 프로젝트를 먼저 생성해 두세요. (한 번만 필요)
+Cloudflare 대시보드에서 **Pages** → **Create project** → **Direct Upload**로 `holaphotograph` 프로젝트를 먼저 생성해 두세요. (한 번만 필요)
 
 ---
 
 ## 전체 배포 (수동)
 
 ```bash
-npm run build && cd worker && npx wrangler deploy && cd .. && npx wrangler pages deploy dist --project-name=camera-review
+npm run build && cd worker && npx wrangler deploy && cd .. && npx wrangler pages deploy dist --project-name=holaphotograph
 ```
 
 ---
@@ -37,7 +37,7 @@ npm run build
 cd worker && npx wrangler deploy
 
 # 3. 프론트엔드 배포 (Cloudflare Pages)
-cd .. && npx wrangler pages deploy dist --project-name=camera-review
+cd .. && npx wrangler pages deploy dist --project-name=holaphotograph
 ```
 
 ---
@@ -53,5 +53,5 @@ npx wrangler deploy
 **프론트엔드만 배포할 때:**
 ```bash
 npm run build
-npx wrangler pages deploy dist --project-name=camera-review
+npx wrangler pages deploy dist --project-name=holaphotograph
 ```

@@ -5,7 +5,7 @@
  */
 const env = (typeof import.meta.env !== "undefined" ? import.meta.env : {}) as { PUBLIC_API_URL?: string; PUBLIC_ADMIN_API_URL?: string };
 const isProd = typeof window !== "undefined" && !window.location.hostname.includes("localhost");
-const defaultUrl = isProd ? "https://camera-review-api.chs4413.workers.dev" : "http://localhost:8787";
+const defaultUrl = isProd ? "https://holaphotograph-api.chs4413.workers.dev" : "http://localhost:8787";
 const PUBLIC = env.PUBLIC_API_URL || defaultUrl;
 const ADMIN = env.PUBLIC_ADMIN_API_URL || PUBLIC;
 

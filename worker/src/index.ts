@@ -67,7 +67,7 @@ export default {
     // 루트 - API 정보
     if (url.pathname === "/" || url.pathname === "/api") {
       return jsonResponse({
-        name: "camera-review-api",
+        name: "holaphotograph-api",
         endpoints: {
           "GET /api/naver-rss": "네이버 블로그 RSS (섹션별 분류)",
           "GET /api/image-proxy?url=...": "네이버 썸네일 이미지 프록시",
@@ -266,7 +266,7 @@ async function handleImageProxy(request: Request): Promise<Response> {
 async function handleNaverRss(request: Request): Promise<Response> {
   try {
     const res = await fetch(NAVER_RSS_URL, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; camera-review/1.0)" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; holaphotograph/1.0)" },
     });
     if (!res.ok) return errorResponse("RSS fetch failed", 502, request);
     const xml = await res.text();

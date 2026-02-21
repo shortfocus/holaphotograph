@@ -79,7 +79,7 @@ wrangler secret put NAVER_BLOG_VISITORS
 ```bash
 npm run build
 cd worker && npm run deploy
-cd .. && npx wrangler pages deploy dist --project-name=camera-review
+cd .. && npx wrangler pages deploy dist --project-name=holaphotograph
 ```
 
 ---

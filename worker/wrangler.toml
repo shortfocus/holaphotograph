@@ -1,15 +1,15 @@
-name = "camera-review-api"
+name = "holaphotograph-api"
 main = "src/index.ts"
 compatibility_date = "2025-02-17"
 
-# D1 데이터베이스 (wrangler d1 create camera-review-db 실행 후 database_id 교체)
+# D1 데이터베이스 (wrangler d1 create holaphotograph-db 실행 후 database_id 교체)
 [[d1_databases]]
 binding = "DB"
-database_name = "camera-review-db"
+database_name = "holaphotograph-db"
 database_id = "97b99cdf-1193-4f3f-b67d-214bc89aa446"
 
 
-# R2 버킷 (이미지 업로드)
+# R2 버킷 (이미지 업로드) — 기존 버킷 그대로 사용
 [[r2_buckets]]
 binding = "BUCKET"
 bucket_name = "camera-review-images"

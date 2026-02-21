@@ -114,7 +114,7 @@
 ### 강의 소식 수신 이메일
 
 - **저장 위치**: Cloudflare D1 `lecture_signups` 테이블
-- **조회 방법**: Cloudflare 대시보드 → D1 → camera-review-db → lecture_signups 테이블
+- **조회 방법**: Cloudflare 대시보드 → D1 → holaphotograph-db → lecture_signups 테이블
 - 또는 wrangler CLI로 조회 가능
 
 ---

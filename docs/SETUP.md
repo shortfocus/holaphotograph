@@ -23,7 +23,7 @@ Cloudflare D1 (DB) + R2 (이미지)
 ```bash
 cd worker
 npm install
-npx wrangler d1 create camera-review-db
+npx wrangler d1 create holaphotograph-db
 ```
 
 출력된 `database_id`를 `worker/wrangler.toml`의 `database_id`에 입력합니다.
@@ -43,7 +43,7 @@ npm run db:migrate
 ## 2. Cloudflare R2 버킷 생성
 
 1. [Cloudflare 대시보드](https://dash.cloudflare.com) → **R2** → **Create bucket**
-2. 버킷 이름: `camera-review-images`
+2. 버킷 이름: `holaphotograph-images`
 3. 생성 후 `worker/wrangler.toml`의 `bucket_name`이 일치하는지 확인
 
 ---
@@ -55,7 +55,7 @@ cd worker
 npm run deploy
 ```
 
-배포 후 Worker URL (예: `https://camera-review-api.xxx.workers.dev`)을 확인합니다.
+배포 후 Worker URL (예: `https://holaphotograph-api.xxx.workers.dev`)을 확인합니다.
 
 ---
 
@@ -73,17 +73,17 @@ npm run deploy
 
 1. **Access** → **Applications** → **Add an application**
 2. **Self-hosted** 선택
-3. **Application name**: `Camera Review Admin`
+3. **Application name**: `Holaphotograph Admin`
 4. **Application domain**:
-   - Pages 도메인 (예: `camera-review.pages.dev` 또는 커스텀 도메인)
+   - Pages 도메인 (예: `holaphotograph.pages.dev` 또는 커스텀 도메인)
    - **Path**: `admin` → `/admin/*` 로 설정
 
 ### 4.3 Access 애플리케이션 생성 (Worker API)
 
 1. **Add an application** → **Self-hosted**
-2. **Application name**: `Camera Review API`
+2. **Application name**: `Holaphotograph API`
 3. **Application domain**:
-   - Worker 도메인 (예: `camera-review-api.xxx.workers.dev`)
+   - Worker 도메인 (예: `holaphotograph-api.xxx.workers.dev`)
    - 또는 커스텀 도메인 `api.yourdomain.com`
 4. **Path**: 전체 (`/`)
 
@@ -115,8 +115,8 @@ ALLOWED_EMAILS = "your@email.com"
 
 > **주의**: Worker를 Access로 보호하면 `GET /api/posts`도 로그인이 필요해 메인 페이지에서 리뷰를 불러올 수 없습니다.  
 > **권장**: 동일 코드로 Worker를 두 번 배포합니다.
-> - **공개 Worker** (예: `camera-review-api`): Access 없음 → 메인 페이지가 `GET /api/posts` 호출
-> - **관리자 Worker** (예: `camera-review-admin-api`): Access 보호 + `ALLOWED_EMAILS` → 관리자 페이지가 이 URL 사용
+> - **공개 Worker** (예: `holaphotograph-api`): Access 없음 → 메인 페이지가 `GET /api/posts` 호출
+> - **관리자 Worker** (예: `holaphotograph-admin-api`): Access 보호 + `ALLOWED_EMAILS` → 관리자 페이지가 이 URL 사용
 
 ---
 
@@ -126,7 +126,7 @@ ALLOWED_EMAILS = "your@email.com"
 
 Pages 프로젝트 설정에서:
 
-- `PUBLIC_API_URL`: 공개 Worker URL (메인 페이지용, 예: `https://camera-review-api.xxx.workers.dev`)
+- `PUBLIC_API_URL`: 공개 Worker URL (메인 페이지용, 예: `https://holaphotograph-api.xxx.workers.dev`)
 - `PUBLIC_ADMIN_API_URL`: (선택) 관리자 Worker URL. Access 보호된 Worker. 없으면 `PUBLIC_API_URL` 사용
 
 ### 5.2 배포
@@ -138,7 +138,7 @@ Pages 프로젝트 설정에서:
 npm run build
 
 # Cloudflare Pages에 배포 (Git 연동 또는 wrangler)
-npx wrangler pages deploy dist --project-name=camera-review
+npx wrangler pages deploy dist --project-name=holaphotograph
 ```
 
 ---

@@ -24,7 +24,7 @@
 ## 프로젝트 구조
 
 ```
-camera-review/
+holaphotograph/
 ├── src/
 │   ├── layouts/     # 레이아웃 (헤더, 푸터)
 │   ├── lib/         # API 클라이언트
@@ -84,7 +84,7 @@ npm run build
 ### 수동 배포
 
 ```bash
-npm run build && cd worker && npx wrangler deploy && cd .. && npx wrangler pages deploy dist --project-name=camera-review
+npm run build && cd worker && npx wrangler deploy && cd .. && npx wrangler pages deploy dist --project-name=holaphotograph
 ```
 
 자세한 설정은 [docs/SETUP.md](docs/SETUP.md)와 [docs/DEPLOY.md](docs/DEPLOY.md)를 참고하세요.
