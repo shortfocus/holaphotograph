@@ -9,7 +9,7 @@ interface Props {
   hideFooter?: boolean;
 }
 
-const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false } = Astro.props;
+const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ko">
@@ -18,7 +18,7 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hid
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin="anonymous" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <slot name="head" />
   </head>
   <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased pb-[var(--lecture-bar-height)]" data-header-opaque={headerOpaque}>
