@@ -2,8 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="고객 후기 - 올라포토">
-  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+<Layout title="고객 후기 - 올라포토" headerOpaque>
+  <div class="mx-auto max-w-6xl px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-10 sm:px-6 sm:pt-24 sm:pb-16">
     <h1 class="mb-8 text-2xl font-bold sm:mb-10 sm:text-3xl">고객 후기</h1>
     <div id="reviews-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>

@@ -3,9 +3,11 @@ import '../styles/global.css';
 
 interface Props {
   title?: string;
+  /** true면 상단이 밝은 페이지(고객후기 등)에서 헤더를 처음부터 진한 스타일로 표시 */
+  headerOpaque?: boolean;
 }
 
-const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
+const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ko">
@@ -17,8 +19,8 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <slot name="head" />
   </head>
-  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased pb-[var(--lecture-bar-height)]">
-    <header id="main-header" class="header-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased pb-[var(--lecture-bar-height)]" data-header-opaque={headerOpaque}>
+    <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
           <img src="/logo.png" alt="올라포토" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
@@ -51,7 +53,8 @@ const { title = '카메라 리뷰 & 촬영 가이드' } = Astro.props;
       const menu = document.getElementById('nav-menu');
 
       function updateHeader() {
-        if (window.scrollY > 50) {
+        const opaque = document.body.dataset.headerOpaque === 'true';
+        if (window.scrollY > 50 || opaque) {
           header?.classList.remove('header-transparent');
           header?.classList.add('header-scrolled');
         } else {

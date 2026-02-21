@@ -1,78 +1,221 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
   <!-- 2. 히어로 섹션 (캐러셀) - 플로팅 바 높이 제외한 뷰포트 -->
-  <section class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]">
-    <div class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(225,29,72,0.1),transparent)] pointer-events-none" aria-hidden="true" />
-    <div class="hero-noise absolute inset-0 pointer-events-none" aria-hidden="true" />
+  <section
+    class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]"
+  >
+    <div
+      class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(225,29,72,0.1),transparent)] pointer-events-none"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="hero-noise absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+    >
+    </div>
 
-    <div id="hero-carousel" class="relative flex h-full flex-col overflow-hidden">
-      <div class="hero-carousel-track flex h-full flex-1 items-center transition-transform duration-500 ease-out" style="transform: translateX(0);">
+    <div
+      id="hero-carousel"
+      class="relative flex h-full flex-col overflow-hidden"
+    >
+      <div
+        class="hero-carousel-track flex h-full flex-1 items-center transition-transform duration-500 ease-out"
+        style="transform: translateX(0);"
+      >
         <!-- Slide 1: Camera Review Archive -->
-        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
-          <div class="relative mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8">
+        <div
+          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+        >
+          <div
+            class="relative mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
+          >
             <div class="flex-1 text-center lg:text-left">
-              <span class="hero-animate inline-block rounded-full border border-[#E11D48]/40 bg-[#E11D48]/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-red-300" style="animation-delay: 0ms; opacity: 0">Camera Review Archive</span>
-              <h1 class="hero-animate mt-6 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl" style="animation-delay: 100ms; opacity: 0">
-                카메라 선택부터 <span class="whitespace-nowrap">촬영 노하우까지</span><br />
-                <span class="text-[#F43F5E] whitespace-nowrap">실전 기반 리뷰 플랫폼</span>
+              <span
+                class="hero-animate inline-block rounded-full border border-[#E11D48]/40 bg-[#E11D48]/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-red-300"
+                style="animation-delay: 0ms; opacity: 0"
+                >Camera Review Archive</span
+              >
+              <h1
+                class="hero-animate mt-6 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+                style="animation-delay: 100ms; opacity: 0"
+              >
+                카메라 선택부터 <span class="whitespace-nowrap"
+                  >촬영 노하우까지</span
+                ><br />
+                <span class="text-[#F43F5E] whitespace-nowrap"
+                  >실전 기반 리뷰 플랫폼</span
+                >
               </h1>
-              <p class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg lg:mx-0 lg:text-xl" style="animation-delay: 200ms; opacity: 0"><span class="whitespace-nowrap">장비 비교</span> · <span class="whitespace-nowrap">실사용 테스트</span> · <span class="whitespace-nowrap">구매 가이드</span></p>
-              <div class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start" style="animation-delay: 300ms; opacity: 0">
-                <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="유튜브">
-                  <img src="/icons/youtube.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
+              <p
+                class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg lg:mx-0 lg:text-xl"
+                style="animation-delay: 200ms; opacity: 0"
+              >
+                <span class="whitespace-nowrap">장비 비교</span> · <span
+                  class="whitespace-nowrap">실사용 테스트</span
+                > · <span class="whitespace-nowrap">구매 가이드</span>
+              </p>
+              <div
+                class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start"
+                style="animation-delay: 300ms; opacity: 0"
+              >
+                <a
+                  href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hero-channel-icon group"
+                  aria-label="유튜브"
+                >
+                  <img
+                    src="/icons/youtube.svg"
+                    alt=""
+                    class="h-9 w-9 sm:h-10 sm:w-10"
+                    aria-hidden="true"
+                  />
                 </a>
-                <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group relative inline-flex" aria-label="네이버 블로그">
-                  <img src="/icons/naver-blog.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10 block transition-opacity duration-250 group-hover:opacity-0" aria-hidden="true" />
-                  <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-9 w-9 sm:h-10 sm:w-10 opacity-0 transition-opacity duration-250 group-hover:opacity-100" aria-hidden="true" />
+                <a
+                  href="https://blog.naver.com/holaphotograph"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hero-channel-icon group relative inline-flex"
+                  aria-label="네이버 블로그"
+                >
+                  <img
+                    src="/icons/naver-blog.svg"
+                    alt=""
+                    class="h-9 w-9 sm:h-10 sm:w-10 block transition-opacity duration-250 group-hover:opacity-0"
+                    aria-hidden="true"
+                  />
+                  <img
+                    src="/icons/naver-blog-hover.svg"
+                    alt=""
+                    class="absolute inset-0 m-auto h-9 w-9 sm:h-10 sm:w-10 opacity-0 transition-opacity duration-250 group-hover:opacity-100"
+                    aria-hidden="true"
+                  />
                 </a>
-                <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="hero-channel-icon group" aria-label="인스타그램">
-                  <img src="/icons/instagram.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
+                <a
+                  href="https://www.instagram.com/snap.hola"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hero-channel-icon group"
+                  aria-label="인스타그램"
+                >
+                  <img
+                    src="/icons/instagram.svg"
+                    alt=""
+                    class="h-9 w-9 sm:h-10 sm:w-10"
+                    aria-hidden="true"
+                  />
                 </a>
-                <a href="mailto:holaphotographer@gmail.com" class="hero-channel-icon group" aria-label="문의하기">
-                  <img src="/icons/contact.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true" />
+                <a
+                  href="mailto:holaphotographer@gmail.com"
+                  class="hero-channel-icon group"
+                  aria-label="문의하기"
+                >
+                  <img
+                    src="/icons/contact.svg"
+                    alt=""
+                    class="h-9 w-9 sm:h-10 sm:w-10"
+                    aria-hidden="true"
+                  />
                 </a>
               </div>
             </div>
-            <div class="hero-animate flex-1 min-w-0" style="animation-delay: 150ms; opacity: 0">
-              <div class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10">
-                <iframe src="https://www.youtube.com/embed/jMMTLjQLTWg?rel=0&autoplay=1&mute=1" title="올라포토 유튜브 영상" class="aspect-video w-full min-h-[200px] sm:min-h-[280px]" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />
+            <div
+              class="hero-animate flex-1 min-w-0"
+              style="animation-delay: 150ms; opacity: 0"
+            >
+              <div
+                class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
+              >
+                <iframe
+                  src="https://www.youtube.com/embed/jMMTLjQLTWg?rel=0&autoplay=1&mute=1"
+                  title="올라포토 유튜브 영상"
+                  class="aspect-video w-full min-h-[200px] sm:min-h-[280px]"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
               </div>
             </div>
           </div>
         </div>
         <!-- Slide 2: 프로모션 -->
-        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
+        <div
+          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+        >
           <div class="mx-auto max-w-2xl px-3 text-center sm:px-4">
-            <span class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">한정 프로모션</span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+            <span
+              class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
+              >한정 프로모션</span
+            >
+            <h2
+              class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+            >
               <span class="text-[#F43F5E]">올라포토</span> 프로모션
             </h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
+            <p
+              class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
+            >
               카메라 리뷰 · 촬영 가이드 · 위클리 포커스까지<br />
               지금 구독하고 다양한 콘텐츠를 만나보세요
             </p>
-            <a href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <a
+              href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"
+                ><path
+                  d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                ></path></svg
+              >
               유튜브에서 보기
             </a>
           </div>
         </div>
         <!-- Slide 3: 고객 리뷰 -->
-        <div class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6">
+        <div
+          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+        >
           <div class="mx-auto max-w-2xl px-3 text-center sm:px-4">
-            <span class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm">실제 이용 후기</span>
-            <h2 class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+            <span
+              class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
+              >실제 이용 후기</span
+            >
+            <h2
+              class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+            >
               <span class="text-[#F43F5E]">고객 리뷰</span> 확인하기
             </h2>
-            <p class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
+            <p
+              class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
+            >
               올라포토와 함께한 고객님들의 솔직한 후기를 확인해보세요.<br />
               카메라 리뷰 · 촬영 서비스 만족도
             </p>
-            <a href="/reviews" class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl border-2 border-[#E11D48] bg-transparent px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#E11D48]/20 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <a
+              href="/reviews"
+              class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl border-2 border-[#E11D48] bg-transparent px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#E11D48]/20 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path></svg
+              >
               리뷰 보러 가기
             </a>
           </div>
@@ -80,68 +223,163 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <!-- 인디케이터 -->
-      <div class="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-slate-600/40 bg-slate-800/80 px-4 py-2 shadow-lg backdrop-blur-sm">
-        <button type="button" data-hero-dot="0" class="hero-dot h-2.5 w-7 rounded-full bg-[#E11D48] shadow-sm transition-all" aria-label="슬라이드 1" aria-current="page"></button>
-        <button type="button" data-hero-dot="1" class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400" aria-label="슬라이드 2"></button>
-        <button type="button" data-hero-dot="2" class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400" aria-label="슬라이드 3"></button>
+      <div
+        class="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-slate-600/40 bg-slate-800/80 px-4 py-2 shadow-lg backdrop-blur-sm"
+      >
+        <button
+          type="button"
+          data-hero-dot="0"
+          class="hero-dot h-2.5 w-7 rounded-full bg-[#E11D48] shadow-sm transition-all"
+          aria-label="슬라이드 1"
+          aria-current="page"></button>
+        <button
+          type="button"
+          data-hero-dot="1"
+          class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400"
+          aria-label="슬라이드 2"></button>
+        <button
+          type="button"
+          data-hero-dot="2"
+          class="hero-dot h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400"
+          aria-label="슬라이드 3"></button>
       </div>
     </div>
   </section>
 
   <!-- 3. 실전 영상 리뷰 섹션 -->
-  <section id="youtube-long" class="section-spacing border-t border-slate-200/60 bg-white py-24">
+  <section
+    id="youtube-long"
+    class="section-spacing border-t border-slate-200/60 bg-white py-24"
+  >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">📺 실전 영상 리뷰</h2>
+      <h2
+        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+      >
+        📺 실전 영상 리뷰
+      </h2>
       <p class="mb-10 text-[#6B7280]">직접 사용하고 비교한 장비 리뷰 영상</p>
-      <div id="youtube-long-grid" class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
-        <div class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video" />
+      <div
+        id="youtube-long-grid"
+        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+      >
+        <div
+          class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video"
+        >
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 5. 빠르게 보는 장비 팁 (Shorts) -->
-  <section id="youtube-shorts" class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24">
+  <section
+    id="youtube-shorts"
+    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24"
+  >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">🎬 빠르게 보는 장비 팁</h2>
+      <h2
+        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+      >
+        🎬 빠르게 보는 장비 팁
+      </h2>
       <p class="mb-10 text-[#6B7280]">1분 안에 핵심만 정리한 장비 팁</p>
-      <div id="youtube-shorts-grid" class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+      <div
+        id="youtube-shorts-grid"
+        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+      >
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 6. 장비 비교 & 상세 분석 (블로그) -->
-  <section id="blog" class="section-spacing border-t border-slate-200/60 bg-white py-24">
+  <section
+    id="blog"
+    class="section-spacing border-t border-slate-200/60 bg-white py-24"
+  >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">✍ 장비 비교 & 상세 분석</h2>
-      <p class="mb-10 text-[#6B7280]">구매 전 꼭 확인해야 할 비교 분석 콘텐츠</p>
-      <div id="blog-grid" class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6">
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
-        <div class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]" />
+      <h2
+        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+      >
+        ✍ 장비 비교 & 상세 분석
+      </h2>
+      <p class="mb-10 text-[#6B7280]">
+        구매 전 꼭 확인해야 할 비교 분석 콘텐츠
+      </p>
+      <div
+        id="blog-grid"
+        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+      >
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 7. 성과 지표 (Performance Section) -->
-  <section class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24">
+  <section
+    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24"
+  >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <p class="section-title mb-10 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]">누적 성과</p>
+      <p
+        class="section-title mb-10 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
+      >
+        누적 성과
+      </p>
       <div class="grid gap-8 sm:grid-cols-3">
         <div class="text-center">
-          <p id="stats-youtube-subscribers" class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl">0</p>
+          <p
+            id="stats-youtube-subscribers"
+            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+          >
+            0
+          </p>
           <p class="mt-2 text-[#6B7280]">유튜브 구독자</p>
         </div>
         <div class="text-center">
-          <p id="stats-youtube-views" class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl">0</p>
+          <p
+            id="stats-youtube-views"
+            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+          >
+            0
+          </p>
           <p class="mt-2 text-[#6B7280]">월간 조회수</p>
         </div>
         <div class="text-center">
-          <p id="stats-naver-visitors" class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl">0</p>
+          <p
+            id="stats-naver-visitors"
+            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+          >
+            0
+          </p>
           <p class="mt-2 text-[#6B7280]">누적 방문자</p>
         </div>
       </div>
@@ -149,30 +387,100 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- 8. 협업 / 광고 문의 -->
-  <section id="about" class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-24">
+  <section
+    id="about"
+    class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-24"
+  >
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
-      <h2 class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl">협업 및 광고 문의</h2>
+      <h2
+        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+      >
+        협업 및 광고 문의
+      </h2>
       <p class="mb-12 text-[#6B7280]">브랜드 협업·광고 문의를 환영합니다</p>
-      <div class="flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center sm:gap-6">
-        <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="유튜브">
-          <img src="/icons/youtube.svg" alt="" class="h-6 w-6 shrink-0" aria-hidden="true" />
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">유튜브</span>
+      <div
+        class="flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center sm:gap-6"
+      >
+        <a
+          href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          aria-label="유튜브"
+        >
+          <img
+            src="/icons/youtube.svg"
+            alt=""
+            class="h-6 w-6 shrink-0"
+            aria-hidden="true"
+          />
+          <span
+            class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]"
+            >유튜브</span
+          >
         </a>
-        <a href="https://blog.naver.com/holaphotograph" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="네이버 블로그">
+        <a
+          href="https://blog.naver.com/holaphotograph"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          aria-label="네이버 블로그"
+        >
           <span class="relative inline-flex h-6 w-6 shrink-0">
-            <img src="/icons/naver-blog.svg" alt="" class="h-6 w-6 block transition-opacity duration-250 group-hover:opacity-0" aria-hidden="true" />
-            <img src="/icons/naver-blog-hover.svg" alt="" class="absolute inset-0 m-auto h-6 w-6 opacity-0 transition-opacity duration-250 group-hover:opacity-100" aria-hidden="true" />
+            <img
+              src="/icons/naver-blog.svg"
+              alt=""
+              class="h-6 w-6 block transition-opacity duration-250 group-hover:opacity-0"
+              aria-hidden="true"
+            />
+            <img
+              src="/icons/naver-blog-hover.svg"
+              alt=""
+              class="absolute inset-0 m-auto h-6 w-6 opacity-0 transition-opacity duration-250 group-hover:opacity-100"
+              aria-hidden="true"
+            />
           </span>
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">네이버 블로그</span>
+          <span
+            class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]"
+            >네이버 블로그</span
+          >
         </a>
-        <a href="https://www.instagram.com/snap.hola" target="_blank" rel="noopener noreferrer" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]" aria-label="인스타그램">
-          <img src="/icons/instagram.svg" alt="" class="h-6 w-6 shrink-0" aria-hidden="true" />
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">인스타그램</span>
+        <a
+          href="https://www.instagram.com/snap.hola"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          aria-label="인스타그램"
+        >
+          <img
+            src="/icons/instagram.svg"
+            alt=""
+            class="h-6 w-6 shrink-0"
+            aria-hidden="true"
+          />
+          <span
+            class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]"
+            >인스타그램</span
+          >
         </a>
-        <a href="mailto:holaphotographer@gmail.com" class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]">
-          <img src="/icons/contact.svg" alt="" class="h-6 w-6 shrink-0 opacity-70" aria-hidden="true" />
-          <span class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]">이메일</span>
-          <span class="text-xs text-[#6B7280] break-all group-hover:text-[#E11D48]/90">holaphotographer@gmail.com</span>
+        <a
+          href="mailto:holaphotographer@gmail.com"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+        >
+          <img
+            src="/icons/contact.svg"
+            alt=""
+            class="h-6 w-6 shrink-0 opacity-70"
+            aria-hidden="true"
+          />
+          <span
+            class="text-sm font-semibold text-[#111827] group-hover:text-[#E11D48]"
+            >이메일</span
+          >
+          <span
+            class="text-xs text-[#6B7280] break-all group-hover:text-[#E11D48]/90"
+            >holaphotographer@gmail.com</span
+          >
         </a>
       </div>
     </div>
@@ -180,12 +488,20 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { fetchNaverRss, fetchYoutubeLatest, fetchChannelStats, getRssThumbnailUrl, submitLectureSignup, type NaverRssItem, type YoutubeVideoItem } from '../lib/api';
+  import {
+    fetchNaverRss,
+    fetchYoutubeLatest,
+    fetchChannelStats,
+    getRssThumbnailUrl,
+    submitLectureSignup,
+    type NaverRssItem,
+    type YoutubeVideoItem,
+  } from "../lib/api";
 
   // Hero Carousel
   (function initHeroCarousel() {
-    const track = document.querySelector('.hero-carousel-track') as HTMLElement;
-    const dots = document.querySelectorAll('[data-hero-dot]');
+    const track = document.querySelector(".hero-carousel-track") as HTMLElement;
+    const dots = document.querySelectorAll("[data-hero-dot]");
     const total = 3;
     let current = 0;
     let autoplayTimer: ReturnType<typeof setInterval> | null = null;
@@ -196,13 +512,13 @@ import Layout from '../layouts/Layout.astro';
       if (track) track.style.transform = `translateX(-${current * 100}%)`;
       dots.forEach((d, idx) => {
         if (idx === current) {
-          d.setAttribute('aria-current', 'page');
-          d.classList.add('bg-[#E11D48]', 'w-7');
-          d.classList.remove('bg-slate-500', 'w-2.5');
+          d.setAttribute("aria-current", "page");
+          d.classList.add("bg-[#E11D48]", "w-7");
+          d.classList.remove("bg-slate-500", "w-2.5");
         } else {
-          d.removeAttribute('aria-current');
-          d.classList.add('bg-slate-500', 'w-2.5');
-          d.classList.remove('bg-[#E11D48]', 'w-7');
+          d.removeAttribute("aria-current");
+          d.classList.add("bg-slate-500", "w-2.5");
+          d.classList.remove("bg-[#E11D48]", "w-7");
         }
       });
     }
@@ -223,60 +539,72 @@ import Layout from '../layouts/Layout.astro';
       autoplayTimer = null;
     }
 
-    dots.forEach((d, i) => d.addEventListener('click', () => {
-      goTo(i);
-      startAutoplay();
-    }));
-    const carousel = track?.closest('#hero-carousel');
-    carousel?.addEventListener('mouseenter', stopAutoplay);
-    carousel?.addEventListener('mouseleave', startAutoplay);
+    dots.forEach((d, i) =>
+      d.addEventListener("click", () => {
+        goTo(i);
+        startAutoplay();
+      }),
+    );
+    const carousel = track?.closest("#hero-carousel");
+    carousel?.addEventListener("mouseenter", stopAutoplay);
+    carousel?.addEventListener("mouseleave", startAutoplay);
 
     let touchStartX = 0;
-    carousel?.addEventListener('touchstart', (e) => {
-      touchStartX = (e as TouchEvent).touches[0].clientX;
-    }, { passive: true });
-    carousel?.addEventListener('touchend', (e) => {
-      const te = e as TouchEvent;
-      const dx = te.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 50) {
-        dx < 0 ? next() : prev();
-        startAutoplay();
-      }
-    }, { passive: true });
+    carousel?.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = (e as TouchEvent).touches[0].clientX;
+      },
+      { passive: true },
+    );
+    carousel?.addEventListener(
+      "touchend",
+      (e) => {
+        const te = e as TouchEvent;
+        const dx = te.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          dx < 0 ? next() : prev();
+          startAutoplay();
+        }
+      },
+      { passive: true },
+    );
 
     startAutoplay();
   })();
 
-  const youtubeLongGrid = document.getElementById('youtube-long-grid')!;
-  const youtubeShortsGrid = document.getElementById('youtube-shorts-grid')!;
-  const blogGrid = document.getElementById('blog-grid')!;
+  const youtubeLongGrid = document.getElementById("youtube-long-grid")!;
+  const youtubeShortsGrid = document.getElementById("youtube-shorts-grid")!;
+  const blogGrid = document.getElementById("blog-grid")!;
   const LIMIT = 6;
 
   function formatCount(n: string | number): string {
-    const num = typeof n === 'string' ? parseInt(n, 10) : n;
-    if (isNaN(num)) return '—';
-    if (num >= 100000000) return (num / 100000000).toFixed(1).replace(/\.0$/, '') + '억';
-    if (num >= 10000) return (num / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+    const num = typeof n === "string" ? parseInt(n, 10) : n;
+    if (isNaN(num)) return "—";
+    if (num >= 100000000)
+      return (num / 100000000).toFixed(1).replace(/\.0$/, "") + "억";
+    if (num >= 10000)
+      return (num / 10000).toFixed(1).replace(/\.0$/, "") + "만";
     return num.toLocaleString();
   }
 
   function formatVideoDate(iso: string): string {
-    if (!iso) return '';
+    if (!iso) return "";
     const d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) return "";
     return `${d.getMonth() + 1}월 ${d.getDate()}일`;
   }
 
   function escapeHtml(s: string) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = s;
     return div.innerHTML;
   }
 
   function stripHtml(html: string): string {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.innerHTML = html;
-    return (div.textContent || div.innerText || '').trim();
+    return (div.textContent || div.innerText || "").trim();
   }
 
   function animateCount(el: HTMLElement, target: number, duration = 1500) {
@@ -293,11 +621,19 @@ import Layout from '../layouts/Layout.astro';
     requestAnimationFrame(update);
   }
 
-  function renderRssCard(item: NaverRssItem, options?: { priority?: 'high' | 'low' }) {
+  function renderRssCard(
+    item: NaverRssItem,
+    options?: { priority?: "high" | "low" },
+  ) {
     const imgUrl = getRssThumbnailUrl(item);
-    const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
-    const thumb = imgUrl ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>` : '<div class="aspect-[209/314] w-full bg-gray-200" />';
-    const desc = stripHtml(item.description).slice(0, 80) + (stripHtml(item.description).length > 80 ? '...' : '');
+    const fetchPriority =
+      options?.priority === "high" ? ' fetchpriority="high"' : "";
+    const thumb = imgUrl
+      ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
+      : '<div class="aspect-[209/314] w-full bg-gray-200" />';
+    const desc =
+      stripHtml(item.description).slice(0, 80) +
+      (stripHtml(item.description).length > 80 ? "..." : "");
     return `
       <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
         ${thumb}
@@ -310,21 +646,25 @@ import Layout from '../layouts/Layout.astro';
     `;
   }
 
-  function renderYoutubeCard(v: YoutubeVideoItem, options?: { priority?: 'high' | 'low'; label?: string; isShort?: boolean }) {
-    const fetchPriority = options?.priority === 'high' ? ' fetchpriority="high"' : '';
-    const label = options?.label ?? '유튜브 보기 →';
-    const cardWidth = options?.isShort ? 'w-[209px]' : 'w-[280px] sm:w-[340px]';
-    const viewStr = v.viewCount ? formatCount(v.viewCount) + ' 회' : '';
+  function renderYoutubeCard(
+    v: YoutubeVideoItem,
+    options?: { priority?: "high" | "low"; label?: string; isShort?: boolean },
+  ) {
+    const fetchPriority =
+      options?.priority === "high" ? ' fetchpriority="high"' : "";
+    const label = options?.label ?? "유튜브 보기 →";
+    const cardWidth = options?.isShort ? "w-[209px]" : "w-[280px] sm:w-[340px]";
+    const viewStr = v.viewCount ? formatCount(v.viewCount) + " 회" : "";
     const dateStr = formatVideoDate(v.publishedAt);
-    const metaStr = [viewStr, dateStr].filter(Boolean).join(' · ');
+    const metaStr = [viewStr, dateStr].filter(Boolean).join(" · ");
     let thumb: string;
     if (options?.isShort) {
-      const aspect = 'aspect-[209/314]';
+      const aspect = "aspect-[209/314]";
       thumb = v.thumbnail_url
         ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover object-center opacity-0 transition-all duration-300 group-hover:scale-105" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
         : `<div class="${aspect} w-full bg-gray-200" />`;
     } else {
-      const aspect = 'aspect-video';
+      const aspect = "aspect-video";
       thumb = v.thumbnail_url
         ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover opacity-0 transition-all duration-300 group-hover:scale-105" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
         : `<div class="${aspect} bg-gray-200" />`;
@@ -332,7 +672,7 @@ import Layout from '../layouts/Layout.astro';
     return `
       <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="yt-card group scroll-row-item shrink-0 ${cardWidth} rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
         ${thumb}
-        ${metaStr ? `<div class="px-4 py-2 bg-gray-50 border-b border-gray-100"><p class="text-xs text-[#6B7280]">${escapeHtml(metaStr)}</p></div>` : ''}
+        ${metaStr ? `<div class="px-4 py-2 bg-gray-50 border-b border-gray-100"><p class="text-xs text-[#6B7280]">${escapeHtml(metaStr)}</p></div>` : ""}
         <div class="p-4 bg-white">
           <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm sm:text-base text-[#111827]">${escapeHtml(v.title)}</h3>
           <p class="mt-1 text-xs text-[#E11D48] font-medium">${escapeHtml(label)}</p>
@@ -341,21 +681,46 @@ import Layout from '../layouts/Layout.astro';
     `;
   }
 
-  function renderRssSection(grid: HTMLElement, items: NaverRssItem[], emptyMsg: string, priority: 'high' | 'low' = 'low') {
+  function renderRssSection(
+    grid: HTMLElement,
+    items: NaverRssItem[],
+    emptyMsg: string,
+    priority: "high" | "low" = "low",
+  ) {
     if (items.length === 0) {
       grid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-[#6B7280]">${emptyMsg}</p>`;
     } else {
       const toShow = items.slice(0, LIMIT);
-      grid.innerHTML = toShow.map((item, i) => renderRssCard(item, { priority: priority === 'high' && i < 3 ? 'high' : 'low' })).join('');
+      grid.innerHTML = toShow
+        .map((item, i) =>
+          renderRssCard(item, {
+            priority: priority === "high" && i < 3 ? "high" : "low",
+          }),
+        )
+        .join("");
     }
   }
 
-  function renderYoutubeSection(grid: HTMLElement, items: YoutubeVideoItem[], emptyMsg: string, label: string, isShort = false) {
+  function renderYoutubeSection(
+    grid: HTMLElement,
+    items: YoutubeVideoItem[],
+    emptyMsg: string,
+    label: string,
+    isShort = false,
+  ) {
     if (items.length === 0) {
       grid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-[#6B7280]">${emptyMsg}</p>`;
     } else {
       const toShow = items.slice(0, LIMIT);
-      grid.innerHTML = toShow.map((v, i) => renderYoutubeCard(v, { priority: i < 3 ? 'high' : 'low', label, isShort })).join('');
+      grid.innerHTML = toShow
+        .map((v, i) =>
+          renderYoutubeCard(v, {
+            priority: i < 3 ? "high" : "low",
+            label,
+            isShort,
+          }),
+        )
+        .join("");
     }
   }
 
@@ -368,13 +733,13 @@ import Layout from '../layouts/Layout.astro';
       ]);
 
       if (statsRes) {
-        const subEl = document.getElementById('stats-youtube-subscribers');
-        const viewsEl = document.getElementById('stats-youtube-views');
-        const naverEl = document.getElementById('stats-naver-visitors');
+        const subEl = document.getElementById("stats-youtube-subscribers");
+        const viewsEl = document.getElementById("stats-youtube-views");
+        const naverEl = document.getElementById("stats-naver-visitors");
 
-        const subs = parseInt(statsRes.youtubeSubscribers ?? '0', 10);
-        const views = parseInt(statsRes.youtubeViewCount ?? '0', 10);
-        const naver = parseInt(statsRes.naverBlogVisitors ?? '0', 10);
+        const subs = parseInt(statsRes.youtubeSubscribers ?? "0", 10);
+        const views = parseInt(statsRes.youtubeViewCount ?? "0", 10);
+        const naver = parseInt(statsRes.naverBlogVisitors ?? "0", 10);
 
         if (subEl && !isNaN(subs)) animateCount(subEl, subs);
         if (viewsEl && !isNaN(views)) viewsEl.textContent = formatCount(views);
@@ -385,54 +750,86 @@ import Layout from '../layouts/Layout.astro';
       const shorts = youtubeRes.shorts || [];
       const youtubeError = youtubeRes.error;
 
-      renderYoutubeSection(youtubeLongGrid, videos, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 롱폼 영상이 없습니다.', '유튜브 보기 →');
+      renderYoutubeSection(
+        youtubeLongGrid,
+        videos,
+        youtubeError
+          ? "유튜브 API 키를 설정해주세요."
+          : "등록된 롱폼 영상이 없습니다.",
+        "유튜브 보기 →",
+      );
       setTimeout(() => {
-        renderYoutubeSection(youtubeShortsGrid, shorts, youtubeError ? '유튜브 API 키를 설정해주세요.' : '등록된 Shorts가 없습니다.', 'Shorts 보기 →', true);
+        renderYoutubeSection(
+          youtubeShortsGrid,
+          shorts,
+          youtubeError
+            ? "유튜브 API 키를 설정해주세요."
+            : "등록된 Shorts가 없습니다.",
+          "Shorts 보기 →",
+          true,
+        );
       }, 80);
 
       const compareBlog = (rssRes.compare || [])
-        .filter((item) => !item.title.includes('보금자리론'))
-        .sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
+        .filter((item) => !item.title.includes("보금자리론"))
+        .sort(
+          (a, b) =>
+            new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime(),
+        )
         .slice(0, 6);
       setTimeout(() => {
-        renderRssSection(blogGrid, compareBlog, '장비 비교·상세 분석 콘텐츠가 없습니다.', 'high');
+        renderRssSection(
+          blogGrid,
+          compareBlog,
+          "장비 비교·상세 분석 콘텐츠가 없습니다.",
+          "high",
+        );
       }, 160);
     } catch (e) {
       youtubeLongGrid.innerHTML = `<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">영상을 불러올 수 없습니다</p>`;
-      youtubeShortsGrid.innerHTML = '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">Shorts를 불러올 수 없습니다</p>';
-      blogGrid.innerHTML = '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
+      youtubeShortsGrid.innerHTML =
+        '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">Shorts를 불러올 수 없습니다</p>';
+      blogGrid.innerHTML =
+        '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
     }
   }
 
   // 강의 소식 수신 신청 폼
   (function initLectureSignup() {
-    const form = document.getElementById('lecture-signup-form') as HTMLFormElement;
-    const input = document.getElementById('lecture-email') as HTMLInputElement;
-    const btn = document.getElementById('lecture-signup-btn') as HTMLButtonElement;
-    const status = document.getElementById('lecture-signup-status') as HTMLElement;
+    const form = document.getElementById(
+      "lecture-signup-form",
+    ) as HTMLFormElement;
+    const input = document.getElementById("lecture-email") as HTMLInputElement;
+    const btn = document.getElementById(
+      "lecture-signup-btn",
+    ) as HTMLButtonElement;
+    const status = document.getElementById(
+      "lecture-signup-status",
+    ) as HTMLElement;
     if (!form || !input || !btn || !status) return;
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = input.value.trim();
       if (!email) {
-        status.textContent = '이메일을 입력해주세요.';
-        status.classList.add('text-amber-400');
-        status.classList.remove('text-emerald-400');
+        status.textContent = "이메일을 입력해주세요.";
+        status.classList.add("text-amber-400");
+        status.classList.remove("text-emerald-400");
         return;
       }
       btn.disabled = true;
-      status.textContent = '';
+      status.textContent = "";
       try {
         const res = await submitLectureSignup(email);
         status.textContent = res.message;
-        status.classList.add('text-emerald-400');
-        status.classList.remove('text-amber-400');
-        input.value = '';
+        status.classList.add("text-emerald-400");
+        status.classList.remove("text-amber-400");
+        input.value = "";
       } catch (err) {
-        status.textContent = err instanceof Error ? err.message : '등록에 실패했습니다.';
-        status.classList.add('text-amber-400');
-        status.classList.remove('text-emerald-400');
+        status.textContent =
+          err instanceof Error ? err.message : "등록에 실패했습니다.";
+        status.classList.add("text-amber-400");
+        status.classList.remove("text-emerald-400");
       } finally {
         btn.disabled = false;
       }
