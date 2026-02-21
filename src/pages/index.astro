@@ -585,8 +585,10 @@ import Layout from "../layouts/Layout.astro";
     "p8K7iu1Rzpo",
   ];
   function getVideoId(link: string): string | null {
-    if (!link) return null;
-    const m = link.match(/(?:youtu\.be\/|[?&]v=)([a-zA-Z0-9_-]{11})/);
+    if (!link || typeof link !== "string") return null;
+    const trimmed = link.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+    const m = trimmed.match(/(?:youtu\.be\/|[/?&]v=)([a-zA-Z0-9_-]{11})/);
     return m ? m[1] : null;
   }
   function sortByPreferredOrder<T extends { link: string }>(
@@ -595,9 +597,12 @@ import Layout from "../layouts/Layout.astro";
   ): T[] {
     const orderMap = new Map(order.map((id, i) => [id, i]));
     return [...items].sort((a, b) => {
-      const ia = orderMap.get(getVideoId(a.link) ?? "") ?? order.length;
-      const ib = orderMap.get(getVideoId(b.link) ?? "") ?? order.length;
-      return ia - ib;
+      const idA = getVideoId(a.link);
+      const idB = getVideoId(b.link);
+      const ia = orderMap.get(idA ?? "") ?? order.length;
+      const ib = orderMap.get(idB ?? "") ?? order.length;
+      if (ia !== ib) return ia - ib;
+      return 0;
     });
   }
 

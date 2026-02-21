@@ -311,6 +311,15 @@ function parseDurationSeconds(duration: string | undefined): number {
 /** 60초 이하 = Shorts (빠르게 보는 장비 팁) */
 const SHORTS_MAX_SECONDS = 60;
 
+/** 첫 번째 섹션(롱폼) 노출 순서 (video ID). 이 순서대로 정렬 후 반환 */
+const YOUTUBE_LONG_ORDER = [
+  "jMMTLjQLTWg",
+  "c-xvb8f9OHM",
+  "qEP4MaioFPM",
+  "cXfv3-85u6M",
+  "p8K7iu1Rzpo",
+];
+
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
 const REVIEW_KEYWORDS = /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
 
@@ -376,11 +385,13 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       }
     }
 
+    const getVid = (link: string) => link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1] ?? "";
     const videosSorted = videos.sort((a, b) => {
-      const aMatch = isReviewLike(a.title) ? 1 : 0;
-      const bMatch = isReviewLike(b.title) ? 1 : 0;
-      if (aMatch !== bMatch) return bMatch - aMatch;
-      return 0;
+      const ia = YOUTUBE_LONG_ORDER.indexOf(getVid(a.link));
+      const ib = YOUTUBE_LONG_ORDER.indexOf(getVid(b.link));
+      const idxA = ia === -1 ? YOUTUBE_LONG_ORDER.length : ia;
+      const idxB = ib === -1 ? YOUTUBE_LONG_ORDER.length : ib;
+      return idxA - idxB;
     });
     const shortsMerged = [...shortsMatching, ...shortsOther];
 
