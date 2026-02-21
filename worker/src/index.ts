@@ -320,6 +320,9 @@ const YOUTUBE_LONG_ORDER = [
   "p8K7iu1Rzpo",
 ];
 
+/** 롱폼 검색 키워드: 제목이 '따.라.해' 패턴(따라해 등) 포함 시만 노출 */
+const LONG_FORM_TITLE_KEYWORD = /따.라.해/;
+
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
 const REVIEW_KEYWORDS = /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
 
@@ -334,68 +337,89 @@ function isTipLike(title: string): boolean {
   return TIP_KEYWORDS.test(title);
 }
 
+type YoutubeVideoItem = { title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string };
+
+function buildVideoItem(it: { id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }): YoutubeVideoItem | null {
+  const vid = it.id;
+  const sn = it.snippet;
+  const title = sn?.title || "";
+  const durationSec = parseDurationSeconds(it.contentDetails?.duration);
+  const isShort = durationSec > 0 && durationSec <= SHORTS_MAX_SECONDS;
+  const link = vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "";
+  if (!link) return null;
+  return {
+    title,
+    link,
+    thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
+    publishedAt: sn?.publishedAt || "",
+    viewCount: it.statistics?.viewCount,
+  };
+}
+
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
   const key = env.YOUTUBE_API_KEY;
   if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured" }, 200, request);
   try {
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&key=${key}`;
-    const searchRes = await fetch(searchUrl);
-    if (!searchRes.ok) {
-      const err = (await searchRes.json()) as { error?: { message?: string } };
-      return errorResponse(err?.error?.message || "YouTube API error", searchRes.status, request);
-    }
-    const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string }; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } } }> };
-    const videoIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
-    if (videoIds.length === 0) return jsonResponse({ videos: [], shorts: [] }, 200, request);
-
-    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds.join(",")}&key=${key}`;
-    const detailsRes = await fetch(detailsUrl);
-    if (!detailsRes.ok) {
-      const err = (await detailsRes.json()) as { error?: { message?: string } };
-      return errorResponse(err?.error?.message || "YouTube API error", detailsRes.status, request);
-    }
-    const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
-    const items = detailsData.items || [];
-
-    const videos: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
-    const shorts: Array<{ title: string; link: string; thumbnail_url: string | null; publishedAt: string; viewCount?: string }> = [];
-    const shortsMatching: typeof shorts = [];
-    const shortsOther: typeof shorts = [];
-
-    for (const it of items) {
-      const vid = it.id;
-      const sn = it.snippet;
-      const title = sn?.title || "";
-      const durationSec = parseDurationSeconds(it.contentDetails?.duration);
-      const isShort = durationSec > 0 && durationSec <= SHORTS_MAX_SECONDS;
-      const item = {
-        title,
-        link: vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "",
-        thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
-        publishedAt: sn?.publishedAt || "",
-        viewCount: it.statistics?.viewCount,
-      };
-      if (!item.link) continue;
-      if (isShort) {
-        if (title.includes("[대여]")) continue; // 빠르게 보는 장비 팁에서 대여 영상 제외
-        if (isTipLike(title)) shortsMatching.push(item);
-        else shortsOther.push(item);
-      } else {
-        videos.push(item);
+    const preferredIds = YOUTUBE_LONG_ORDER.join(",");
+    const preferredUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${preferredIds}&key=${key}`;
+    const preferredRes = await fetch(preferredUrl);
+    const preferredVideos: YoutubeVideoItem[] = [];
+    if (preferredRes.ok) {
+      const preferredData = (await preferredRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
+      for (const vid of YOUTUBE_LONG_ORDER) {
+        const it = (preferredData.items || []).find((i) => i.id === vid);
+        if (!it) continue;
+        const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
+        if (item && !item.link.includes("/shorts/")) preferredVideos.push(item);
       }
     }
 
-    const getVid = (link: string) => link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1] ?? "";
-    const videosSorted = videos.sort((a, b) => {
-      const ia = YOUTUBE_LONG_ORDER.indexOf(getVid(a.link));
-      const ib = YOUTUBE_LONG_ORDER.indexOf(getVid(b.link));
-      const idxA = ia === -1 ? YOUTUBE_LONG_ORDER.length : ia;
-      const idxB = ib === -1 ? YOUTUBE_LONG_ORDER.length : ib;
-      return idxA - idxB;
-    });
-    const shortsMerged = [...shortsMatching, ...shortsOther];
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("따라해")}&key=${key}`;
+    const searchRes = await fetch(searchUrl);
+    if (!searchRes.ok) {
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
+      return errorResponse("YouTube search failed", searchRes.status, request);
+    }
+    const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
+    const searchIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
+    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
 
-    return jsonResponse({ videos: videosSorted.slice(0, 6), shorts: shortsMerged.slice(0, 6) }, 200, request);
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${searchIds.join(",")}&key=${key}`;
+    const detailsRes = await fetch(detailsUrl);
+    if (!detailsRes.ok) {
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 6), shorts: [] }, 200, request);
+      return errorResponse("YouTube API error", detailsRes.status, request);
+    }
+    const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
+    const items = detailsData.items || [];
+    const preferredSet = new Set(YOUTUBE_LONG_ORDER);
+
+    const restLong: YoutubeVideoItem[] = [];
+    const shortsMatching: YoutubeVideoItem[] = [];
+    const shortsOther: YoutubeVideoItem[] = [];
+    for (const it of items) {
+      const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
+      if (!item) continue;
+      if (item.link.includes("/shorts/")) {
+        if (!item.title.includes("[대여]")) {
+          if (isTipLike(item.title)) shortsMatching.push(item);
+          else shortsOther.push(item);
+        }
+      } else {
+        const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
+        if (vid && !preferredSet.has(vid) && LONG_FORM_TITLE_KEYWORD.test(item.title)) restLong.push(item);
+      }
+    }
+
+    restLong.sort((a, b) => {
+      const va = parseInt(a.viewCount ?? "0", 10) || 0;
+      const vb = parseInt(b.viewCount ?? "0", 10) || 0;
+      return vb - va;
+    });
+
+    const videos = [...preferredVideos, ...restLong].slice(0, 6);
+    const shortsMerged = [...shortsMatching, ...shortsOther];
+    return jsonResponse({ videos, shorts: shortsMerged.slice(0, 6) }, 200, request);
   } catch (err) {
     console.error("youtube-latest error:", err);
     return errorResponse("YouTube fetch failed", 502, request);
