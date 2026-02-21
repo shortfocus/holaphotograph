@@ -45,6 +45,23 @@ function errorResponse(message: string, status: number, request?: Request) {
   return jsonResponse({ error: message }, status, request);
 }
 
+/** DB에 저장된 이미지 URL을 현재 Worker 도메인으로 바꿈 (도메인 변경 시 기존 이미지 표시용) */
+function normalizeImageUrl(url: string | null, origin: string): string | null {
+  if (!url || !url.trim()) return null;
+  const match = url.match(/^(https?:\/\/[^/]+)(\/api\/images\/.+)$/);
+  if (match) return origin + match[2];
+  return url;
+}
+
+/** HTML 본문 안의 /api/images/ 이미지 URL을 현재 도메인으로 치환 */
+function rewriteImageUrlsInHtml(html: string, origin: string): string {
+  if (!html) return "";
+  return html.replace(
+    /(https?:\/\/[^/"'\s]+)(\/api\/images\/[^"'\s]*)/gi,
+    (_full, _host, path) => origin + path
+  );
+}
+
 /** Access가 추가하는 이메일 헤더. 허용 목록에 있으면 true */
 function isAllowedAdmin(request: Request, env: Env): boolean {
   const allowed = env.ALLOWED_EMAILS?.trim();
@@ -534,7 +551,13 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     "SELECT id, title, content, thumbnail_url, youtube_url, section, created_at, updated_at FROM posts ORDER BY created_at DESC"
   ).all<Post>();
-  return jsonResponse({ posts: results }, 200, request);
+  const origin = new URL(request.url).origin;
+  const posts = results.map((p) => ({
+    ...p,
+    thumbnail_url: normalizeImageUrl(p.thumbnail_url, origin),
+    content: rewriteImageUrlsInHtml(p.content ?? "", origin),
+  }));
+  return jsonResponse({ posts }, 200, request);
 }
 
 async function handleGetPost(request: Request, env: Env, id: number): Promise<Response> {
@@ -544,7 +567,13 @@ async function handleGetPost(request: Request, env: Env, id: number): Promise<Re
     .bind(id)
     .first<Post>();
   if (!post) return errorResponse("Not found", 404, request);
-  return jsonResponse(post, 200, request);
+  const origin = new URL(request.url).origin;
+  const normalized = {
+    ...post,
+    thumbnail_url: normalizeImageUrl(post.thumbnail_url, origin),
+    content: rewriteImageUrlsInHtml(post.content ?? "", origin),
+  };
+  return jsonResponse(normalized, 200, request);
 }
 
 async function handleCreatePost(request: Request, env: Env): Promise<Response> {
