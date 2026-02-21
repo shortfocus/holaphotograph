@@ -3,8 +3,8 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <!-- 2. 히어로 섹션 (캐러셀) - 뷰포트 전체 높이 채우기 -->
-  <section class="hero-section relative left-0 right-0 min-h-screen w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]" style="min-height: 100vh; min-height: 100dvh;">
+  <!-- 2. 히어로 섹션 (캐러셀) - 플로팅 바 높이 제외한 뷰포트 -->
+  <section class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]">
     <div class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(225,29,72,0.1),transparent)] pointer-events-none" aria-hidden="true" />
     <div class="hero-noise absolute inset-0 pointer-events-none" aria-hidden="true" />
 

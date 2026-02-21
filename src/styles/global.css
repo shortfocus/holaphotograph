@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* 플로팅 바 높이 (히어로 섹션 높이 계산용) */
+:root {
+  --lecture-bar-base: 95px;
+  /* 모바일: 세로 배치 + pt-4 여백 */
+  --lecture-bar-mobile: 181px;
+  --lecture-bar-height: calc(var(--lecture-bar-mobile) + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 640px) {
+  :root {
+    --lecture-bar-height: calc(var(--lecture-bar-base) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* 반응형 텍스트 줄바꿈 (한글/긴 단어) */
 html {
   overflow-x: hidden;
@@ -9,10 +22,13 @@ body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
-/* 히어로 섹션: 브라우저 끝까지 풀브리드 */
+/* 히어로 섹션: 플로팅 바 상단에 맞춤 (모바일/PC 동일) */
 .hero-section {
   width: 100%;
   min-width: 100%;
+  min-height: unset;
+  height: calc(100vh - var(--lecture-bar-height));
+  height: calc(100dvh - var(--lecture-bar-height));
 }
 
 /* Hero 섹션 애니메이션 */
