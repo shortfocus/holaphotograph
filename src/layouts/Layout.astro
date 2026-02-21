@@ -5,9 +5,11 @@ interface Props {
   title?: string;
   /** true면 상단이 밝은 페이지(고객후기 등)에서 헤더를 처음부터 진한 스타일로 표시 */
   headerOpaque?: boolean;
+  /** true면 푸터 영역 숨김 (관리자 페이지 등) */
+  hideFooter?: boolean;
 }
 
-const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false } = Astro.props;
+const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ko">
@@ -109,6 +111,7 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false } = 
       </div>
     </aside>
 
+    {!hideFooter && (
     <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
         <div class="text-center">
@@ -134,5 +137,6 @@ const { title = '카메라 리뷰 & 촬영 가이드', headerOpaque = false } = 
         <p class="mt-10 text-center text-sm text-slate-500">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
       </div>
     </footer>
+    )}
   </body>
 </html>
