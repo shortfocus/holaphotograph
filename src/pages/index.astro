@@ -249,15 +249,17 @@ import Layout from "../layouts/Layout.astro";
   <!-- 3. 실전 영상 리뷰 섹션 -->
   <section
     id="youtube-long"
-    class="section-spacing border-t border-slate-200/60 bg-white py-24"
+    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2
-        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
-      >
-        📺 실전 영상 리뷰
+      <h2 class="section-title mb-3">
+        <span class="block text-sm font-medium text-[#6B7280] sm:text-base"
+          >후지필름 카메라 클래스 누적 수강생 1위</span
+        >
+        <span class="mt-1 block text-2xl font-bold text-[#111827] sm:text-3xl"
+          >📺 올라포토 카메라 매뉴얼 클래스</span
+        >
       </h2>
-      <p class="mb-10 text-[#6B7280]">직접 사용하고 비교한 장비 리뷰 영상</p>
       <div
         id="youtube-long-grid"
         class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
@@ -278,52 +280,17 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
-  <!-- 5. 빠르게 보는 장비 팁 (Shorts) -->
-  <section
-    id="youtube-shorts"
-    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24"
-  >
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2
-        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
-      >
-        🎬 빠르게 보는 장비 팁
-      </h2>
-      <p class="mb-10 text-[#6B7280]">1분 안에 핵심만 정리한 장비 팁</p>
-      <div
-        id="youtube-shorts-grid"
-        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
-      >
-        <div
-          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
-        >
-        </div>
-        <div
-          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
-        >
-        </div>
-        <div
-          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
-        >
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. 장비 비교 & 상세 분석 (블로그) -->
+  <!-- 5. 고품격! 올라포토 카메라/렌즈 제품 리뷰 (블로그) -->
   <section
     id="blog"
-    class="section-spacing border-t border-slate-200/60 bg-white py-24"
+    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2
-        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+        class="section-title mb-3 text-2xl font-bold text-[#111827] sm:text-3xl"
       >
-        ✍ 장비 비교 & 상세 분석
+        ✍ 고품격! 올라포토 카메라/렌즈 제품 리뷰
       </h2>
-      <p class="mb-10 text-[#6B7280]">
-        구매 전 꼭 확인해야 할 비교 분석 콘텐츠
-      </p>
       <div
         id="blog-grid"
         class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
@@ -344,13 +311,44 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
+  <!-- 6. 빠르게 보는 장비 팁 (Shorts) -->
+  <section
+    id="youtube-shorts"
+    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
+  >
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2
+        class="section-title mb-3 text-2xl font-bold text-[#111827] sm:text-3xl"
+      >
+        🎬 빠르게 보는 장비 팁
+      </h2>
+      <div
+        id="youtube-shorts-grid"
+        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+      >
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 7. 성과 지표 (Performance Section) -->
   <section
-    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-24"
+    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-14 sm:py-16"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <p
-        class="section-title mb-10 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
+        class="section-title mb-8 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
       >
         누적 성과
       </p>
@@ -389,11 +387,11 @@ import Layout from "../layouts/Layout.astro";
   <!-- 8. 협업 / 광고 문의 -->
   <section
     id="about"
-    class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-24"
+    class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-14 sm:py-16"
   >
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
       <h2
-        class="section-title mb-4 text-2xl font-bold text-[#111827] sm:text-3xl"
+        class="section-title mb-3 text-2xl font-bold text-[#111827] sm:text-3xl"
       >
         협업 및 광고 문의
       </h2>
@@ -578,6 +576,31 @@ import Layout from "../layouts/Layout.astro";
   const blogGrid = document.getElementById("blog-grid")!;
   const LIMIT = 6;
 
+  /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID) */
+  const YOUTUBE_LONG_ORDER = [
+    "jMMTLjQLTWg",
+    "c-xvb8f9OHM",
+    "qEP4MaioFPM",
+    "cXfv3-85u6M",
+    "p8K7iu1Rzpo",
+  ];
+  function getVideoId(link: string): string | null {
+    if (!link) return null;
+    const m = link.match(/(?:youtu\.be\/|[?&]v=)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+  function sortByPreferredOrder<T extends { link: string }>(
+    items: T[],
+    order: string[],
+  ): T[] {
+    const orderMap = new Map(order.map((id, i) => [id, i]));
+    return [...items].sort((a, b) => {
+      const ia = orderMap.get(getVideoId(a.link) ?? "") ?? order.length;
+      const ib = orderMap.get(getVideoId(b.link) ?? "") ?? order.length;
+      return ia - ib;
+    });
+  }
+
   function formatCount(n: string | number): string {
     const num = typeof n === "string" ? parseInt(n, 10) : n;
     if (isNaN(num)) return "—";
@@ -747,12 +770,13 @@ import Layout from "../layouts/Layout.astro";
       }
 
       const videos = youtubeRes.videos || [];
+      const videosSorted = sortByPreferredOrder(videos, YOUTUBE_LONG_ORDER);
       const shorts = youtubeRes.shorts || [];
       const youtubeError = youtubeRes.error;
 
       renderYoutubeSection(
         youtubeLongGrid,
-        videos,
+        videosSorted,
         youtubeError
           ? "유튜브 API 키를 설정해주세요."
           : "등록된 롱폼 영상이 없습니다.",

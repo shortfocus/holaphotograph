@@ -229,21 +229,6 @@ body.lecture-bar-collapsed .hero-section {
   width: 100%;
 }
 
-/* 기존 nav-link (호버 wiggle) - 하위 호환 */
-.nav-link {
-  transition: color 0.2s, background-color 0.2s;
-  transform-origin: center center;
-}
-.nav-link:hover {
-  animation: nav-link-wiggle 0.5s ease-in-out;
-}
-@keyframes nav-link-wiggle {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-8deg) scale(1.08); }
-  50% { transform: rotate(8deg) scale(1.08); }
-  75% { transform: rotate(-4deg) scale(1.04); }
-}
-
 /* Trix 에디터 스타일 보정 */
 trix-editor.trix-content {
   border: 1px solid #d1d5db;
@@ -290,15 +275,15 @@ trix-editor.trix-content:empty:not(:focus)::before {
   scroll-snap-align: start;
 }
 
-/* 여백 시스템 (docs/DESIGN_IMPROVEMENT.md) */
+/* 여백 시스템: 섹션 간격·타이틀을 fit하게 */
 .section-spacing {
-  margin-top: 120px;
+  margin-top: 3rem; /* 48px, 기존 120px에서 축소 */
 }
 .section-spacing:first-of-type {
   margin-top: 0;
 }
 .section-title {
-  margin-bottom: 40px;
+  margin-bottom: 1.5rem; /* 24px, 기존 40px에서 축소 */
 }
 
 /* 카드 hover는 각 카드의 Tailwind hover:-translate-y-1로 처리 */
