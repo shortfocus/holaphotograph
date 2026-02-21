@@ -12,15 +12,6 @@ import Layout from '../../layouts/Layout.astro';
     <form id="post-form" class="space-y-6">
       <input type="hidden" id="post-id" name="id" />
       <div>
-        <label for="section" class="block text-sm font-medium text-gray-700 mb-3">등록 유형</label>
-        <select id="section" name="section" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2">
-          <option value="reviews">텍스트 후기</option>
-          <option value="guides">위클리 포커스 & 카메라 소식</option>
-          <option value="models">렌즈 & 액세서리</option>
-          <option value="youtube">유튜브 영상 후기</option>
-        </select>
-      </div>
-      <div>
         <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
         <input
           type="text"
@@ -30,12 +21,12 @@ import Layout from '../../layouts/Layout.astro';
           class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
         />
       </div>
-      <div id="field-content">
+      <div>
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
         <input id="content" name="content" type="hidden" />
         <trix-editor input="content" class="trix-content mt-1 min-h-[400px] rounded-lg border border-gray-300 bg-white px-3 py-2"></trix-editor>
       </div>
-      <div id="field-thumbnail">
+      <div>
         <label class="block text-sm font-medium text-gray-700">썸네일 이미지</label>
         <input
           type="file"
@@ -47,15 +38,6 @@ import Layout from '../../layouts/Layout.astro';
         <div id="thumb-preview" class="mt-2">
           <img src="" alt="미리보기" class="max-h-40 rounded-lg border" id="thumb-img" />
         </div>
-      </div>
-      <div id="field-youtube">
-        <label for="youtube_url" class="block text-sm font-medium text-gray-700">유튜브 영상 링크</label>
-        <input
-          type="url"
-          id="youtube_url"
-          name="youtube_url"
-          class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-        />
       </div>
       <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
         <button
@@ -87,32 +69,7 @@ import Layout from '../../layouts/Layout.astro';
     window.location.href = '/admin';
   }
 
-  const contentField = document.getElementById('field-content')!;
-  const thumbnailField = document.getElementById('field-thumbnail')!;
-  const youtubeField = document.getElementById('field-youtube')!;
   const contentInput = document.getElementById('content') as HTMLInputElement;
-  const sectionSelect = document.getElementById('section') as HTMLSelectElement | null;
-
-  function getSection(): 'reviews' | 'guides' | 'models' | 'youtube' {
-    return sectionSelect?.value as 'reviews' | 'guides' | 'models' | 'youtube';
-  }
-
-  function toggleFields() {
-    const section = getSection();
-    if (section === 'youtube') {
-      contentField.classList.add('hidden');
-      thumbnailField.classList.add('hidden');
-      youtubeField.classList.remove('hidden');
-      contentInput.removeAttribute('required');
-    } else {
-      contentField.classList.remove('hidden');
-      thumbnailField.classList.remove('hidden');
-      youtubeField.classList.add('hidden');
-      contentInput.setAttribute('required', 'required');
-    }
-  }
-
-  sectionSelect?.addEventListener('change', toggleFields);
 
   // Trix 에디터 이미지 첨부 시 R2 업로드 후 URL로 치환 (blob/base64 → 실제 URL)
   document.addEventListener('trix-attachment-add', async (e: Event) => {
@@ -143,10 +100,6 @@ import Layout from '../../layouts/Layout.astro';
     } else if (contentInput) {
       contentInput.value = post.content || '';
     }
-    (form.querySelector('#youtube_url') as HTMLInputElement).value = post.youtube_url || '';
-    if (sectionSelect) sectionSelect.value = post.section || (post.youtube_url && !post.content ? 'youtube' : 'reviews');
-    toggleFields();
-
     if (post.thumbnail_url) {
       thumbImg.src = post.thumbnail_url;
       thumbPreview.classList.remove('hidden');
@@ -165,38 +118,32 @@ import Layout from '../../layouts/Layout.astro';
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const section = getSection();
     const fd = new FormData(form);
     const title = (fd.get('title') as string)?.trim();
     const content = (fd.get('content') as string)?.trim() || '';
-    const youtubeUrl = (fd.get('youtube_url') as string)?.trim() || null;
 
-    if (section !== 'youtube' && !content) {
+    if (!content) {
       alert('내용을 입력해주세요.');
       return;
     }
 
     let thumbnailUrl: string | undefined;
-    if (section !== 'youtube') {
-      const file = thumbInput.files?.[0];
-      if (file) {
-        try {
-          const result = await uploadImage(file);
-          thumbnailUrl = result.url;
-        } catch (err) {
-          alert((err as Error).message);
-          return;
-        }
+    const file = thumbInput.files?.[0];
+    if (file) {
+      try {
+        const result = await uploadImage(file);
+        thumbnailUrl = result.url;
+      } catch (err) {
+        alert((err as Error).message);
+        return;
       }
     }
 
     try {
       await updatePost(id, {
         title: title || '',
-        content: section === 'youtube' ? '' : content,
-        thumbnail_url: section === 'youtube' ? null : (thumbnailUrl !== undefined ? thumbnailUrl : undefined),
-        youtube_url: section === 'youtube' ? youtubeUrl : null,
-        section,
+        content,
+        thumbnail_url: thumbnailUrl !== undefined ? thumbnailUrl : undefined,
       });
       window.location.href = '/admin';
     } catch (err) {

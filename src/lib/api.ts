@@ -12,15 +12,11 @@ const ADMIN = env.PUBLIC_ADMIN_API_URL || PUBLIC;
 export const API_BASE = PUBLIC;
 const ADMIN_API_BASE = ADMIN;
 
-export type PostSection = 'reviews' | 'guides' | 'models' | 'youtube';
-
 export interface Post {
   id: number;
   title: string;
   content: string;
   thumbnail_url: string | null;
-  youtube_url: string | null;
-  section?: PostSection;
   created_at: string;
   updated_at: string;
 }

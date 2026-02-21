@@ -24,12 +24,6 @@ import Layout from '../../layouts/Layout.astro';
 
   const PLACEHOLDER_IMG = '/placeholder.svg';
 
-  function getYoutubeThumbnail(url: string | null): string | null {
-    if (!url) return null;
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
-  }
-
   function getFirstImageFromContent(html: string | null): string | null {
     if (!html || !html.trim().startsWith('<')) return null;
     const div = document.createElement('div');
@@ -43,7 +37,6 @@ import Layout from '../../layouts/Layout.astro';
   function getThumbnailUrl(post: Post): string {
     return post.thumbnail_url
       || getFirstImageFromContent(post.content)
-      || getYoutubeThumbnail(post.youtube_url)
       || PLACEHOLDER_IMG;
   }
 
@@ -62,7 +55,7 @@ import Layout from '../../layouts/Layout.astro';
   function renderPostCard(post: Post) {
     const thumbUrl = getThumbnailUrl(post);
     const thumb = `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(post.title)}" class="aspect-video w-full object-cover opacity-0 transition-opacity duration-300" loading="lazy" decoding="async" onload="this.classList.add('opacity-100')" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" />`;
-    const desc = post.content ? stripHtml(post.content).slice(0, 100) + (stripHtml(post.content).length > 100 ? '...' : '') : (post.youtube_url ? '유튜브 영상' : '');
+    const desc = post.content ? stripHtml(post.content).slice(0, 100) + (stripHtml(post.content).length > 100 ? '...' : '') : '';
     const dateStr = new Date(post.created_at).toLocaleDateString('ko-KR');
     return `
       <article class="flex min-h-[320px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">

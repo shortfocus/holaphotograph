@@ -50,12 +50,6 @@ import Layout from '../layouts/Layout.astro';
   const contentEl = document.getElementById('post-content')!;
   const errorEl = document.getElementById('post-error')!;
 
-  function getYoutubeThumbnail(url: string | null): string | null {
-    if (!url) return null;
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
-  }
-
   async function load() {
     if (!id) {
       loadingEl.classList.add('hidden');
@@ -83,9 +77,8 @@ import Layout from '../layouts/Layout.astro';
 
       const thumbEl = document.getElementById('post-thumbnail')!;
       const thumbImg = document.getElementById('post-thumb-img') as HTMLImageElement;
-      const thumbUrl = post.thumbnail_url || getYoutubeThumbnail(post.youtube_url);
-      if (thumbUrl) {
-        thumbImg.src = thumbUrl;
+      if (post.thumbnail_url) {
+        thumbImg.src = post.thumbnail_url;
         thumbImg.alt = post.title;
         thumbEl.classList.remove('hidden');
       } else {
@@ -104,13 +97,7 @@ import Layout from '../layouts/Layout.astro';
       }
 
       const youtubeEl = document.getElementById('post-youtube')!;
-      const youtubeLink = document.getElementById('post-youtube-link') as HTMLAnchorElement;
-      if (post.youtube_url) {
-        youtubeLink.href = post.youtube_url;
-        youtubeEl.classList.remove('hidden');
-      } else {
-        youtubeEl.classList.add('hidden');
-      }
+      youtubeEl.classList.add('hidden');
 
       document.title = `${post.title} - 고객 후기`;
     } catch (e) {

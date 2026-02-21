@@ -15,8 +15,6 @@ interface Post {
   title: string;
   content: string;
   thumbnail_url: string | null;
-  youtube_url: string | null;
-  section: string;
   created_at: string;
   updated_at: string;
 }
@@ -549,7 +547,7 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, youtube_url, section, created_at, updated_at FROM posts ORDER BY created_at DESC"
+    "SELECT id, title, content, thumbnail_url, created_at, updated_at FROM customer_reviews ORDER BY created_at DESC"
   ).all<Post>();
   const origin = new URL(request.url).origin;
   const posts = results.map((p) => ({
@@ -562,7 +560,7 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
 
 async function handleGetPost(request: Request, env: Env, id: number): Promise<Response> {
   const post = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, youtube_url, section, created_at, updated_at FROM posts WHERE id = ?"
+    "SELECT id, title, content, thumbnail_url, created_at, updated_at FROM customer_reviews WHERE id = ?"
   )
     .bind(id)
     .first<Post>();
@@ -587,28 +585,20 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   const title = String(body.title ?? "").trim();
   const content = String(body.content ?? "").trim();
   const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
-  const youtubeUrl = body.youtube_url != null && body.youtube_url !== "" ? String(body.youtube_url) : null;
-  const section = ["reviews", "guides", "models", "youtube"].includes(String(body.section ?? "reviews"))
-    ? String(body.section)
-    : "reviews";
 
   if (!title) return errorResponse("title required", 400, request);
-  if (section === "youtube") {
-    if (!youtubeUrl) return errorResponse("youtube_url required for 유튜브 영상", 400, request);
-  } else {
-    if (!content) return errorResponse("content required", 400, request);
-  }
+  if (!content) return errorResponse("content required", 400, request);
 
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO posts (title, content, thumbnail_url, youtube_url, section, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
     )
-      .bind(title, content, thumbnailUrl, youtubeUrl, section, now, now)
+      .bind(title, content, thumbnailUrl, now, now)
       .run();
 
     const id = result.meta.last_row_id;
-    const post = await env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first<Post>();
+    const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
     if (!post) return errorResponse("Failed to fetch created post", 500, request);
     return jsonResponse(post, 201, request);
   } catch (err) {
@@ -631,33 +621,28 @@ async function handleUpdatePost(request: Request, env: Env, id: number): Promise
   const body = await request.json() as Record<string, unknown>;
   const title = body.title != null ? String(body.title).trim() : null;
   const content = body.content != null ? String(body.content).trim() : null;
-  const youtubeUrl = body.youtube_url !== undefined ? (body.youtube_url ? String(body.youtube_url) : null) : null;
 
-  const existing = await env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first<Post>();
+  const existing = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
   if (!existing) return errorResponse("Not found", 404, request);
 
   const finalTitle = title ?? existing.title;
   const finalContent = content ?? existing.content;
   const finalThumb = body.thumbnail_url !== undefined ? (body.thumbnail_url ? String(body.thumbnail_url) : null) : existing.thumbnail_url;
-  const finalYoutube = youtubeUrl !== null ? youtubeUrl : existing.youtube_url;
-  const finalSection = body.section != null && ["reviews", "guides", "models", "youtube"].includes(String(body.section))
-    ? String(body.section)
-    : (existing.section ?? "reviews");
   const now = new Date().toISOString();
 
   await env.DB.prepare(
-    "UPDATE posts SET title = ?, content = ?, thumbnail_url = ?, youtube_url = ?, section = ?, updated_at = ? WHERE id = ?"
+    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, updated_at = ? WHERE id = ?"
   )
-    .bind(finalTitle, finalContent, finalThumb, finalYoutube, finalSection, now, id)
+    .bind(finalTitle, finalContent, finalThumb, now, id)
     .run();
 
-  const post = await env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first<Post>();
+  const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
   return jsonResponse(post, 200, request);
 }
 
 async function handleDeletePost(request: Request, env: Env, id: number): Promise<Response> {
   if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-  const result = await env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run();
+  const result = await env.DB.prepare("DELETE FROM customer_reviews WHERE id = ?").bind(id).run();
   if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
 }

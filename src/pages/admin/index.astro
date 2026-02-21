@@ -48,7 +48,6 @@ import Layout from '../../layouts/Layout.astro';
         }
         return;
       }
-      const sectionLabels: Record<string, string> = { reviews: '고객 후기', guides: '위클리 포커스 & 카메라 소식', models: '렌즈 & 액세서리', youtube: '유튜브 영상' };
       listEl.innerHTML = posts
         .map(
           (p: Post) => `
@@ -58,9 +57,8 @@ import Layout from '../../layouts/Layout.astro';
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <h3 class="truncate font-semibold">${escapeHtml(p.title)}</h3>
-                <span class="shrink-0 rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">${sectionLabels[p.section || 'reviews'] || p.section}</span>
               </div>
-              <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(p.youtube_url || p.content?.slice(0, 50) || '-')}${(p.content?.length || 0) > 50 ? '...' : ''}</p>
+              <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(p.content?.slice(0, 50) || '-')}${(p.content?.length || 0) > 50 ? '...' : ''}</p>
               <p class="text-xs text-gray-400">${new Date(p.created_at).toLocaleDateString('ko-KR')}</p>
             </div>
           </div>
