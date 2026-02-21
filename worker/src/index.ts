@@ -387,7 +387,7 @@ function buildVideoItem(it: { id?: string; snippet?: { title?: string; published
   };
 }
 
-const YOUTUBE_CACHE_KEY = "https://holaphotograph-api/youtube-latest-cache";
+const YOUTUBE_CACHE_KEY = "https://holaphotograph-api/youtube-latest-cache-v2";
 const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
 
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
@@ -454,6 +454,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const shortsSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("후지필름")}&key=${key}`;
     const shortsSearchRes = await fetch(shortsSearchUrl);
     const shortsList: YoutubeVideoItem[] = [];
+    let shortsApiSucceeded = false;
     if (shortsSearchRes.ok) {
       const shortsSearchData = (await shortsSearchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
       const shortsIds = (shortsSearchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
@@ -461,6 +462,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
         const shortsDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${shortsIds.join(",")}&key=${key}`;
         const shortsDetailsRes = await fetch(shortsDetailsUrl);
         if (shortsDetailsRes.ok) {
+          shortsApiSucceeded = true;
           const shortsDetailsData = (await shortsDetailsRes.json()) as { items?: Array<Parameters<typeof buildVideoItem>[0]> };
           for (const it of shortsDetailsData.items || []) {
             const item = buildVideoItem(it);
@@ -473,13 +475,17 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
             return vb - va;
           });
         }
+      } else {
+        shortsApiSucceeded = true;
       }
     }
 
     const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5) }, 200, request);
-    const responseToCache = response.clone();
-    responseToCache.headers.set("Cache-Control", `public, max-age=${YOUTUBE_CACHE_TTL_SECONDS}`);
-    await cache.put(cacheReq, responseToCache);
+    if (shortsApiSucceeded) {
+      const responseToCache = response.clone();
+      responseToCache.headers.set("Cache-Control", `public, max-age=${YOUTUBE_CACHE_TTL_SECONDS}`);
+      await cache.put(cacheReq, responseToCache);
+    }
     return response;
   } catch (err) {
     console.error("youtube-latest error:", err);
