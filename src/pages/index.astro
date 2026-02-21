@@ -662,15 +662,21 @@ import Layout from "../layouts/Layout.astro";
     const desc =
       stripHtml(item.description).slice(0, 80) +
       (stripHtml(item.description).length > 80 ? "..." : "");
+    const youtubeChannelUrl = "https://www.youtube.com/@holaphotograph";
     return `
-      <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
-        ${thumb}
-        <div class="p-4 bg-white">
-          <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm text-[#111827]">${escapeHtml(item.title)}</h3>
-          <p class="mt-1 line-clamp-2 text-xs text-[#6B7280]">${escapeHtml(desc)}</p>
-          <p class="mt-2 text-xs text-[#E11D48] font-medium">블로그 보기 →</p>
+      <div class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
+        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="block">
+          ${thumb}
+          <div class="p-4 bg-white">
+            <h3 class="font-semibold line-clamp-2 leading-relaxed text-sm text-[#111827]">${escapeHtml(item.title)}</h3>
+            <p class="mt-1 line-clamp-2 text-xs text-[#6B7280]">${escapeHtml(desc)}</p>
+          </div>
+        </a>
+        <div class="flex items-center justify-between gap-2 px-4 pb-4 pt-0">
+          <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">블로그 보기 →</a>
+          <a href="${escapeHtml(youtubeChannelUrl)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">유튜브 보기 →</a>
         </div>
-      </a>
+      </div>
     `;
   }
 
