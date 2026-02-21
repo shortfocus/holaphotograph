@@ -387,7 +387,15 @@ function buildVideoItem(it: { id?: string; snippet?: { title?: string; published
   };
 }
 
+const YOUTUBE_CACHE_KEY = "https://holaphotograph-api/youtube-latest-cache";
+const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
+
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
+  const cache = caches.default;
+  const cacheReq = new Request(YOUTUBE_CACHE_KEY);
+  const cached = await cache.match(cacheReq);
+  if (cached) return cached;
+
   const key = env.YOUTUBE_API_KEY;
   if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured" }, 200, request);
   try {
@@ -468,7 +476,11 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       }
     }
 
-    return jsonResponse({ videos, shorts: shortsList.slice(0, 5) }, 200, request);
+    const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5) }, 200, request);
+    const responseToCache = response.clone();
+    responseToCache.headers.set("Cache-Control", `public, max-age=${YOUTUBE_CACHE_TTL_SECONDS}`);
+    await cache.put(cacheReq, responseToCache);
+    return response;
   } catch (err) {
     console.error("youtube-latest error:", err);
     return errorResponse("YouTube fetch failed", 502, request);

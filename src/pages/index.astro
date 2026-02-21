@@ -759,8 +759,8 @@ import Layout from "../layouts/Layout.astro";
   async function load() {
     try {
       const [rssRes, youtubeRes, statsRes] = await Promise.all([
-        fetchNaverRss(),
-        fetchYoutubeLatest(),
+        fetchNaverRss().catch(() => ({ reviews: [], guides: [], models: [], compare: [] })),
+        fetchYoutubeLatest().catch(() => ({ videos: [], shorts: [], error: "Failed to load" })),
         fetchChannelStats().catch(() => null),
       ]);
 
