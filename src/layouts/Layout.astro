@@ -31,7 +31,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         <button
           type="button"
           id="nav-toggle"
-          class="header-toggle inline-flex items-center justify-center rounded-lg p-2 text-white hover:bg-white/10 md:hidden"
+          class="header-toggle inline-flex cursor-pointer items-center justify-center rounded-lg p-2 text-white hover:bg-white/10 md:hidden"
           aria-label="메뉴 열기"
           aria-expanded="false"
         >
@@ -103,7 +103,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
     <!-- 강의 소식 플로팅 CTA (토글 가능) -->
     <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
       <!-- 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 (bottom: 100%), CTA 오른쪽에 맞춤 -->
-      <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="플로팅 바 접기">
+      <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="플로팅 바 접기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg>
         <span>접기</span>
       </button>
@@ -127,7 +127,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
               <button
                 type="submit"
                 id="lecture-signup-btn"
-                class="w-full shrink-0 rounded-lg bg-[#E11D48] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:opacity-70 sm:w-auto"
+                class="w-full shrink-0 cursor-pointer rounded-lg bg-[#E11D48] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#be123c] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/50 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
               >
                 강의 소식 받기
               </button>
@@ -137,7 +137,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         </div>
       </div>
       <!-- 펼치기 탭: 접었을 때 플로팅 바 상단 경계에 하단이 딱 붙음 (접기 탭과 동일 방식) -->
-      <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="강의 소식 바 펼치기">
+      <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="강의 소식 바 펼치기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
         <span>열기</span>
       </button>

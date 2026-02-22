@@ -12,13 +12,17 @@ const ADMIN = env.PUBLIC_ADMIN_API_URL || PUBLIC;
 export const API_BASE = PUBLIC;
 const ADMIN_API_BASE = ADMIN;
 
+export type ReviewStatus = "pending" | "approved";
+
 export interface Post {
   id: number;
   title: string;
   content: string;
   thumbnail_url: string | null;
+  author_name?: string | null;
   created_at: string;
   updated_at: string;
+  status?: ReviewStatus;
 }
 
 export async function fetchPosts(): Promise<Post[]> {
@@ -26,6 +30,45 @@ export async function fetchPosts(): Promise<Post[]> {
   if (!res.ok) throw new Error("Failed to fetch posts");
   const data = (await res.json()) as { posts?: Post[] };
   return data.posts ?? [];
+}
+
+/** 관리자용: 전체 목록 (pending 포함, credentials 필요) */
+export async function fetchPostsForAdmin(): Promise<Post[]> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/posts`, { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to fetch posts");
+  const data = (await res.json()) as { posts?: Post[] };
+  return data.posts ?? [];
+}
+
+export interface SubmitReviewBody {
+  title: string;
+  content: string;
+  author_name: string;
+  thumbnail_url?: string | null;
+  /** Cloudflare Turnstile 응답 토큰 (봇 방지) */
+  turnstile_token?: string;
+}
+
+export interface SubmitReviewResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function submitReview(body: SubmitReviewBody): Promise<SubmitReviewResponse> {
+  const res = await fetch(`${API_BASE}/api/reviews`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: body.title.trim(),
+      content: body.content.trim(),
+      author_name: body.author_name.trim(),
+      thumbnail_url: body.thumbnail_url || null,
+      ...(body.turnstile_token ? { turnstile_token: body.turnstile_token } : {}),
+    }),
+  });
+  const data = (await res.json()) as SubmitReviewResponse & { error?: string };
+  if (!res.ok) throw new Error(data.error || "등록에 실패했습니다.");
+  return data;
 }
 
 export interface NaverRssItem {
@@ -119,6 +162,13 @@ export async function fetchPost(id: number): Promise<Post | null> {
   return res.json();
 }
 
+/** 관리자용: 단건 조회 (pending 포함, credentials 필요) */
+export async function fetchPostForAdmin(id: number): Promise<Post | null> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, { credentials: "include" });
+  if (!res.ok) return null;
+  return res.json();
+}
+
 export async function createPost(body: Partial<Post>): Promise<Post> {
   const res = await fetch(`${ADMIN_API_BASE}/api/posts`, {
     method: "POST",
@@ -133,7 +183,9 @@ export async function createPost(body: Partial<Post>): Promise<Post> {
   return res.json();
 }
 
-export async function updatePost(id: number, body: Partial<Post> & { thumbnail_url?: string | null }): Promise<Post> {
+export async function updatePost(
+  id: number,
+  body: Partial<Post> & { thumbnail_url?: string | null; status?: ReviewStatus }): Promise<Post> {
   const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

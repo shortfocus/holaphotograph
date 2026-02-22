@@ -9,5 +9,7 @@ declare namespace Cloudflare {
     YOUTUBE_API_KEY?: string;
     /** 네이버 블로그 총 방문자 수 (수동 설정, wrangler secret put NAVER_BLOG_VISITORS) */
     NAVER_BLOG_VISITORS?: string;
+    /** Cloudflare Turnstile 시크릿 키 (후기 제출 봇 방지) */
+    TURNSTILE_SECRET_KEY?: string;
   }
 }

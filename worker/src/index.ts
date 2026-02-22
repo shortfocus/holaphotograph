@@ -1,4 +1,6 @@
 /// <reference path="../worker-configuration.d.ts" />
+import sanitizeHtml from "sanitize-html";
+
 export interface Env {
   DB: D1Database;
   BUCKET: R2Bucket;
@@ -8,15 +10,39 @@ export interface Env {
   YOUTUBE_API_KEY?: string;
   /** 네이버 블로그 총 방문자 수 (수동 설정) */
   NAVER_BLOG_VISITORS?: string;
+  /** Cloudflare Turnstile 시크릿 키 (후기 제출 봇 방지, wrangler secret put TURNSTILE_SECRET_KEY) */
+  TURNSTILE_SECRET_KEY?: string;
 }
 
+/** pending: 대기(고객 제출), approved: 승인 후 노출 */
 interface Post {
   id: number;
   title: string;
   content: string;
   thumbnail_url: string | null;
+  author_name: string | null;
   created_at: string;
   updated_at: string;
+  status?: "pending" | "approved";
+}
+
+/** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거 */
+function sanitizeReviewContent(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      "p", "br", "div", "span", "strong", "b", "em", "i", "u", "s",
+      "a", "ul", "ol", "li", "blockquote", "h1", "h2", "h3",
+      "figure", "figcaption", "img",
+    ],
+    allowedAttributes: {
+      a: ["href", "title", "target", "rel"],
+      img: ["src", "alt", "width", "height", "title"],
+      div: ["class"], span: ["class"], figure: ["class"], figcaption: ["class"],
+    },
+    allowedSchemes: ["http", "https"],
+    allowedSchemesByTag: { img: ["http", "https", "data"] },
+    allowedSchemesAppliedToAttributes: ["href", "src"],
+  });
 }
 
 function getCorsHeaders(request: Request) {
@@ -89,10 +115,11 @@ export default {
           "GET /api/youtube-latest": "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
           "GET /api/channel-stats": "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
           "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
-          "GET /api/posts": "리뷰 목록 (최신순)",
-          "GET /api/posts/:id": "리뷰 상세",
-          "POST /api/posts": "리뷰 작성 (관리자)",
-          "PUT /api/posts/:id": "리뷰 수정 (관리자)",
+          "GET /api/posts": "리뷰 목록 (공개: approved만, 관리자: 전체+status)",
+          "GET /api/posts/:id": "리뷰 상세 (approved만)",
+          "POST /api/posts": "리뷰 작성 (관리자, approved)",
+          "POST /api/reviews": "고객 후기 제출 (로그인 없음, pending)",
+          "PUT /api/posts/:id": "리뷰 수정/승인 (관리자)",
           "DELETE /api/posts/:id": "리뷰 삭제 (관리자)",
           "POST /api/upload": "이미지 업로드 (관리자)",
           "GET /api/images/:path": "이미지 조회",
@@ -124,6 +151,11 @@ export default {
     // POST /api/lecture-signup - 강의 소식 수신 신청 (이메일 수집)
     if (url.pathname === "/api/lecture-signup" && request.method === "POST") {
       return handleLectureSignup(request, env);
+    }
+
+    // POST /api/reviews - 고객 후기 제출 (로그인 없음, pending 저장)
+    if (url.pathname === "/api/reviews" && request.method === "POST") {
+      return handleSubmitReview(request, env);
     }
 
     const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
@@ -391,7 +423,7 @@ const YOUTUBE_CACHE_KEY = "https://holaphotograph-api/youtube-latest-cache-v2";
 const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
 
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
-  const cache = caches.default;
+  const cache = (caches as unknown as { default: Cache }).default;
   const cacheReq = new Request(YOUTUBE_CACHE_KEY);
   const cached = await cache.match(cacheReq);
   if (cached) {
@@ -540,10 +572,81 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
   }
 }
 
+/** 고객 후기 제출 (로그인 없음). status = pending으로 저장, 관리자 승인 후 노출 */
+async function handleSubmitReview(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") return errorResponse("Method not allowed", 405, request);
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!contentType.includes("application/json")) {
+    return errorResponse("Content-Type must be application/json", 400, request);
+  }
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+  const turnstileToken =
+    typeof body.turnstile_token === "string"
+      ? body.turnstile_token.trim()
+      : typeof (body as Record<string, unknown>)["cf-turnstile-response"] === "string"
+        ? String((body as Record<string, unknown>)["cf-turnstile-response"]).trim()
+        : "";
+  if (env.TURNSTILE_SECRET_KEY) {
+    if (!turnstileToken) return errorResponse("Turnstile verification required", 400, request);
+    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET_KEY,
+        response: turnstileToken,
+        remoteip: request.headers.get("CF-Connecting-IP") ?? undefined,
+      }),
+    });
+    const verifyData = (await verifyRes.json()) as { success?: boolean; "error-codes"?: string[] };
+    if (!verifyData.success) {
+      return errorResponse("Verification failed. Please try again.", 400, request);
+    }
+  }
+
+  const title = String(body.title ?? "").trim();
+  let content = String(body.content ?? "").trim();
+  const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
+  const authorName = body.author_name != null ? String(body.author_name).trim() : "";
+  if (!authorName) return errorResponse("author_name required", 400, request);
+  if (authorName.length > 100) return errorResponse("author_name too long", 400, request);
+
+  if (!title) return errorResponse("title required", 400, request);
+  if (!content) return errorResponse("content required", 400, request);
+  if (title.length > 500) return errorResponse("title too long", 400, request);
+  content = sanitizeReviewContent(content);
+  if (content.length > 50000) return errorResponse("content too long", 400, request);
+
+  try {
+    const now = new Date().toISOString();
+    await env.DB.prepare(
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    )
+      .bind(title, content, thumbnailUrl, authorName, "pending", now, now)
+      .run();
+    return jsonResponse({ success: true, message: "등록되었습니다. 승인 후 게시됩니다." }, 201, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse("Database error", 500, request);
+    }
+    return errorResponse("Failed to submit review", 500, request);
+  }
+}
+
 async function handleListPosts(request: Request, env: Env): Promise<Response> {
-  const { results } = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, created_at, updated_at FROM customer_reviews ORDER BY created_at DESC"
-  ).all<Post>();
+  const isAdmin = isAllowedAdmin(request, env);
+  const sql = isAdmin
+    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status FROM customer_reviews ORDER BY created_at DESC"
+    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE status = ? ORDER BY created_at DESC";
+  const stmt = isAdmin
+    ? env.DB.prepare(sql)
+    : env.DB.prepare(sql).bind("approved");
+  const { results } = await stmt.all<Post & { status?: string }>();
   const origin = new URL(request.url).origin;
   const posts = results.map((p) => ({
     ...p,
@@ -554,11 +657,12 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
 }
 
 async function handleGetPost(request: Request, env: Env, id: number): Promise<Response> {
-  const post = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, created_at, updated_at FROM customer_reviews WHERE id = ?"
-  )
-    .bind(id)
-    .first<Post>();
+  const isAdmin = isAllowedAdmin(request, env);
+  const sql = isAdmin
+    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status FROM customer_reviews WHERE id = ?"
+    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE id = ? AND status = ?";
+  const stmt = isAdmin ? env.DB.prepare(sql).bind(id) : env.DB.prepare(sql).bind(id, "approved");
+  const post = await stmt.first<Post & { status?: string }>();
   if (!post) return errorResponse("Not found", 404, request);
   const origin = new URL(request.url).origin;
   const normalized = {
@@ -587,9 +691,9 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO customer_reviews (title, content, thumbnail_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
     )
-      .bind(title, content, thumbnailUrl, now, now)
+      .bind(title, content, thumbnailUrl, null, "approved", now, now)
       .run();
 
     const id = result.meta.last_row_id;
@@ -623,12 +727,13 @@ async function handleUpdatePost(request: Request, env: Env, id: number): Promise
   const finalTitle = title ?? existing.title;
   const finalContent = content ?? existing.content;
   const finalThumb = body.thumbnail_url !== undefined ? (body.thumbnail_url ? String(body.thumbnail_url) : null) : existing.thumbnail_url;
+  const finalStatus = body.status === "pending" || body.status === "approved" ? body.status : (existing as Post & { status?: string }).status ?? "pending";
   const now = new Date().toISOString();
 
   await env.DB.prepare(
-    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, updated_at = ? WHERE id = ?"
+    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, status = ?, updated_at = ? WHERE id = ?"
   )
-    .bind(finalTitle, finalContent, finalThumb, now, id)
+    .bind(finalTitle, finalContent, finalThumb, finalStatus, now, id)
     .run();
 
   const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();

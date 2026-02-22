@@ -4,7 +4,12 @@ import Layout from '../../layouts/Layout.astro';
 
 <Layout title="고객 후기 - 올라포토" headerOpaque>
   <div class="mx-auto max-w-6xl px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-10 sm:px-6 sm:pt-24 sm:pb-16">
-    <h1 class="mb-8 text-2xl font-bold sm:mb-10 sm:text-3xl">고객 후기</h1>
+    <div class="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-2xl font-bold sm:text-3xl">고객 후기</h1>
+      <a href="/reviews/new" class="cursor-pointer shrink-0 rounded-lg bg-red-600 px-5 py-2.5 text-center font-medium text-white hover:bg-red-700 sm:py-2">
+        후기 등록
+      </a>
+    </div>
     <div id="reviews-grid" class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
       <div class="animate-pulse rounded-xl border border-gray-200 bg-white overflow-hidden"><div class="aspect-video bg-gray-200" /><div class="p-4 space-y-2"><div class="h-4 bg-gray-200 rounded w-3/4" /><div class="h-3 bg-gray-200 rounded w-full" /><div class="h-3 bg-gray-200 rounded w-1/2" /></div></div>
@@ -63,6 +68,7 @@ import Layout from '../../layouts/Layout.astro';
           ${thumb}
           <div class="flex min-h-0 flex-1 flex-col p-4">
             <h3 class="shrink-0 break-words text-lg font-bold line-clamp-2">${escapeHtml(post.title)}</h3>
+            ${post.author_name ? `<p class="mt-1 text-xs text-gray-500">${escapeHtml(post.author_name)}</p>` : ''}
             <div class="flex flex-1 items-center py-3">
               <p class="line-clamp-2 w-full break-words text-sm text-gray-500">${escapeHtml(desc)}</p>
             </div>

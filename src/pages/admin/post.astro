@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="고객 후기 상세 - 관리자" headerOpaque hideFooter>
+  <Fragment slot="head">
+    <script src="https://unpkg.com/dompurify@3.0.9/dist/purify.min.js"></script>
+  </Fragment>
+  <article class="mx-auto max-w-3xl px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-8 sm:px-6 sm:pt-24 sm:pb-12">
+    <div id="post-loading" class="py-16 text-center text-gray-500">로딩 중...</div>
+    <div id="post-content" class="hidden">
+      <div class="mb-6 flex flex-wrap items-center gap-3">
+        <a href="/admin" class="text-gray-600 hover:text-gray-900">← 목록으로</a>
+        <span id="post-status-badge" class="hidden rounded px-2 py-0.5 text-xs font-medium"></span>
+        <span id="post-actions" class="ml-auto flex gap-2"></span>
+      </div>
+      <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <header class="border-b border-gray-200 px-6 py-6 sm:px-8 sm:py-8">
+          <h1 id="post-title" class="text-2xl font-bold sm:text-3xl"></h1>
+          <p id="post-date" class="mt-2 text-sm text-gray-500"></p>
+        </header>
+        <div class="px-6 py-6 sm:px-8 sm:py-8">
+          <div id="post-thumbnail" class="mb-6 hidden">
+            <img id="post-thumb-img" src="" alt="" class="aspect-video w-full rounded-lg object-cover" />
+          </div>
+          <div id="post-body" class="post-body"></div>
+        </div>
+      </div>
+    </div>
+    <div id="post-error" class="hidden py-16 text-center">
+      <p class="text-red-600">후기를 찾을 수 없습니다.</p>
+      <a href="/admin" class="mt-4 inline-block text-blue-600 hover:underline">목록으로</a>
+    </div>
+  </article>
+</Layout>
+
+<script>
+  import { fetchPostForAdmin, updatePost, deletePost } from '../../lib/api';
+
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id') || '0', 10);
+
+  const loadingEl = document.getElementById('post-loading')!;
+  const contentEl = document.getElementById('post-content')!;
+  const errorEl = document.getElementById('post-error')!;
+  const statusBadgeEl = document.getElementById('post-status-badge')!;
+  const postActionsEl = document.getElementById('post-actions')!;
+
+  async function load() {
+    if (!id) {
+      loadingEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const post = await fetchPostForAdmin(id);
+      if (!post) {
+        loadingEl.classList.add('hidden');
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+
+      (document.getElementById('post-title') as HTMLElement).textContent = post.title;
+      (document.getElementById('post-date') as HTMLElement).textContent = new Date(post.created_at).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      if (post.status) {
+        statusBadgeEl.classList.remove('hidden');
+        statusBadgeEl.textContent = post.status === 'approved' ? '승인' : '대기';
+        statusBadgeEl.className = post.status === 'approved'
+          ? 'rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800'
+          : 'rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800';
+      }
+
+      postActionsEl.innerHTML = '';
+      if (post.status === 'pending') {
+        const approveBtn = document.createElement('button');
+        approveBtn.type = 'button';
+        approveBtn.className = 'cursor-pointer rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700';
+        approveBtn.textContent = '승인';
+        approveBtn.addEventListener('click', async () => {
+          if (!confirm('정말 승인하시겠습니까?')) return;
+          approveBtn.setAttribute('disabled', 'disabled');
+          try {
+            await updatePost(id, { status: 'approved' });
+            window.location.href = '/admin';
+          } catch (e) {
+            alert((e as Error).message);
+            approveBtn.removeAttribute('disabled');
+          }
+        });
+        postActionsEl.appendChild(approveBtn);
+      } else if (post.status === 'approved') {
+        const revertBtn = document.createElement('button');
+        revertBtn.type = 'button';
+        revertBtn.className = 'cursor-pointer rounded bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-200';
+        revertBtn.textContent = '승인 되돌리기';
+        revertBtn.addEventListener('click', async () => {
+          if (!confirm('승인을 되돌리고 대기 상태로 변경하시겠습니까?')) return;
+          revertBtn.setAttribute('disabled', 'disabled');
+          try {
+            await updatePost(id, { status: 'pending' });
+            window.location.href = '/admin';
+          } catch (e) {
+            alert((e as Error).message);
+            revertBtn.removeAttribute('disabled');
+          }
+        });
+        postActionsEl.appendChild(revertBtn);
+      }
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'cursor-pointer rounded bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200';
+      deleteBtn.textContent = '삭제';
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        try {
+          await deletePost(id);
+          window.location.href = '/admin';
+        } catch (e) {
+          alert((e as Error).message);
+        }
+      });
+      postActionsEl.appendChild(deleteBtn);
+
+      const thumbEl = document.getElementById('post-thumbnail')!;
+      const thumbImg = document.getElementById('post-thumb-img') as HTMLImageElement;
+      if (post.thumbnail_url) {
+        thumbImg.src = post.thumbnail_url;
+        thumbImg.alt = post.title;
+        thumbEl.classList.remove('hidden');
+      } else {
+        thumbEl.classList.add('hidden');
+      }
+
+      const bodyEl = document.getElementById('post-body')!;
+      if (post.content) {
+        const isHtml = post.content.trim().startsWith('<');
+        const raw = isHtml ? post.content : post.content.replace(/\n/g, '<br />');
+        const DOMPurify = (window as Window & { DOMPurify?: { sanitize: (d: string, o?: object) => string } }).DOMPurify;
+        bodyEl.innerHTML = DOMPurify ? DOMPurify.sanitize(raw, { ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'blockquote', 'pre', 'code', 'img', 'figure', 'figcaption'], ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'width', 'height', 'class'], ADD_DATA_URI_TAGS: ['img'] }) : raw;
+        bodyEl.classList.remove('hidden');
+      } else {
+        bodyEl.classList.add('hidden');
+      }
+
+      document.title = `${post.title} - 고객 후기 관리`;
+    } catch (e) {
+      loadingEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  load();
+</script>

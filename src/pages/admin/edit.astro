@@ -27,6 +27,13 @@ import Layout from '../../layouts/Layout.astro';
         <trix-editor input="content" class="trix-content mt-1 min-h-[400px] rounded-lg border border-gray-300 bg-white px-3 py-2"></trix-editor>
       </div>
       <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">상태</label>
+        <select id="status" name="status" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2">
+          <option value="pending">대기</option>
+          <option value="approved">승인 (노출)</option>
+        </select>
+      </div>
+      <div>
         <label class="block text-sm font-medium text-gray-700">썸네일 이미지</label>
         <input
           type="file"
@@ -42,11 +49,11 @@ import Layout from '../../layouts/Layout.astro';
       <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
         <button
           type="submit"
-          class="rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 sm:py-2"
+          class="cursor-pointer rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 sm:py-2"
         >
           저장
         </button>
-        <a href="/admin" class="rounded-lg border border-gray-300 px-6 py-2.5 text-center font-medium hover:bg-gray-50 sm:py-2">
+        <a href="/admin" class="cursor-pointer rounded-lg border border-gray-300 px-6 py-2.5 text-center font-medium hover:bg-gray-50 sm:py-2">
           취소
         </a>
       </div>
@@ -55,7 +62,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { fetchPost, updatePost, uploadImage } from '../../lib/api';
+  import { fetchPostForAdmin, updatePost, uploadImage } from '../../lib/api';
 
   const form = document.getElementById('post-form') as HTMLFormElement;
   const thumbInput = document.getElementById('thumbnail') as HTMLInputElement;
@@ -86,7 +93,7 @@ import Layout from '../../layouts/Layout.astro';
   });
 
   async function load() {
-    const post = await fetchPost(id);
+    const post = await fetchPostForAdmin(id);
     if (!post) {
       alert('글을 찾을 수 없습니다.');
       window.location.href = '/admin';
@@ -94,6 +101,8 @@ import Layout from '../../layouts/Layout.astro';
     }
     (form.querySelector('#post-id') as HTMLInputElement).value = String(id);
     (form.querySelector('#title') as HTMLInputElement).value = post.title;
+    const statusEl = document.getElementById('status') as HTMLSelectElement | null;
+    if (statusEl && post.status) statusEl.value = post.status;
     const trixEditor = form.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
     if (trixEditor?.editor && post.content) {
       trixEditor.editor.loadHTML(post.content);
@@ -139,11 +148,13 @@ import Layout from '../../layouts/Layout.astro';
       }
     }
 
+    const status = (document.getElementById('status') as HTMLSelectElement | null)?.value as 'pending' | 'approved' | undefined;
     try {
       await updatePost(id, {
         title: title || '',
         content,
         thumbnail_url: thumbnailUrl !== undefined ? thumbnailUrl : undefined,
+        status: status || undefined,
       });
       window.location.href = '/admin';
     } catch (err) {
