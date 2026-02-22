@@ -43,12 +43,26 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { submitReview } from '../../lib/api';
+  import { submitReview, uploadReviewImage } from '../../lib/api';
 
   const form = document.getElementById('review-form') as HTMLFormElement;
   const formMessage = document.getElementById('review-form-message')!;
   const submitBtn = document.getElementById('review-submit')!;
   const contentInput = document.getElementById('review-content') as HTMLInputElement;
+
+  // Trix 에디터에 이미지 붙여넣기/첨부 시 R2 업로드 후 URL로 치환
+  document.addEventListener('trix-attachment-add', async (e: Event) => {
+    const attachment = (e as CustomEvent & { attachment: { file?: File; setAttributes: (a: { url: string }) => void; remove: () => void } }).attachment;
+    if (!attachment.file) return;
+    try {
+      const result = await uploadReviewImage(attachment.file);
+      attachment.setAttributes({ url: result.url });
+    } catch (err) {
+      console.error('이미지 업로드 실패:', err);
+      attachment.remove();
+      alert((err as Error).message || '이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    }
+  });
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();

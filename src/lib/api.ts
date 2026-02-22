@@ -228,6 +228,22 @@ export async function uploadImage(file: File): Promise<UploadResult> {
   return data;
 }
 
+/** 고객 후기 본문 이미지 업로드 (로그인 없음, POST /api/reviews/upload) */
+export async function uploadReviewImage(file: File): Promise<UploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE}/api/reviews/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "이미지 업로드에 실패했습니다.");
+  }
+  const data = (await res.json()) as UploadResult;
+  return data;
+}
+
 export async function deleteImage(key: string): Promise<void> {
   const res = await fetch(`${ADMIN_API_BASE}/api/images/${key}`, {
     method: "DELETE",

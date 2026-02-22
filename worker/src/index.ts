@@ -184,6 +184,11 @@ export default {
       return handleSubmitReview(request, env);
     }
 
+    // POST /api/reviews/upload - 고객 후기 본문 이미지 업로드 (로그인 없음)
+    if (url.pathname === "/api/reviews/upload" && request.method === "POST") {
+      return handleReviewImageUpload(request, env);
+    }
+
     const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
 
     // POST /api/upload - 이미지 업로드 (관리자 전용)
@@ -639,6 +644,31 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
     }
     return errorResponse("Failed to submit review", 500, request);
   }
+}
+
+/** 고객 후기 본문 이미지 업로드 (로그인 없음, R2에 저장 후 URL 반환) */
+async function handleReviewImageUpload(request: Request, env: Env): Promise<Response> {
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!contentType.startsWith("multipart/form-data")) {
+    return errorResponse("Expected multipart/form-data", 400, request);
+  }
+  const formData = await request.formData();
+  const file = formData.get("file") as File | null;
+  if (!file) return errorResponse("No file provided", 400, request);
+  const sizeLimit = 5 * 1024 * 1024; // 5MB
+  if (file.size > sizeLimit) return errorResponse("File too large (max 5MB)", 400, request);
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  if (!allowedTypes.includes(file.type)) {
+    return errorResponse("Invalid file type (allowed: jpeg, png, gif, webp)", 400, request);
+  }
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "jpg");
+  const key = `reviews/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+  await env.BUCKET.put(key, file.stream(), {
+    httpMetadata: { contentType: file.type },
+  });
+  const baseUrl = new URL(request.url).origin.replace(/^https?:\/\//, "");
+  const imageUrl = `https://${baseUrl}/api/images/${key}`;
+  return jsonResponse({ url: imageUrl, key }, 200, request);
 }
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {
