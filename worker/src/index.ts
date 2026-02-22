@@ -403,7 +403,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
   }
 
   const key = env.YOUTUBE_API_KEY;
-  if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured" }, 200, request);
+  if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured", cacheExpiresAt: null }, 200, request);
   try {
     const preferredIds = YOUTUBE_LONG_ORDER.join(",");
     const preferredUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${preferredIds}&key=${key}`;
@@ -422,17 +422,17 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("따라해")}&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
       return errorResponse("YouTube search failed", searchRes.status, request);
     }
     const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
     const searchIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
-    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
+    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
 
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${searchIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [] }, 200, request);
+      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
       return errorResponse("YouTube API error", detailsRes.status, request);
     }
     const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
