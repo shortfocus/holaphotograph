@@ -179,6 +179,11 @@ export default {
       return handleLectureSignup(request, env);
     }
 
+    // GET /api/reviews - 고객 후기 목록 (승인된 것만, 공개용)
+    if (url.pathname === "/api/reviews" && request.method === "GET") {
+      return handleListApprovedReviews(request, env);
+    }
+
     // POST /api/reviews - 고객 후기 제출 (로그인 없음, pending 저장)
     if (url.pathname === "/api/reviews" && request.method === "POST") {
       return handleSubmitReview(request, env);
@@ -669,6 +674,22 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
   const baseUrl = new URL(request.url).origin.replace(/^https?:\/\//, "");
   const imageUrl = `https://${baseUrl}/api/images/${key}`;
   return jsonResponse({ url: imageUrl, key }, 200, request);
+}
+
+/** 고객 후기 목록 (승인된 것만) - 공개 페이지 전용 */
+async function handleListApprovedReviews(request: Request, env: Env): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE status = ? ORDER BY created_at DESC"
+  )
+    .bind("approved")
+    .all<Post>();
+  const origin = new URL(request.url).origin;
+  const posts = results.map((p) => ({
+    ...p,
+    thumbnail_url: normalizeImageUrl(p.thumbnail_url, origin),
+    content: rewriteImageUrlsInHtml(p.content ?? "", origin),
+  }));
+  return jsonResponse({ posts }, 200, request);
 }
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {

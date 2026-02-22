@@ -32,6 +32,14 @@ export async function fetchPosts(): Promise<Post[]> {
   return data.posts ?? [];
 }
 
+/** 고객 후기 목록 (승인된 것만) - /reviews 페이지용 */
+export async function fetchApprovedReviews(): Promise<Post[]> {
+  const res = await fetch(`${API_BASE}/api/reviews`);
+  if (!res.ok) throw new Error("Failed to fetch reviews");
+  const data = (await res.json()) as { posts?: Post[] };
+  return data.posts ?? [];
+}
+
 /** 관리자용: 전체 목록 (pending 포함, credentials 필요) */
 export async function fetchPostsForAdmin(): Promise<Post[]> {
   const res = await fetch(`${ADMIN_API_BASE}/api/posts`, { credentials: "include" });
