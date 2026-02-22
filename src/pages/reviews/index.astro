@@ -31,29 +31,35 @@ import Layout from '../../layouts/Layout.astro';
       .reviews-board .trix-content:focus-within { border-color: #a8a29e !important; outline: none; }
       .reviews-modal-backdrop { background: rgba(0,0,0,0.5); }
       .reviews-modal-content { max-height: 85vh; overflow: auto; }
-      .reviews-tab { font-weight: 600; cursor: pointer; transition: background-color 0.2s, color 0.2s; border-bottom: 3px solid transparent; margin-bottom: -1px; }
-      /* 탭 색상: 스카이블루 + 세이지 파스텔 */
-      .reviews-tab-snap { color: #1e40af; background: #e0f2fe; }
-      .reviews-tab-snap:hover { background: #bae6fd; color: #1e3a8a; }
-      .reviews-tab-snap[aria-selected="true"] { background: #7dd3fc; color: #1e3a8a; border-bottom-color: transparent; }
-      .reviews-tab-lecture { color: #065f46; background: #d1fae5; }
-      .reviews-tab-lecture:hover { background: #a7f3d0; color: #064e3b; }
-      .reviews-tab-lecture[aria-selected="true"] { background: #34d399; color: #064e3b; border-bottom-color: transparent; }
+      .reviews-tab { font-weight: 600; cursor: pointer; transition: background-color 0.2s, color 0.2s, border-color 0.2s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+      /* inactive: 그레이로 구분 */
+      .reviews-tab[aria-selected="false"] { background: #e5e7eb; color: #6b7280; }
+      .reviews-tab[aria-selected="false"]:hover { background: #d1d5db; color: #4b5563; }
+      /* active: 스카이블루 + 세이지 파스텔 */
+      .reviews-tab-snap[aria-selected="true"] { background: #7dd3fc; color: #1e3a8a; }
+      .reviews-tab-lecture[aria-selected="true"] { background: #34d399; color: #064e3b; }
+      /* inactive 탭: 하단 보더만 활성 탭 색상 */
+      .reviews-tablist--snap .reviews-tab { border-bottom-color: #0284c7; }
+      .reviews-tablist--lecture .reviews-tab { border-bottom-color: #059669; }
+      /* active 탭: 하단 보더 제거, 좌·상·우만 활성 색상 + 보더 색상 shadow */
+      .reviews-tablist--snap .reviews-tab-snap[aria-selected="true"] { border-left: 2px solid #0284c7; border-top: 2px solid #0284c7; border-right: 2px solid #0284c7; border-bottom-color: transparent; box-shadow: 0 0 14px rgba(2, 132, 199, 0.45); }
+      .reviews-tablist--lecture .reviews-tab-lecture[aria-selected="true"] { border-left: 2px solid #059669; border-top: 2px solid #059669; border-right: 2px solid #059669; border-bottom-color: transparent; box-shadow: 0 0 14px rgba(5, 150, 105, 0.45); }
       .reviews-tablist { border-bottom: 1px solid #e5e7eb; }
-      .reviews-panel-snap { border-top: none; }
-      .reviews-panel-lecture { border-top: none; }
+      /* 패널: 노출 중일 때 좌·하·우 보더를 해당 탭 색상으로 + 보더 색상 shadow */
+      .reviews-panel-snap:not(.hidden) { border-left: 2px solid #0284c7; border-right: 2px solid #0284c7; border-bottom: 2px solid #0284c7; border-top: none; box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35); }
+      .reviews-panel-lecture:not(.hidden) { border-left: 2px solid #059669; border-right: 2px solid #059669; border-bottom: 2px solid #059669; border-top: none; box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35); }
     </style>
   </Fragment>
   <div class="padlet-board px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20 reviews-board">
     <div class="relative mx-auto max-w-6xl">
       <!-- 탭: 스냅 촬영 후기 | 강의 수강 후기 -->
-      <div class="reviews-tablist flex overflow-hidden rounded-t-lg bg-stone-200 shadow sm:mb-0" role="tablist">
-        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기</button>
-        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
+      <div id="reviews-tablist" class="reviews-tablist reviews-tablist--snap flex overflow-hidden rounded-t-lg bg-stone-200 shadow sm:mb-0" role="tablist">
+        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기</button>
+        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
       </div>
 
-      <!-- 탭 1: 스냅 촬영 후기 (구성: 고객 후기 등록 | 고객 후기) -->
-      <div id="panel-snap" class="reviews-panel-snap hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
+      <!-- 탭 1: 스냅 촬영 후기 (기본 노출) -->
+      <div id="panel-snap" class="reviews-panel-snap rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <section>
@@ -96,8 +102,8 @@ import Layout from '../../layouts/Layout.astro';
         </div>
       </div>
 
-      <!-- 탭 2: 강의 수강 후기 (고객 후기 등록 + 고객 후기) -->
-      <div id="panel-lecture" class="reviews-panel-lecture rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
+      <!-- 탭 2: 강의 수강 후기 -->
+      <div id="panel-lecture" class="reviews-panel-lecture hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <!-- 두 열: 고객 후기 등록 | 고객 후기 -->
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -200,17 +206,22 @@ import Layout from '../../layouts/Layout.astro';
   const panelSnap = document.getElementById('panel-snap')!;
   const panelLecture = document.getElementById('panel-lecture')!;
 
+  const tablist = document.getElementById('reviews-tablist')!;
   tabSnap.addEventListener('click', () => {
     tabSnap.setAttribute('aria-selected', 'true');
     tabLecture.setAttribute('aria-selected', 'false');
     panelSnap.classList.remove('hidden');
     panelLecture.classList.add('hidden');
+    tablist.classList.remove('reviews-tablist--lecture');
+    tablist.classList.add('reviews-tablist--snap');
   });
   tabLecture.addEventListener('click', () => {
     tabLecture.setAttribute('aria-selected', 'true');
     tabSnap.setAttribute('aria-selected', 'false');
     panelLecture.classList.remove('hidden');
     panelSnap.classList.add('hidden');
+    tablist.classList.remove('reviews-tablist--snap');
+    tablist.classList.add('reviews-tablist--lecture');
   });
 
   function stripHtml(html: string): string {
