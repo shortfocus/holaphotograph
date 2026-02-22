@@ -4,8 +4,8 @@ import sanitizeHtml from "sanitize-html";
 export interface Env {
   DB: D1Database;
   BUCKET: R2Bucket;
-  /** Rate limiting용 KV (POST /api/reviews, /api/reviews/upload) */
-  RATE_LIMIT_KV?: KVNamespace;
+  /** KV: rate limiting(후기/이미지 업로드) + YouTube API 캐시 */
+  APP_KV?: KVNamespace;
   /** 허용 이메일 (쉼표 구분). 비어있으면 로컬 개발 모드로 모든 요청 허용 */
   ALLOWED_EMAILS?: string;
   /** YouTube Data API v3 키 */
@@ -89,7 +89,7 @@ async function checkRateLimit(
   maxRequests: number,
   windowSeconds: number
 ): Promise<Response | null> {
-  const kv = env.RATE_LIMIT_KV;
+  const kv = env.APP_KV;
   if (!kv) return null;
 
   const ip = getClientIp(request);
@@ -500,19 +500,18 @@ function buildVideoItem(it: { id?: string; snippet?: { title?: string; published
   };
 }
 
-const YOUTUBE_CACHE_KEY = "https://holaphotograph-api/youtube-latest-cache-v2";
+const YOUTUBE_CACHE_KV_KEY = "ytcache:latest";
 const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
 
 async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
-  const cache = (caches as unknown as { default: Cache }).default;
-  const cacheReq = new Request(YOUTUBE_CACHE_KEY);
-  const cached = await cache.match(cacheReq);
-  if (cached) {
-    const expiresAt = cached.headers.get("X-Cache-Expires-At") || new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString();
-    const body = (await cached.json()) as { videos?: unknown[]; shorts?: unknown[]; error?: string; cacheExpiresAt?: string };
-    body.cacheExpiresAt = expiresAt;
-    const cors = getCorsHeaders(request);
-    return new Response(JSON.stringify(body), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+  const kv = env.APP_KV;
+  if (kv) {
+    const raw = await kv.get(YOUTUBE_CACHE_KV_KEY);
+    if (raw) {
+      const body = JSON.parse(raw) as { videos?: unknown[]; shorts?: unknown[]; error?: string; cacheExpiresAt?: string | null };
+      const cors = getCorsHeaders(request);
+      return new Response(JSON.stringify(body), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+    }
   }
 
   const key = env.YOUTUBE_API_KEY;
@@ -570,13 +569,11 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const shortsApiSucceeded = true;
 
     const expiresAt = shortsApiSucceeded ? new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString() : null;
-    const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5), cacheExpiresAt: expiresAt }, 200, request);
-    if (shortsApiSucceeded && expiresAt) {
-      const responseToCache = response.clone();
-      responseToCache.headers.set("Cache-Control", `public, max-age=${YOUTUBE_CACHE_TTL_SECONDS}`);
-      await cache.put(cacheReq, responseToCache);
+    const body = { videos, shorts: shortsList.slice(0, 5), cacheExpiresAt: expiresAt };
+    if (kv && shortsApiSucceeded && expiresAt) {
+      await kv.put(YOUTUBE_CACHE_KV_KEY, JSON.stringify(body), { expirationTtl: YOUTUBE_CACHE_TTL_SECONDS });
     }
-    return response;
+    return jsonResponse(body, 200, request);
   } catch (err) {
     console.error("youtube-latest error:", err);
     return errorResponse("YouTube fetch failed", 502, request);
