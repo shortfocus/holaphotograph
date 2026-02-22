@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/inject-turnstile-env.cjs && astro build",
     "preview": "astro preview",
     "dev:worker": "cd worker && npm run dev"
   },
