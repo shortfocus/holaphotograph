@@ -710,6 +710,19 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   }
 }
 
+/** 업로드 파일 앞 12바이트가 허용 이미지 매직 바이트인지 검사 (Content-Type/확장자 조작 방지) */
+async function isAllowedImageMagicBytes(file: File): Promise<boolean> {
+  const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  if (header.length < 4) return false;
+  const eq = (a: Uint8Array, offset: number, b: number[]) =>
+    b.every((v, i) => header[offset + i] === v);
+  if (eq(header, 0, [0xff, 0xd8, 0xff])) return true; // JPEG
+  if (eq(header, 0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return true; // PNG
+  if (header.length >= 6 && eq(header, 0, [0x47, 0x49, 0x46, 0x38]) && (header[5] === 0x37 || header[5] === 0x39) && header[6] === 0x61) return true; // GIF87a / GIF89a
+  if (header.length >= 12 && eq(header, 0, [0x52, 0x49, 0x46, 0x46]) && eq(header, 8, [0x57, 0x45, 0x42, 0x50])) return true; // WebP (RIFF....WEBP)
+  return false;
+}
+
 /** 고객 후기 본문 이미지 업로드 (로그인 없음, R2에 저장 후 URL 반환) */
 async function handleReviewImageUpload(request: Request, env: Env): Promise<Response> {
   const rateLimitRes = await checkRateLimit(env, request, "reviews_upload", 5, 60);
@@ -727,6 +740,9 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
     return errorResponse("Invalid file type (allowed: jpeg, png, gif, webp)", 400, request);
+  }
+  if (!(await isAllowedImageMagicBytes(file))) {
+    return errorResponse("Invalid file: not a valid image (jpeg, png, gif, webp)", 400, request);
   }
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "jpg");
   const key = `reviews/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
