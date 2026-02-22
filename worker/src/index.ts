@@ -656,7 +656,7 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
 async function handleSubmitReview(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return errorResponse("Method not allowed", 405, request);
 
-  const rateLimitRes = await checkRateLimit(env, request, "reviews", 5, 60);
+  const rateLimitRes = await checkRateLimit(env, request, "reviews", 3, 60);
   if (rateLimitRes) return rateLimitRes;
 
   const contentType = request.headers.get("Content-Type") || "";
@@ -712,7 +712,7 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
 
 /** 고객 후기 본문 이미지 업로드 (로그인 없음, R2에 저장 후 URL 반환) */
 async function handleReviewImageUpload(request: Request, env: Env): Promise<Response> {
-  const rateLimitRes = await checkRateLimit(env, request, "reviews_upload", 10, 60);
+  const rateLimitRes = await checkRateLimit(env, request, "reviews_upload", 5, 60);
   if (rateLimitRes) return rateLimitRes;
 
   const contentType = request.headers.get("Content-Type") || "";
