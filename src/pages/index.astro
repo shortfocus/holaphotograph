@@ -781,23 +781,18 @@ import Layout from "../layouts/Layout.astro";
       const videos = youtubeRes.videos || [];
       const videosSorted = sortByPreferredOrder(videos, YOUTUBE_LONG_ORDER);
       const shorts = youtubeRes.shorts || [];
-      const youtubeError = youtubeRes.error;
 
       renderYoutubeSection(
         youtubeLongGrid,
         videosSorted,
-        youtubeError
-          ? "유튜브 API 키를 설정해주세요."
-          : "등록된 롱폼 영상이 없습니다.",
+        "데이터 준비 중입니다.",
         "유튜브 보기 →",
       );
       setTimeout(() => {
         renderYoutubeSection(
           youtubeShortsGrid,
           shorts,
-          youtubeError
-            ? "유튜브 API 키를 설정해주세요."
-            : "등록된 Shorts가 없습니다.",
+          "데이터 준비 중입니다.",
           "Shorts 보기 →",
           true,
         );
