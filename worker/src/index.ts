@@ -394,7 +394,12 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
   const cache = caches.default;
   const cacheReq = new Request(YOUTUBE_CACHE_KEY);
   const cached = await cache.match(cacheReq);
-  if (cached) return cached;
+  if (cached) {
+    const expiresAt = cached.headers.get("X-Cache-Expires-At") || new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString();
+    const headers = new Headers(cached.headers);
+    headers.set("X-Cache-Expires-At", expiresAt);
+    return new Response(cached.body, { status: cached.status, statusText: cached.statusText, headers });
+  }
 
   const key = env.YOUTUBE_API_KEY;
   if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured" }, 200, request);
