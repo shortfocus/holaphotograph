@@ -78,7 +78,8 @@ function getClientIp(request: Request): string {
   );
 }
 
-/** Rate limit: N초 동안 M회 초과 시 429. KV 없으면 통과. keyPrefix별로 별도 제한. */
+/** Rate limit: N초(고정 윈도우) 동안 M회 초과 시 429. KV 없으면 통과.
+ *  분 단위 고정 키를 써서 KV 최종 일관성으로 인한 "매 요청이 null 보고 리셋" 현상 방지. */
 async function checkRateLimit(
   env: Env,
   request: Request,
@@ -90,36 +91,22 @@ async function checkRateLimit(
   if (!kv) return null;
 
   const ip = getClientIp(request);
-  const key = `rl:${keyPrefix}:${ip}`;
   const now = Math.floor(Date.now() / 1000);
-  const windowEnd = now + windowSeconds;
+  const windowId = Math.floor(now / windowSeconds);
+  const key = `rl:${keyPrefix}:${ip}:${windowId}`;
 
   const raw = await kv.get(key);
-  let count: number;
-  let currentWindowEnd: number;
+  const count = raw ? Math.max(0, parseInt(raw, 10) || 0) : 0;
 
-  if (!raw) {
-    count = 1;
-    currentWindowEnd = windowEnd;
-  } else {
-    const [c, e] = raw.split(":").map(Number);
-    if (now > e) {
-      count = 1;
-      currentWindowEnd = windowEnd;
-    } else {
-      if (c >= maxRequests) {
-        return jsonResponse(
-          { error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
-          429,
-          request
-        );
-      }
-      count = c + 1;
-      currentWindowEnd = e;
-    }
+  if (count >= maxRequests) {
+    return jsonResponse(
+      { error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
+      429,
+      request
+    );
   }
 
-  await kv.put(key, `${count}:${currentWindowEnd}`, { expirationTtl: windowSeconds + 60 });
+  await kv.put(key, String(count + 1), { expirationTtl: windowSeconds + 120 });
   return null;
 }
 
