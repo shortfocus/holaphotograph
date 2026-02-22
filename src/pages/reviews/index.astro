@@ -48,6 +48,37 @@ import Layout from '../../layouts/Layout.astro';
       /* 패널: 노출 중일 때 좌·하·우 보더를 해당 탭 색상으로 + 보더 색상 shadow */
       .reviews-panel-snap:not(.hidden) { border-left: 2px solid #0284c7; border-right: 2px solid #0284c7; border-bottom: 2px solid #0284c7; border-top: none; box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35); }
       .reviews-panel-lecture:not(.hidden) { border-left: 2px solid #059669; border-right: 2px solid #059669; border-bottom: 2px solid #059669; border-top: none; box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35); }
+      /* 고객 후기 등록 접기: 기존 카드와 동일 크기, 점선 + 중앙 + 버튼 */
+      .review-add-card {
+        min-height: 12rem;
+        height: 100%;
+        border: 2px dashed #94a3b8;
+        border-radius: 0.125rem;
+        background: #fafaf9;
+        box-shadow: 2px 4px 12px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      }
+      .review-add-card:hover { background: #f5f5f4; border-color: #64748b; box-shadow: 3px 6px 18px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.1); }
+      .review-add-card .review-add-btn {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background: #e7e5e4;
+        color: #57534e;
+        font-size: 1.5rem;
+        line-height: 1;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s, color 0.2s;
+      }
+      .review-add-card:hover .review-add-btn { background: #d6d3d1; color: #44403c; }
     </style>
   </Fragment>
   <div class="padlet-board px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20 reviews-board">
@@ -58,101 +89,34 @@ import Layout from '../../layouts/Layout.astro';
         <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
       </div>
 
-      <!-- 탭 1: 스냅 촬영 후기 (기본 노출) -->
+      <!-- 탭 1: 스냅 촬영 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
       <div id="panel-snap" class="reviews-panel-snap rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <section>
-            <h2 class="mb-4 text-xl font-bold text-stone-800">고객 후기 등록</h2>
-            <div class="postit-note rounded-sm border border-stone-200 bg-white p-4 sm:min-h-80">
-              <form id="review-form-snap" class="space-y-3">
-                <div>
-                  <label for="review-author-snap" class="block text-xs font-semibold text-stone-700">성함 / 닉네임 <span class="text-red-500">*</span></label>
-                  <input type="text" id="review-author-snap" name="author_name" required maxlength="100" placeholder="이름 입력"
-                    class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
-                </div>
-                <div>
-                  <label for="review-title-snap" class="block text-xs font-semibold text-stone-700">제목 <span class="text-red-500">*</span></label>
-                  <input type="text" id="review-title-snap" name="title" required maxlength="500" placeholder="제목 입력"
-                    class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
-                </div>
-                <div>
-                  <label for="review-content-snap" class="block text-xs font-semibold text-stone-700">내용 <span class="text-red-500">*</span></label>
-                  <input id="review-content-snap" name="content" type="hidden" required />
-                  <trix-editor input="review-content-snap" class="trix-content mt-0.5 min-h-35 rounded border border-stone-300 bg-stone-50/30 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" placeholder="후기 내용"></trix-editor>
-                </div>
-                <div id="review-form-message-snap" class="hidden text-xs"></div>
-                <div class="flex gap-2 pt-1">
-                  <button type="submit" id="review-submit-snap" class="cursor-pointer rounded bg-stone-800 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50">등록</button>
-                  <button type="reset" id="review-reset-snap" class="cursor-pointer rounded border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50">비우기</button>
-                </div>
-              </form>
+        <section id="reviews-section-snap" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
+          <div class="relative z-10 min-w-0">
+            <div id="add-card-snap" class="review-add-card" role="button" tabindex="0" aria-label="고객 후기 등록">
+              <span class="review-add-btn" aria-hidden="true">➕</span>
             </div>
-          </section>
-          <section>
-            <h2 class="mb-4 text-xl font-bold text-stone-800">고객 후기</h2>
-            <div id="reviews-grid-snap" class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-              <div class="postit-note animate-pulse rotate-1 rounded-sm bg-rose-50/80 p-4"><div class="space-y-2"><div class="h-4 rounded bg-rose-200/50 w-3/4" /><div class="h-3 rounded bg-rose-200/50 w-full" /><div class="h-3 rounded bg-rose-200/50 w-1/2" /></div></div>
-              <div class="postit-note animate-pulse -rotate-2 rounded-sm bg-sky-50/80 p-4"><div class="space-y-2"><div class="h-4 rounded bg-sky-200/50 w-3/4" /><div class="h-3 rounded bg-sky-200/50 w-full" /><div class="h-3 rounded bg-sky-200/50 w-1/2" /></div></div>
-            </div>
-            <div id="reviews-empty-snap" class="hidden pt-8 text-center">
-              <p class="text-stone-500">아직 게시된 후기가 없습니다. 왼쪽에서 첫 후기를 남겨보세요.</p>
-            </div>
-          </section>
-        </div>
+          </div>
+          <div id="reviews-empty-snap" class="pointer-events-none absolute inset-0 hidden flex items-center justify-center text-center" aria-hidden="true">
+            <p class="text-stone-500">아직 게시된 후기가 없습니다. ➕ 버튼을 눌러 후기를 남겨보세요!</p>
+          </div>
+        </section>
       </div>
 
-      <!-- 탭 2: 강의 수강 후기 -->
+      <!-- 탭 2: 강의 수강 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
       <div id="panel-lecture" class="reviews-panel-lecture hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
-        <!-- 두 열: 고객 후기 등록 | 고객 후기 -->
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <!-- 왼쪽 열: 고객 후기 등록 -->
-        <section>
-          <h2 class="mb-4 text-xl font-bold text-stone-800">고객 후기 등록</h2>
-          <div class="postit-note rounded-sm border border-stone-200 bg-white p-4 sm:min-h-80">
-            <form id="review-form" class="space-y-3">
-              <div>
-                <label for="review-author" class="block text-xs font-semibold text-stone-700">성함 / 닉네임 <span class="text-red-500">*</span></label>
-                <input type="text" id="review-author" name="author_name" required maxlength="100" placeholder="이름 입력"
-                  class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
-              </div>
-              <div>
-                <label for="review-title" class="block text-xs font-semibold text-stone-700">제목 <span class="text-red-500">*</span></label>
-                <input type="text" id="review-title" name="title" required maxlength="500" placeholder="제목 입력"
-                  class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
-              </div>
-              <div>
-                <label for="review-content" class="block text-xs font-semibold text-stone-700">내용 <span class="text-red-500">*</span></label>
-                <input id="review-content" name="content" type="hidden" required />
-                <trix-editor input="review-content" class="trix-content mt-0.5 min-h-35 rounded border border-stone-300 bg-stone-50/30 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" placeholder="후기 내용"></trix-editor>
-              </div>
-              <div id="review-form-message" class="hidden text-xs"></div>
-              <div class="flex gap-2 pt-1">
-                <button type="submit" id="review-submit" class="cursor-pointer rounded bg-stone-800 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50">
-                  등록
-                </button>
-                <button type="reset" id="review-reset" class="cursor-pointer rounded border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50">
-                  비우기
-                </button>
-              </div>
-            </form>
+        <section id="reviews-section-lecture" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
+          <div class="relative z-10 min-w-0">
+            <div id="add-card-lecture" class="review-add-card" role="button" tabindex="0" aria-label="고객 후기 등록">
+              <span class="review-add-btn" aria-hidden="true">➕</span>
+            </div>
+          </div>
+          <div id="reviews-empty" class="pointer-events-none absolute inset-0 hidden flex items-center justify-center text-center" aria-hidden="true">
+            <p class="text-stone-500">아직 게시된 후기가 없습니다. ➕ 버튼을 눌러 후기를 남겨보세요!</p>
           </div>
         </section>
-
-        <!-- 오른쪽 열: 고객 후기 목록 -->
-        <section>
-          <h2 class="mb-4 text-xl font-bold text-stone-800">고객 후기</h2>
-          <div id="reviews-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-            <!-- 스켈레톤 -->
-            <div class="postit-note animate-pulse rotate-1 rounded-sm bg-rose-50/80 p-4"><div class="space-y-2"><div class="h-4 rounded bg-rose-200/50 w-3/4" /><div class="h-3 rounded bg-rose-200/50 w-full" /><div class="h-3 rounded bg-rose-200/50 w-1/2" /></div></div>
-            <div class="postit-note animate-pulse -rotate-2 rounded-sm bg-sky-50/80 p-4"><div class="space-y-2"><div class="h-4 rounded bg-sky-200/50 w-3/4" /><div class="h-3 rounded bg-sky-200/50 w-full" /><div class="h-3 rounded bg-sky-200/50 w-1/2" /></div></div>
-          </div>
-          <div id="reviews-empty" class="hidden pt-8 text-center">
-            <p class="text-stone-500">아직 게시된 후기가 없습니다. 왼쪽에서 첫 후기를 남겨보세요.</p>
-          </div>
-        </section>
-        </div>
       </div>
     </div>
   </div>
@@ -166,6 +130,39 @@ import Layout from '../../layouts/Layout.astro';
       </div>
       <p id="review-modal-meta" class="mb-4 text-sm text-stone-500"></p>
       <div id="review-modal-body" class="post-body text-stone-700 prose prose-sm max-w-none prose-img:rounded-lg"></div>
+    </div>
+  </div>
+
+  <!-- 고객 후기 등록 모달 -->
+  <div id="review-register-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 reviews-modal-backdrop" aria-hidden="true" aria-labelledby="review-register-modal-title">
+    <div class="reviews-modal-content w-full max-w-lg rounded-lg bg-white p-6 shadow-xl" role="dialog">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 id="review-register-modal-title" class="text-lg font-bold text-stone-800">고객 후기 등록</h2>
+        <button type="button" id="review-register-modal-close" class="shrink-0 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="닫기">✕</button>
+      </div>
+      <form id="review-form-modal" class="space-y-3">
+        <div>
+          <label for="review-author-modal" class="block text-xs font-semibold text-stone-700">성함 / 닉네임 <span class="text-red-500">*</span></label>
+          <input type="text" id="review-author-modal" name="author_name" required maxlength="100" placeholder="이름 입력"
+            class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
+        </div>
+        <div>
+          <label for="review-title-modal" class="block text-xs font-semibold text-stone-700">제목 <span class="text-red-500">*</span></label>
+          <input type="text" id="review-title-modal" name="title" required maxlength="500" placeholder="제목 입력"
+            class="mt-0.5 w-full rounded border border-stone-300 bg-stone-50/50 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" />
+        </div>
+        <div>
+          <label for="review-content-modal" class="block text-xs font-semibold text-stone-700">내용 <span class="text-red-500">*</span></label>
+          <input id="review-content-modal" name="content" type="hidden" required />
+          <trix-editor input="review-content-modal" class="trix-content mt-0.5 min-h-35 rounded border border-stone-300 bg-stone-50/30 px-2.5 py-1.5 text-sm text-stone-800 placeholder-stone-400 focus:border-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400" placeholder="후기 내용"></trix-editor>
+        </div>
+        <div id="review-form-message-modal" class="hidden text-xs"></div>
+        <div class="flex gap-2 pt-1">
+          <button type="submit" id="review-submit-modal" class="cursor-pointer rounded bg-stone-800 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50">등록</button>
+          <button type="reset" id="review-reset-modal" class="cursor-pointer rounded border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50">비우기</button>
+          <button type="button" id="review-register-cancel" class="cursor-pointer rounded border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50">닫기</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -184,19 +181,18 @@ import Layout from '../../layouts/Layout.astro';
 <script>
   import { fetchApprovedReviews, submitReview, uploadReviewImage, type Post } from '../../lib/api';
 
-  const grid = document.getElementById('reviews-grid')!;
+  const sectionSnap = document.getElementById('reviews-section-snap')!;
+  const sectionLecture = document.getElementById('reviews-section-lecture')!;
   const emptyEl = document.getElementById('reviews-empty')!;
-  const gridSnap = document.getElementById('reviews-grid-snap')!;
   const emptySnap = document.getElementById('reviews-empty-snap')!;
-  const form = document.getElementById('review-form') as HTMLFormElement;
-  const formMessage = document.getElementById('review-form-message')!;
-  const submitBtn = document.getElementById('review-submit')!;
-  const contentInput = document.getElementById('review-content') as HTMLInputElement;
-  const formSnap = document.getElementById('review-form-snap') as HTMLFormElement;
-  const formMessageSnap = document.getElementById('review-form-message-snap')!;
-  const submitBtnSnap = document.getElementById('review-submit-snap')!;
-  const contentInputSnap = document.getElementById('review-content-snap') as HTMLInputElement;
   const modal = document.getElementById('review-modal')!;
+  const registerModal = document.getElementById('review-register-modal')!;
+  const registerModalClose = document.getElementById('review-register-modal-close')!;
+  const registerModalTitle = document.getElementById('review-register-modal-title')!;
+  const formModal = document.getElementById('review-form-modal') as HTMLFormElement;
+  const contentInputModal = document.getElementById('review-content-modal') as HTMLInputElement;
+  const formMessageModal = document.getElementById('review-form-message-modal')!;
+  const submitBtnModal = document.getElementById('review-submit-modal')!;
   const modalTitle = document.getElementById('review-modal-title')!;
   const modalMeta = document.getElementById('review-modal-meta')!;
   const modalBody = document.getElementById('review-modal-body')!;
@@ -223,6 +219,36 @@ import Layout from '../../layouts/Layout.astro';
     tablist.classList.remove('reviews-tablist--snap');
     tablist.classList.add('reviews-tablist--lecture');
   });
+
+  const addCardSnap = document.getElementById('add-card-snap')!;
+  const addCardLecture = document.getElementById('add-card-lecture')!;
+  let currentRegisterType: 'snap' | 'lecture' = 'snap';
+
+  function openRegisterModal(type: 'snap' | 'lecture') {
+    currentRegisterType = type;
+    registerModalTitle.textContent = type === 'snap' ? '스냅 촬영 후기 등록' : '강의 수강 후기 등록';
+    registerModal.classList.remove('hidden');
+    registerModal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeRegisterModal() {
+    registerModal.classList.add('hidden');
+    registerModal.classList.remove('flex');
+    document.body.style.overflow = '';
+    formModal?.reset();
+    const trixEditor = formModal?.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
+    if (trixEditor?.editor) trixEditor.editor.loadHTML('');
+  }
+
+  addCardSnap.addEventListener('click', () => openRegisterModal('snap'));
+  addCardSnap.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRegisterModal('snap'); } });
+  addCardLecture.addEventListener('click', () => openRegisterModal('lecture'));
+  addCardLecture.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRegisterModal('lecture'); } });
+
+  registerModalClose.addEventListener('click', closeRegisterModal);
+  document.getElementById('review-register-cancel')?.addEventListener('click', closeRegisterModal);
+  registerModal.addEventListener('click', (e) => { if (e.target === registerModal) closeRegisterModal(); });
 
   function stripHtml(html: string): string {
     const div = document.createElement('div');
@@ -265,7 +291,6 @@ import Layout from '../../layouts/Layout.astro';
 
   modalClose.addEventListener('click', closeReviewModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeReviewModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeReviewModal(); });
 
   const alertModal = document.getElementById('alert-modal')!;
   const alertModalTitle = document.getElementById('alert-modal-title')!;
@@ -289,7 +314,10 @@ import Layout from '../../layouts/Layout.astro';
   alertModalClose.addEventListener('click', closeAlertModal);
   alertModal.addEventListener('click', (e) => { if (e.target === alertModal) closeAlertModal(); });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !alertModal.classList.contains('hidden')) closeAlertModal();
+    if (e.key !== 'Escape') return;
+    if (!alertModal.classList.contains('hidden')) closeAlertModal();
+    else if (!registerModal.classList.contains('hidden')) closeRegisterModal();
+    else closeReviewModal();
   });
 
   const postsById = new Map<number, Post>();
@@ -301,7 +329,7 @@ import Layout from '../../layouts/Layout.astro';
     const color = POSTIT_COLORS[index % POSTIT_COLORS.length];
     const rotation = POSTIT_ROTATIONS[index % POSTIT_ROTATIONS.length];
     return `
-      <article class="postit-note flex h-full min-h-0 cursor-pointer flex-col rounded-sm p-4 transition-transform hover:rotate-0 ${color} ${rotation}" data-id="${post.id}">
+      <article class="review-card postit-note flex h-full min-h-0 cursor-pointer flex-col rounded-sm p-4 transition-transform hover:rotate-0 ${color} ${rotation}" data-id="${post.id}">
         <h3 class="shrink-0 break-words text-lg font-bold line-clamp-2 text-stone-800">${escapeHtml(post.title)}</h3>
         ${post.author_name ? `<p class="mt-1 shrink-0 text-xs text-stone-500">${escapeHtml(maskAuthorName(post.author_name))}</p>` : ''}
         <div class="min-h-0 flex-1 py-2">
@@ -333,11 +361,11 @@ import Layout from '../../layouts/Layout.astro';
     btnEl: HTMLElement,
     formEl: HTMLFormElement | null,
     reviewType: 'snap' | 'lecture'
-  ) {
+  ): Promise<boolean> {
     const authorName = (document.getElementById(authorElId) as HTMLInputElement)?.value?.trim() ?? '';
     const title = (document.getElementById(titleElId) as HTMLInputElement)?.value?.trim() ?? '';
     const content = contentEl?.value?.trim() ?? '';
-    if (!authorName || !title || !content) return;
+    if (!authorName || !title || !content) return false;
     messageEl.classList.add('hidden');
     btnEl.setAttribute('disabled', 'disabled');
     try {
@@ -346,67 +374,63 @@ import Layout from '../../layouts/Layout.astro';
       const trixEditor = formEl?.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
       if (trixEditor?.editor) trixEditor.editor.loadHTML('');
       openAlertModal('후기 등록 완료', res.message ?? '등록되었습니다. 관리자 검토 후 보드에 게시됩니다.');
+      return true;
     } catch (err) {
       openAlertModal('등록 실패', (err as Error).message);
+      return false;
     } finally {
       btnEl.removeAttribute('disabled');
     }
   }
 
-  form?.addEventListener('submit', async (e) => {
+  formModal?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    await handleFormSubmit('review-author', 'review-title', contentInput, formMessage, submitBtn, form, 'lecture');
+    const ok = await handleFormSubmit('review-author-modal', 'review-title-modal', contentInputModal, formMessageModal, submitBtnModal, formModal, currentRegisterType);
+    if (ok) {
+      closeRegisterModal();
+      load();
+    }
   });
 
-  formSnap?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await handleFormSubmit('review-author-snap', 'review-title-snap', contentInputSnap, formMessageSnap, submitBtnSnap, formSnap, 'snap');
-  });
-
-  document.getElementById('review-reset')?.addEventListener('click', () => {
-    const trixEditor = form?.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
-    if (trixEditor?.editor) trixEditor.editor.loadHTML('');
-  });
-
-  document.getElementById('review-reset-snap')?.addEventListener('click', () => {
-    const trixEditor = formSnap?.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
+  document.getElementById('review-reset-modal')?.addEventListener('click', () => {
+    const trixEditor = formModal?.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
     if (trixEditor?.editor) trixEditor.editor.loadHTML('');
   });
 
   async function load() {
     try {
       const posts = await fetchApprovedReviews();
-      [grid, gridSnap].forEach((g) => {
-        g.querySelectorAll('.animate-pulse').forEach((el) => el.remove());
-      });
       const lecturePosts = posts.filter((p) => (p.review_type ?? 'lecture') === 'lecture');
       const snapPosts = posts.filter((p) => p.review_type === 'snap');
       emptyEl.classList.toggle('hidden', lecturePosts.length > 0);
       emptySnap.classList.toggle('hidden', snapPosts.length > 0);
+      sectionSnap.querySelectorAll('.review-card').forEach((el) => el.remove());
+      sectionLecture.querySelectorAll('.review-card').forEach((el) => el.remove());
       lecturePosts.forEach((p, i) => {
         const wrap = document.createElement('div');
         wrap.innerHTML = renderPostCard(p, i);
         const card = wrap.firstElementChild!;
-        grid.appendChild(card);
+        sectionLecture.appendChild(card);
       });
       snapPosts.forEach((p, i) => {
         const wrap = document.createElement('div');
         wrap.innerHTML = renderPostCard(p, i);
         const card = wrap.firstElementChild!;
-        gridSnap.appendChild(card);
+        sectionSnap.appendChild(card);
       });
     } catch (e) {
-      [grid, gridSnap].forEach((g) => {
-        g.querySelectorAll('.animate-pulse').forEach((el) => el.remove());
-        const errMsg = document.createElement('p');
-        errMsg.className = 'col-span-full text-center text-red-600';
-        errMsg.textContent = `고객 후기를 불러올 수 없습니다: ${(e as Error).message}`;
-        g.appendChild(errMsg);
-      });
+      sectionSnap.querySelectorAll('.review-card').forEach((el) => el.remove());
+      sectionLecture.querySelectorAll('.review-card').forEach((el) => el.remove());
+      const errMsg = document.createElement('p');
+      errMsg.className = 'col-span-2 sm:col-span-4 text-center text-red-600';
+      errMsg.style.gridColumn = '1 / -1';
+      errMsg.textContent = `고객 후기를 불러올 수 없습니다: ${(e as Error).message}`;
+      sectionSnap.appendChild(errMsg);
+      sectionLecture.appendChild(errMsg.cloneNode(true));
     }
   }
 
-  function onGridClick(e: Event) {
+  function onSectionClick(e: Event) {
     const card = (e.target as HTMLElement).closest('article[data-id]');
     if (!card) return;
     const id = parseInt(card.getAttribute('data-id') || '0', 10);
@@ -414,8 +438,8 @@ import Layout from '../../layouts/Layout.astro';
     if (post) openReviewModal(post);
   }
 
-  grid.addEventListener('click', onGridClick);
-  gridSnap.addEventListener('click', onGridClick);
+  sectionSnap.addEventListener('click', onSectionClick);
+  sectionLecture.addEventListener('click', onSectionClick);
 
   load();
 </script>
