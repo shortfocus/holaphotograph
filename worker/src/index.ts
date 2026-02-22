@@ -84,6 +84,34 @@ function rewriteImageUrlsInHtml(html: string, origin: string): string {
   );
 }
 
+/** thumbnail_url 및 content(HTML)에서 우리 R2에 저장된 이미지 키만 추출 (삭제 시 R2 정리용) */
+function extractR2KeysFromPost(post: { thumbnail_url: string | null; content: string | null }): string[] {
+  const keys: string[] = [];
+  const addKey = (urlOrPath: string) => {
+    const m = urlOrPath.match(/\/api\/images\/([^"'\s?#]+)/i);
+    if (m) {
+      try {
+        keys.push(decodeURIComponent(m[1]));
+      } catch {
+        keys.push(m[1]);
+      }
+    }
+  };
+  if (post.thumbnail_url?.trim()) addKey(post.thumbnail_url);
+  if (post.content?.trim()) {
+    const re = /\/api\/images\/([^"'\s?#]+)/gi;
+    let match;
+    while ((match = re.exec(post.content)) !== null) {
+      try {
+        keys.push(decodeURIComponent(match[1]));
+      } catch {
+        keys.push(match[1]);
+      }
+    }
+  }
+  return [...new Set(keys)];
+}
+
 /** Access가 추가하는 이메일 헤더. 허용 목록에 있으면 true */
 function isAllowedAdmin(request: Request, env: Env): boolean {
   const allowed = env.ALLOWED_EMAILS?.trim();
@@ -717,6 +745,21 @@ async function handleUpdatePost(request: Request, env: Env, id: number): Promise
 
 async function handleDeletePost(request: Request, env: Env, id: number): Promise<Response> {
   if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+  const post = await env.DB.prepare(
+    "SELECT thumbnail_url, content FROM customer_reviews WHERE id = ?"
+  )
+    .bind(id)
+    .first<{ thumbnail_url: string | null; content: string | null }>();
+  if (post) {
+    const keys = extractR2KeysFromPost(post);
+    for (const key of keys) {
+      try {
+        await env.BUCKET.delete(key);
+      } catch {
+        // R2에 없거나 실패해도 글 삭제는 진행
+      }
+    }
+  }
   const result = await env.DB.prepare("DELETE FROM customer_reviews WHERE id = ?").bind(id).run();
   if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
