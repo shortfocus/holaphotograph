@@ -14,6 +14,9 @@ const ADMIN_API_BASE = ADMIN;
 
 export type ReviewStatus = "pending" | "approved";
 
+/** review_type: 'snap' = 스냅 촬영 후기, 'lecture' = 강의 수강 후기 */
+export type ReviewType = "snap" | "lecture";
+
 export interface Post {
   id: number;
   title: string;
@@ -23,6 +26,7 @@ export interface Post {
   created_at: string;
   updated_at: string;
   status?: ReviewStatus;
+  review_type?: ReviewType;
 }
 
 export async function fetchPosts(): Promise<Post[]> {
@@ -53,6 +57,8 @@ export interface SubmitReviewBody {
   content: string;
   author_name: string;
   thumbnail_url?: string | null;
+  /** 'snap' = 스냅 촬영 후기, 'lecture' = 강의 수강 후기 (기본값) */
+  review_type?: ReviewType;
 }
 
 export interface SubmitReviewResponse {
@@ -69,6 +75,7 @@ export async function submitReview(body: SubmitReviewBody): Promise<SubmitReview
       content: body.content.trim(),
       author_name: body.author_name.trim(),
       thumbnail_url: body.thumbnail_url || null,
+      review_type: body.review_type === "snap" ? "snap" : "lecture",
     }),
   });
   const data = (await res.json()) as SubmitReviewResponse & { error?: string };
@@ -190,7 +197,7 @@ export async function createPost(body: Partial<Post>): Promise<Post> {
 
 export async function updatePost(
   id: number,
-  body: Partial<Post> & { thumbnail_url?: string | null; status?: ReviewStatus }): Promise<Post> {
+  body: Partial<Post> & { thumbnail_url?: string | null; status?: ReviewStatus; review_type?: ReviewType }): Promise<Post> {
   const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

@@ -46,6 +46,7 @@ import Layout from '../../layouts/Layout.astro';
         return;
       }
       const statusBadge = (s: string) => s === 'approved' ? '<span class="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">승인</span>' : '<span class="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">대기</span>';
+      const reviewTypeBadge = (t: string | undefined) => t === 'snap' ? '<span class="rounded bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">스냅 촬영 후기</span>' : '<span class="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">강의 수강 후기</span>';
       listEl.innerHTML = posts
         .map(
           (p: Post) => `
@@ -55,6 +56,7 @@ import Layout from '../../layouts/Layout.astro';
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="truncate font-semibold">${escapeHtml(p.title)}</h3>
+                ${reviewTypeBadge(p.review_type)}
                 ${p.status ? statusBadge(p.status) : ''}
               </div>
               <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(p.content?.slice(0, 50) || '-')}${(p.content?.length || 0) > 50 ? '...' : ''}</p>

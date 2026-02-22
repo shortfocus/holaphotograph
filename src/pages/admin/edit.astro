@@ -34,6 +34,13 @@ import Layout from '../../layouts/Layout.astro';
         </select>
       </div>
       <div>
+        <label for="review_type" class="block text-sm font-medium text-gray-700">구분</label>
+        <select id="review_type" name="review_type" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2">
+          <option value="lecture">강의 수강 후기</option>
+          <option value="snap">스냅 촬영 후기</option>
+        </select>
+      </div>
+      <div>
         <label class="block text-sm font-medium text-gray-700">썸네일 이미지</label>
         <input
           type="file"
@@ -103,6 +110,8 @@ import Layout from '../../layouts/Layout.astro';
     (form.querySelector('#title') as HTMLInputElement).value = post.title;
     const statusEl = document.getElementById('status') as HTMLSelectElement | null;
     if (statusEl && post.status) statusEl.value = post.status;
+    const reviewTypeEl = document.getElementById('review_type') as HTMLSelectElement | null;
+    if (reviewTypeEl && post.review_type) reviewTypeEl.value = post.review_type;
     const trixEditor = form.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
     if (trixEditor?.editor && post.content) {
       trixEditor.editor.loadHTML(post.content);
@@ -149,12 +158,14 @@ import Layout from '../../layouts/Layout.astro';
     }
 
     const status = (document.getElementById('status') as HTMLSelectElement | null)?.value as 'pending' | 'approved' | undefined;
+    const reviewType = (document.getElementById('review_type') as HTMLSelectElement | null)?.value as 'snap' | 'lecture' | undefined;
     try {
       await updatePost(id, {
         title: title || '',
         content,
         thumbnail_url: thumbnailUrl !== undefined ? thumbnailUrl : undefined,
         status: status || undefined,
+        review_type: reviewType || undefined,
       });
       window.location.href = '/admin';
     } catch (err) {

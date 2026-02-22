@@ -15,6 +15,7 @@ export interface Env {
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
+/** review_type: snap = 스냅 촬영 후기, lecture = 강의 수강 후기 */
 interface Post {
   id: number;
   title: string;
@@ -24,6 +25,7 @@ interface Post {
   created_at: string;
   updated_at: string;
   status?: "pending" | "approved";
+  review_type?: "snap" | "lecture";
 }
 
 /** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거. img의 data: 스킴 제거(대용량 base64 DoS·레거시 XSS 방지) */
@@ -676,6 +678,9 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   if (!authorName) return errorResponse("author_name required", 400, request);
   if (authorName.length > 100) return errorResponse("author_name too long", 400, request);
 
+  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : "lecture";
+  const reviewType = rawReviewType === "snap" ? "snap" : "lecture";
+
   if (!title) return errorResponse("title required", 400, request);
   if (!content) return errorResponse("content required", 400, request);
   if (title.length > 500) return errorResponse("title too long", 400, request);
@@ -696,9 +701,9 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   try {
     const now = new Date().toISOString();
     await env.DB.prepare(
-      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     )
-      .bind(title, content, thumbnailUrl, authorName, "pending", now, now)
+      .bind(title, content, thumbnailUrl, authorName, "pending", reviewType, now, now)
       .run();
     return jsonResponse({ success: true, message: "등록되었습니다. 승인 후 게시됩니다." }, 201, request);
   } catch (err) {
@@ -757,7 +762,7 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
 /** 고객 후기 목록 (승인된 것만) - 공개 페이지 전용 */
 async function handleListApprovedReviews(request: Request, env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE status = ? ORDER BY created_at DESC"
+    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE status = ? ORDER BY created_at DESC"
   )
     .bind("approved")
     .all<Post>();
@@ -773,8 +778,8 @@ async function handleListApprovedReviews(request: Request, env: Env): Promise<Re
 async function handleListPosts(request: Request, env: Env): Promise<Response> {
   const isAdmin = isAllowedAdmin(request, env);
   const sql = isAdmin
-    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status FROM customer_reviews ORDER BY created_at DESC"
-    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE status = ? ORDER BY created_at DESC";
+    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status, review_type FROM customer_reviews ORDER BY created_at DESC"
+    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE status = ? ORDER BY created_at DESC";
   const stmt = isAdmin
     ? env.DB.prepare(sql)
     : env.DB.prepare(sql).bind("approved");
@@ -791,8 +796,8 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
 async function handleGetPost(request: Request, env: Env, id: number): Promise<Response> {
   const isAdmin = isAllowedAdmin(request, env);
   const sql = isAdmin
-    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status FROM customer_reviews WHERE id = ?"
-    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at FROM customer_reviews WHERE id = ? AND status = ?";
+    ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status, review_type FROM customer_reviews WHERE id = ?"
+    : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE id = ? AND status = ?";
   const stmt = isAdmin ? env.DB.prepare(sql).bind(id) : env.DB.prepare(sql).bind(id, "approved");
   const post = await stmt.first<Post & { status?: string }>();
   if (!post) return errorResponse("Not found", 404, request);
@@ -816,6 +821,8 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   const title = String(body.title ?? "").trim();
   const content = String(body.content ?? "").trim();
   const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
+  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : "lecture";
+  const reviewType = rawReviewType === "snap" ? "snap" : "lecture";
 
   if (!title) return errorResponse("title required", 400, request);
   if (!content) return errorResponse("content required", 400, request);
@@ -823,9 +830,9 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     )
-      .bind(title, content, thumbnailUrl, null, "approved", now, now)
+      .bind(title, content, thumbnailUrl, null, "approved", reviewType, now, now)
       .run();
 
     const id = result.meta.last_row_id;
@@ -860,12 +867,14 @@ async function handleUpdatePost(request: Request, env: Env, id: number): Promise
   const finalContent = content ?? existing.content;
   const finalThumb = body.thumbnail_url !== undefined ? (body.thumbnail_url ? String(body.thumbnail_url) : null) : existing.thumbnail_url;
   const finalStatus = body.status === "pending" || body.status === "approved" ? body.status : (existing as Post & { status?: string }).status ?? "pending";
+  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : (existing as Post & { review_type?: string }).review_type ?? "lecture";
+  const finalReviewType = rawReviewType === "snap" ? "snap" : "lecture";
   const now = new Date().toISOString();
 
   await env.DB.prepare(
-    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, status = ?, updated_at = ? WHERE id = ?"
+    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, status = ?, review_type = ?, updated_at = ? WHERE id = ?"
   )
-    .bind(finalTitle, finalContent, finalThumb, finalStatus, now, id)
+    .bind(finalTitle, finalContent, finalThumb, finalStatus, finalReviewType, now, id)
     .run();
 
   const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();

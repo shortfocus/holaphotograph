@@ -22,6 +22,13 @@ import Layout from '../../layouts/Layout.astro';
           placeholder="예: Sony A7C 실사용 후기"
         />
       </div>
+      <div>
+        <label for="review_type" class="block text-sm font-medium text-gray-700">구분</label>
+        <select id="review_type" name="review_type" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2">
+          <option value="lecture">강의 수강 후기</option>
+          <option value="snap">스냅 촬영 후기</option>
+        </select>
+      </div>
       <div id="field-content">
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
         <input id="content" name="content" type="hidden" required />
@@ -139,11 +146,13 @@ import Layout from '../../layouts/Layout.astro';
       }
     }
 
+    const reviewType = (document.getElementById('review_type') as HTMLSelectElement | null)?.value as 'snap' | 'lecture' | undefined;
     try {
       await createPost({
         title: title || '',
         content,
         thumbnail_url: uploadResult?.url ?? null,
+        review_type: reviewType ?? 'lecture',
       });
       window.location.href = '/admin';
     } catch (err) {
