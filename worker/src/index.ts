@@ -396,9 +396,10 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
   const cached = await cache.match(cacheReq);
   if (cached) {
     const expiresAt = cached.headers.get("X-Cache-Expires-At") || new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString();
-    const headers = new Headers(cached.headers);
-    headers.set("X-Cache-Expires-At", expiresAt);
-    return new Response(cached.body, { status: cached.status, statusText: cached.statusText, headers });
+    const body = (await cached.json()) as { videos?: unknown[]; shorts?: unknown[]; error?: string; cacheExpiresAt?: string };
+    body.cacheExpiresAt = expiresAt;
+    const cors = getCorsHeaders(request);
+    return new Response(JSON.stringify(body), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
   }
 
   const key = env.YOUTUBE_API_KEY;
@@ -485,13 +486,11 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       }
     }
 
-    const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5) }, 200, request);
-    if (shortsApiSucceeded) {
-      const expiresAt = new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString();
-      response.headers.set("X-Cache-Expires-At", expiresAt);
+    const expiresAt = shortsApiSucceeded ? new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString() : null;
+    const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5), cacheExpiresAt: expiresAt }, 200, request);
+    if (shortsApiSucceeded && expiresAt) {
       const responseToCache = response.clone();
       responseToCache.headers.set("Cache-Control", `public, max-age=${YOUTUBE_CACHE_TTL_SECONDS}`);
-      responseToCache.headers.set("X-Cache-Expires-At", expiresAt);
       await cache.put(cacheReq, responseToCache);
     }
     return response;
