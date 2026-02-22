@@ -405,86 +405,56 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
   const key = env.YOUTUBE_API_KEY;
   if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured", cacheExpiresAt: null }, 200, request);
   try {
-    const preferredIds = YOUTUBE_LONG_ORDER.join(",");
-    const preferredUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${preferredIds}&key=${key}`;
-    const preferredRes = await fetch(preferredUrl);
-    const preferredVideos: YoutubeVideoItem[] = [];
-    if (preferredRes.ok) {
-      const preferredData = (await preferredRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
-      for (const vid of YOUTUBE_LONG_ORDER) {
-        const it = (preferredData.items || []).find((i) => i.id === vid);
-        if (!it) continue;
-        const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
-        if (item && !item.link.includes("/shorts/")) preferredVideos.push(item);
-      }
-    }
-
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("따라해")}&key=${key}`;
+    // 1회: 검색 (q에 OR 사용. 공식 문서엔 없으나 실사용에서 동작)
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=50&order=date&type=video&q=${encodeURIComponent("따라해 OR 후지필름")}&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
       return errorResponse("YouTube search failed", searchRes.status, request);
     }
     const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
     const searchIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
-    if (searchIds.length === 0 && preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
 
-    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${searchIds.join(",")}&key=${key}`;
+    // 2회: 상세 한 번에 (preferred + 검색 ID, 최대 50)
+    const detailsIds = [...new Set([...YOUTUBE_LONG_ORDER, ...searchIds])].slice(0, 50);
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${detailsIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
-      if (preferredVideos.length > 0) return jsonResponse({ videos: preferredVideos.slice(0, 5), shorts: [], cacheExpiresAt: null }, 200, request);
       return errorResponse("YouTube API error", detailsRes.status, request);
     }
     const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
     const items = detailsData.items || [];
     const preferredSet = new Set(YOUTUBE_LONG_ORDER);
-
+    const preferredVideos: YoutubeVideoItem[] = [];
+    for (const vid of YOUTUBE_LONG_ORDER) {
+      const it = items.find((i) => i.id === vid);
+      if (!it) continue;
+      const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
+      if (item && !item.link.includes("/shorts/")) preferredVideos.push(item);
+    }
     const restLong: YoutubeVideoItem[] = [];
+    const shortsList: YoutubeVideoItem[] = [];
     for (const it of items) {
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (!item) continue;
-      if (!item.link.includes("/shorts/")) {
+      if (item.link.includes("/shorts/")) {
+        if (SHORTS_TITLE_KEYWORD.test(item.title) && !item.title.includes("[대여]")) shortsList.push(item);
+      } else {
         const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
         if (vid && !preferredSet.has(vid) && LONG_FORM_TITLE_KEYWORD.test(item.title)) restLong.push(item);
       }
     }
-
     restLong.sort((a, b) => {
       const va = parseInt(a.viewCount ?? "0", 10) || 0;
       const vb = parseInt(b.viewCount ?? "0", 10) || 0;
       return vb - va;
     });
-
+    shortsList.sort((a, b) => {
+      const va = parseInt(a.viewCount ?? "0", 10) || 0;
+      const vb = parseInt(b.viewCount ?? "0", 10) || 0;
+      return vb - va;
+    });
     const videos = [...preferredVideos, ...restLong].slice(0, 5);
-
-    const shortsSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=25&order=date&type=video&q=${encodeURIComponent("후지필름")}&key=${key}`;
-    const shortsSearchRes = await fetch(shortsSearchUrl);
-    const shortsList: YoutubeVideoItem[] = [];
-    let shortsApiSucceeded = false;
-    if (shortsSearchRes.ok) {
-      const shortsSearchData = (await shortsSearchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
-      const shortsIds = (shortsSearchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
-      if (shortsIds.length > 0) {
-        const shortsDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${shortsIds.join(",")}&key=${key}`;
-        const shortsDetailsRes = await fetch(shortsDetailsUrl);
-        if (shortsDetailsRes.ok) {
-          shortsApiSucceeded = true;
-          const shortsDetailsData = (await shortsDetailsRes.json()) as { items?: Array<Parameters<typeof buildVideoItem>[0]> };
-          for (const it of shortsDetailsData.items || []) {
-            const item = buildVideoItem(it);
-            if (!item) continue;
-            if (item.link.includes("/shorts/") && SHORTS_TITLE_KEYWORD.test(item.title) && !item.title.includes("[대여]")) shortsList.push(item);
-          }
-          shortsList.sort((a, b) => {
-            const va = parseInt(a.viewCount ?? "0", 10) || 0;
-            const vb = parseInt(b.viewCount ?? "0", 10) || 0;
-            return vb - va;
-          });
-        }
-      } else {
-        shortsApiSucceeded = true;
-      }
-    }
+    const shortsApiSucceeded = true;
 
     const expiresAt = shortsApiSucceeded ? new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString() : null;
     const response = jsonResponse({ videos, shorts: shortsList.slice(0, 5), cacheExpiresAt: expiresAt }, 200, request);
