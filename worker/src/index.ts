@@ -24,7 +24,7 @@ interface Post {
   status?: "pending" | "approved";
 }
 
-/** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거 */
+/** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거. img의 data: 스킴 제거(대용량 base64 DoS·레거시 XSS 방지) */
 function sanitizeReviewContent(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: [
@@ -38,7 +38,7 @@ function sanitizeReviewContent(html: string): string {
       div: ["class"], span: ["class"], figure: ["class"], figcaption: ["class"],
     },
     allowedSchemes: ["http", "https"],
-    allowedSchemesByTag: { img: ["http", "https", "data"] },
+    allowedSchemesByTag: { img: ["http", "https"] },
     allowedSchemesAppliedToAttributes: ["href", "src"],
   });
 }
@@ -608,7 +608,8 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
   }
 }
 
-/** 고객 후기 제출 (로그인 없음). status = pending으로 저장, 관리자 승인 후 노출 */
+/** 고객 후기 제출 (로그인 없음). status = pending으로 저장, 관리자 승인 후 노출.
+ *  보안: 입력 길이·sanitize·thumbnail_url 화이트리스트 적용. 스팸/DoS 대비는 Cloudflare Rate Limiting 또는 Worker 내 IP별 제한 권장. */
 async function handleSubmitReview(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return errorResponse("Method not allowed", 405, request);
   const contentType = request.headers.get("Content-Type") || "";
@@ -623,7 +624,7 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   }
   const title = String(body.title ?? "").trim();
   let content = String(body.content ?? "").trim();
-  const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
+  let thumbnailUrl: string | null = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url).trim() : null;
   const authorName = body.author_name != null ? String(body.author_name).trim() : "";
   if (!authorName) return errorResponse("author_name required", 400, request);
   if (authorName.length > 100) return errorResponse("author_name too long", 400, request);
@@ -633,6 +634,17 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   if (title.length > 500) return errorResponse("title too long", 400, request);
   content = sanitizeReviewContent(content);
   if (content.length > 50000) return errorResponse("content too long", 400, request);
+
+  // thumbnail_url은 본인 업로드 이미지(/api/images/reviews/...)만 허용 (외부 URL·스킴 남용 방지)
+  if (thumbnailUrl) {
+    const origin = new URL(request.url).origin;
+    const allowedPrefix = `${origin}/api/images/reviews/`;
+    if (!thumbnailUrl.startsWith("https://") && !thumbnailUrl.startsWith("http://")) {
+      thumbnailUrl = null;
+    } else if (!thumbnailUrl.startsWith(allowedPrefix)) {
+      thumbnailUrl = null;
+    }
+  }
 
   try {
     const now = new Date().toISOString();
