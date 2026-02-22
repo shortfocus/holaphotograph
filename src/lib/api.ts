@@ -45,8 +45,6 @@ export interface SubmitReviewBody {
   content: string;
   author_name: string;
   thumbnail_url?: string | null;
-  /** Cloudflare Turnstile 응답 토큰 (봇 방지) */
-  turnstile_token?: string;
 }
 
 export interface SubmitReviewResponse {
@@ -63,7 +61,6 @@ export async function submitReview(body: SubmitReviewBody): Promise<SubmitReview
       content: body.content.trim(),
       author_name: body.author_name.trim(),
       thumbnail_url: body.thumbnail_url || null,
-      ...(body.turnstile_token ? { turnstile_token: body.turnstile_token } : {}),
     }),
   });
   const data = (await res.json()) as SubmitReviewResponse & { error?: string };

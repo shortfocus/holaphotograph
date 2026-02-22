@@ -1,17 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-
-/** 환경 변수 없으면 Cloudflare 테스트 키 사용 → 위젯 항상 표시, 로컬/개발에서 동작 확인 가능 */
-const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
-const turnstileSiteKey = (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined) ?? TURNSTILE_TEST_SITE_KEY;
-const isTurnstileLive = turnstileSiteKey !== TURNSTILE_TEST_SITE_KEY;
 ---
 
 <Layout title="후기 등록 - 올라포토" headerOpaque>
   <Fragment slot="head">
     <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css" />
     <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
-    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   </Fragment>
   <div class="mx-auto max-w-2xl px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-10 sm:px-6 sm:pt-24 sm:pb-16">
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -35,13 +29,9 @@ const isTurnstileLive = turnstileSiteKey !== TURNSTILE_TEST_SITE_KEY;
         <input id="review-content" name="content" type="hidden" required />
         <trix-editor input="review-content" class="trix-content mt-1 min-h-[420px] rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="후기 내용을 입력하세요"></trix-editor>
       </div>
-      <div class="flex flex-col gap-1" data-turnstile-mode={isTurnstileLive ? 'live' : 'test'}>
-        <span class="text-sm font-medium text-gray-700">자동 입력 방지</span>
-        <div id="turnstile-container" data-sitekey={turnstileSiteKey}></div>
-      </div>
       <div id="review-form-message" class="hidden text-sm"></div>
       <div class="flex gap-3">
-        <button type="submit" id="review-submit" disabled class="cursor-pointer rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="submit" id="review-submit" class="cursor-pointer rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
           등록하기
         </button>
         <a href="/reviews" class="cursor-pointer rounded-lg border border-gray-300 px-6 py-2.5 font-medium text-gray-700 hover:bg-gray-50">
@@ -59,58 +49,6 @@ const isTurnstileLive = turnstileSiteKey !== TURNSTILE_TEST_SITE_KEY;
   const formMessage = document.getElementById('review-form-message')!;
   const submitBtn = document.getElementById('review-submit')!;
   const contentInput = document.getElementById('review-content') as HTMLInputElement;
-  const turnstileContainer = document.getElementById('turnstile-container');
-  const turnstileSiteKeyFromDom = turnstileContainer?.dataset.sitekey;
-
-  let turnstileWidgetId: string | undefined;
-
-  function getTurnstileToken(): string | undefined {
-    const input = form?.querySelector<HTMLInputElement | HTMLTextAreaElement>('[name="cf-turnstile-response"]');
-    return input?.value?.trim() || undefined;
-  }
-
-  function isFormReady(): boolean {
-    const author = (document.getElementById('review-author') as HTMLInputElement)?.value?.trim() ?? '';
-    const title = (document.getElementById('review-title') as HTMLInputElement)?.value?.trim() ?? '';
-    const content = contentInput?.value?.trim() ?? '';
-    const token = getTurnstileToken();
-    return Boolean(author && title && content && token);
-  }
-
-  function updateSubmitState() {
-    if (isFormReady()) submitBtn.removeAttribute('disabled');
-    else submitBtn.setAttribute('disabled', 'disabled');
-  }
-
-  if (turnstileContainer && turnstileSiteKeyFromDom) {
-    const containerEl = turnstileContainer;
-    const sitekey = turnstileSiteKeyFromDom;
-    function renderTurnstile() {
-      const w = (window as unknown as { turnstile?: { render: (el: HTMLElement, opts: { sitekey: string; callback?: () => void; 'expired-callback'?: () => void }) => string } }).turnstile;
-      if (w) {
-        turnstileWidgetId = w.render(containerEl, {
-          sitekey,
-          callback: updateSubmitState,
-          'expired-callback': updateSubmitState,
-        });
-        return;
-      }
-      setTimeout(renderTurnstile, 50);
-    }
-    renderTurnstile();
-  } else {
-    turnstileWidgetId = undefined;
-  }
-
-  const authorInput = document.getElementById('review-author') as HTMLInputElement;
-  const titleInput = document.getElementById('review-title') as HTMLInputElement;
-  authorInput?.addEventListener('input', updateSubmitState);
-  authorInput?.addEventListener('change', updateSubmitState);
-  titleInput?.addEventListener('input', updateSubmitState);
-  titleInput?.addEventListener('change', updateSubmitState);
-  contentInput?.addEventListener('input', updateSubmitState);
-  contentInput?.addEventListener('change', updateSubmitState);
-  form?.addEventListener('trix-change', updateSubmitState);
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -118,31 +56,22 @@ const isTurnstileLive = turnstileSiteKey !== TURNSTILE_TEST_SITE_KEY;
     const title = (document.getElementById('review-title') as HTMLInputElement).value.trim();
     const content = contentInput?.value?.trim() ?? '';
     if (!authorName || !title || !content) return;
-    const turnstileToken = getTurnstileToken();
     formMessage.classList.add('hidden');
     submitBtn.setAttribute('disabled', 'disabled');
     try {
-      const res = await submitReview({
-        title,
-        content,
-        author_name: authorName,
-        ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
-      });
+      const res = await submitReview({ title, content, author_name: authorName });
       formMessage.textContent = res.message ?? '등록되었습니다. 승인 후 게시됩니다.';
       formMessage.classList.remove('hidden', 'text-red-600');
       formMessage.classList.add('text-green-600');
       form.reset();
       const trixEditor = form.querySelector('trix-editor') as HTMLInputElement & { editor?: { loadHTML: (html: string) => void } };
       if (trixEditor?.editor) trixEditor.editor.loadHTML('');
-      if (turnstileWidgetId != null && (window as unknown as { turnstile?: { reset: (id: string) => void } }).turnstile?.reset) {
-        (window as unknown as { turnstile: { reset: (id: string) => void } }).turnstile.reset(turnstileWidgetId);
-      }
     } catch (err) {
       formMessage.textContent = (err as Error).message;
       formMessage.classList.remove('hidden', 'text-green-600');
       formMessage.classList.add('text-red-600');
     } finally {
-      updateSubmitState();
+      submitBtn.removeAttribute('disabled');
     }
   });
 </script>

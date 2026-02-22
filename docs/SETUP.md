@@ -128,23 +128,8 @@ Pages 프로젝트 설정에서:
 
 - `PUBLIC_API_URL`: 공개 Worker URL (메인 페이지용, 예: `https://holaphotograph-api.xxx.workers.dev`)
 - `PUBLIC_ADMIN_API_URL`: (선택) 관리자 Worker URL. Access 보호된 Worker. 없으면 `PUBLIC_API_URL` 사용
-- `PUBLIC_TURNSTILE_SITE_KEY`: (선택) [Cloudflare Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile) 위젯 Site Key. 후기 등록 폼 봇 방지용. 설정 시 Worker에 시크릿 키도 필요.
 
-### 5.2 Cloudflare Turnstile (후기 등록 봇 방지)
-
-고객 후기 등록 시 봇 제출을 막으려면 Turnstile을 사용할 수 있습니다.
-
-1. [Cloudflare 대시보드](https://dash.cloudflare.com) → **Turnstile** → **Add site** → 도메인 입력 후 위젯 생성
-2. **Site Key**(공개)와 **Secret Key**(비공개) 확인
-3. **Pages** 환경 변수에 `PUBLIC_TURNSTILE_SITE_KEY` = Site Key 설정
-4. **Worker** 시크릿 설정:
-   ```bash
-   cd worker
-   npx wrangler secret put TURNSTILE_SECRET_KEY   # Secret Key 입력
-   ```
-5. 둘 다 설정된 경우에만 후기 제출 시 토큰 검증이 수행됩니다. 키를 넣지 않으면 Turnstile 없이 동작합니다.
-
-### 5.3 배포
+### 5.2 배포
 
 > 전체 배포 명령어는 [DEPLOY.md](./DEPLOY.md) 참고.
 

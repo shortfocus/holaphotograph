@@ -10,8 +10,6 @@ export interface Env {
   YOUTUBE_API_KEY?: string;
   /** 네이버 블로그 총 방문자 수 (수동 설정) */
   NAVER_BLOG_VISITORS?: string;
-  /** Cloudflare Turnstile 시크릿 키 (후기 제출 봇 방지, wrangler secret put TURNSTILE_SECRET_KEY) */
-  TURNSTILE_SECRET_KEY?: string;
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
@@ -585,29 +583,6 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   } catch {
     return errorResponse("Invalid JSON body", 400, request);
   }
-  const turnstileToken =
-    typeof body.turnstile_token === "string"
-      ? body.turnstile_token.trim()
-      : typeof (body as Record<string, unknown>)["cf-turnstile-response"] === "string"
-        ? String((body as Record<string, unknown>)["cf-turnstile-response"]).trim()
-        : "";
-  if (env.TURNSTILE_SECRET_KEY) {
-    if (!turnstileToken) return errorResponse("Turnstile verification required", 400, request);
-    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        secret: env.TURNSTILE_SECRET_KEY,
-        response: turnstileToken,
-        remoteip: request.headers.get("CF-Connecting-IP") ?? undefined,
-      }),
-    });
-    const verifyData = (await verifyRes.json()) as { success?: boolean; "error-codes"?: string[] };
-    if (!verifyData.success) {
-      return errorResponse("Verification failed. Please try again.", 400, request);
-    }
-  }
-
   const title = String(body.title ?? "").trim();
   let content = String(body.content ?? "").trim();
   const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
