@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 /** 환경 변수 없으면 Cloudflare 테스트 키 사용 → 위젯 항상 표시, 로컬/개발에서 동작 확인 가능 */
 const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
 const turnstileSiteKey = (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined) ?? TURNSTILE_TEST_SITE_KEY;
+const isTurnstileLive = turnstileSiteKey !== TURNSTILE_TEST_SITE_KEY;
 ---
 
 <Layout title="후기 등록 - 올라포토" headerOpaque>
@@ -34,7 +35,7 @@ const turnstileSiteKey = (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | 
         <input id="review-content" name="content" type="hidden" required />
         <trix-editor input="review-content" class="trix-content mt-1 min-h-[420px] rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="후기 내용을 입력하세요"></trix-editor>
       </div>
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1" data-turnstile-mode={isTurnstileLive ? 'live' : 'test'}>
         <span class="text-sm font-medium text-gray-700">자동 입력 방지</span>
         <div id="turnstile-container" data-sitekey={turnstileSiteKey}></div>
       </div>
