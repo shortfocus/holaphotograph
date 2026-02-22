@@ -48,6 +48,15 @@ npm run db:migrate
 
 ---
 
+## 2.5 Workers KV (Rate Limiting, 선택)
+
+고객 후기 제출·이미지 업로드에 IP별 요청 제한을 두려면 KV 네임스페이스를 생성하고 `worker/wrangler.toml`에 id를 넣습니다.  
+생성하지 않으면 rate limit은 적용되지 않고, API는 그대로 동작합니다.
+
+**상세 절차**: [docs/KV_SETUP.md](KV_SETUP.md)
+
+---
+
 ## 3. Worker 배포
 
 ```bash

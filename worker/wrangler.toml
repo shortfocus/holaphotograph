@@ -14,6 +14,14 @@ database_id = "97b99cdf-1193-4f3f-b67d-214bc89aa446"
 binding = "BUCKET"
 bucket_name = "camera-review-images"
 
+# Rate limiting (고객 후기 제출/이미지 업로드). 상세: docs/KV_SETUP.md
+# 프로덕션: npx wrangler kv namespace create "RATE_LIMIT"  → 나온 id로 아래 id 교체
+# 프리뷰(로컬): npx wrangler kv namespace create "RATE_LIMIT" --preview  → 나온 id로 preview_id 교체
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "bb94378fd15d4ccb85444f63c41f7fa0"
+preview_id = "f7f176a5728142329e3e568d2b0a1fde"
+
 # 허용 관리자 이메일. Worker를 Access로 보호하면 헤더로 전달됨.
 # Worker Access 제거 시 아래도 비워두면 쓰기 허용 (/admin만 Access로 보호)
 # [vars]

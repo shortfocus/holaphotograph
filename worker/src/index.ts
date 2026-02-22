@@ -4,6 +4,8 @@ import sanitizeHtml from "sanitize-html";
 export interface Env {
   DB: D1Database;
   BUCKET: R2Bucket;
+  /** Rate limiting용 KV (POST /api/reviews, /api/reviews/upload) */
+  RATE_LIMIT_KV?: KVNamespace;
   /** 허용 이메일 (쉼표 구분). 비어있으면 로컬 개발 모드로 모든 요청 허용 */
   ALLOWED_EMAILS?: string;
   /** YouTube Data API v3 키 */
@@ -65,6 +67,60 @@ function jsonResponse(data: unknown, status = 200, request?: Request) {
 
 function errorResponse(message: string, status: number, request?: Request) {
   return jsonResponse({ error: message }, status, request);
+}
+
+/** 요청 클라이언트 IP (Cloudflare 또는 헤더, 로컬 대비) */
+function getClientIp(request: Request): string {
+  return (
+    request.headers.get("CF-Connecting-IP") ||
+    request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+    "127.0.0.1"
+  );
+}
+
+/** Rate limit: N초 동안 M회 초과 시 429. KV 없으면 통과. keyPrefix별로 별도 제한. */
+async function checkRateLimit(
+  env: Env,
+  request: Request,
+  keyPrefix: string,
+  maxRequests: number,
+  windowSeconds: number
+): Promise<Response | null> {
+  const kv = env.RATE_LIMIT_KV;
+  if (!kv) return null;
+
+  const ip = getClientIp(request);
+  const key = `rl:${keyPrefix}:${ip}`;
+  const now = Math.floor(Date.now() / 1000);
+  const windowEnd = now + windowSeconds;
+
+  const raw = await kv.get(key);
+  let count: number;
+  let currentWindowEnd: number;
+
+  if (!raw) {
+    count = 1;
+    currentWindowEnd = windowEnd;
+  } else {
+    const [c, e] = raw.split(":").map(Number);
+    if (now > e) {
+      count = 1;
+      currentWindowEnd = windowEnd;
+    } else {
+      if (c >= maxRequests) {
+        return jsonResponse(
+          { error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
+          429,
+          request
+        );
+      }
+      count = c + 1;
+      currentWindowEnd = e;
+    }
+  }
+
+  await kv.put(key, `${count}:${currentWindowEnd}`, { expirationTtl: windowSeconds + 60 });
+  return null;
 }
 
 /** DB에 저장된 이미지 URL을 현재 Worker 도메인으로 바꿈 (도메인 변경 시 기존 이미지 표시용) */
@@ -609,9 +665,13 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
 }
 
 /** 고객 후기 제출 (로그인 없음). status = pending으로 저장, 관리자 승인 후 노출.
- *  보안: 입력 길이·sanitize·thumbnail_url 화이트리스트 적용. 스팸/DoS 대비는 Cloudflare Rate Limiting 또는 Worker 내 IP별 제한 권장. */
+ *  보안: 입력 길이·sanitize·thumbnail_url 화이트리스트·IP별 rate limit 적용. */
 async function handleSubmitReview(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return errorResponse("Method not allowed", 405, request);
+
+  const rateLimitRes = await checkRateLimit(env, request, "reviews", 5, 60);
+  if (rateLimitRes) return rateLimitRes;
+
   const contentType = request.headers.get("Content-Type") || "";
   if (!contentType.includes("application/json")) {
     return errorResponse("Content-Type must be application/json", 400, request);
@@ -665,6 +725,9 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
 
 /** 고객 후기 본문 이미지 업로드 (로그인 없음, R2에 저장 후 URL 반환) */
 async function handleReviewImageUpload(request: Request, env: Env): Promise<Response> {
+  const rateLimitRes = await checkRateLimit(env, request, "reviews_upload", 10, 60);
+  if (rateLimitRes) return rateLimitRes;
+
   const contentType = request.headers.get("Content-Type") || "";
   if (!contentType.startsWith("multipart/form-data")) {
     return errorResponse("Expected multipart/form-data", 400, request);
