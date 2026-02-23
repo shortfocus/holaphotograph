@@ -641,6 +641,17 @@ import Layout from "../layouts/Layout.astro";
     requestAnimationFrame(update);
   }
 
+  /** 블로그 포스트 ID → 해당 영상 유튜브 링크 */
+  const BLOG_TO_YOUTUBE: Record<string, string> = {
+    "223554336299": "https://youtu.be/GBRSgYPD_v8?si=4Rhhrm2Eu9ojgDDD",
+    "223630921092": "https://youtu.be/4W-6_M39Jr4?si=z5G76lXho02zYvPc",
+    "223918535079": "https://youtu.be/Q9_ootsvDgQ?si=OIgX9Bao6dx3pZG5",
+    "223723467910": "https://youtu.be/daabLwDGO7g?si=zDZE6rch9fiDDc0G",
+    "223715629379": "https://youtu.be/oQXueYPPoSg?si=iwYOidkc31MQV99Q",
+    "223594532420": "https://youtu.be/FsObBG1YIEA?si=PU24l0WbCn9RZaF9",
+  };
+  const YOUTUBE_CHANNEL_FALLBACK = "https://www.youtube.com/@holaphotograph";
+
   function renderRssCard(
     item: NaverRssItem,
     options?: { priority?: "high" | "low" },
@@ -654,7 +665,8 @@ import Layout from "../layouts/Layout.astro";
     const desc =
       stripHtml(item.description).slice(0, 80) +
       (stripHtml(item.description).length > 80 ? "..." : "");
-    const youtubeChannelUrl = "https://www.youtube.com/@holaphotograph";
+    const blogPostId = item.link?.split("/").pop()?.trim() || "";
+    const youtubeUrl = BLOG_TO_YOUTUBE[blogPostId] ?? YOUTUBE_CHANNEL_FALLBACK;
     return `
       <div class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
         <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="block">
@@ -666,7 +678,7 @@ import Layout from "../layouts/Layout.astro";
         </a>
         <div class="flex items-center justify-between gap-2 px-4 pb-4 pt-0">
           <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">블로그 보기 →</a>
-          <a href="${escapeHtml(youtubeChannelUrl)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">유튜브 보기 →</a>
+          <a href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">유튜브 보기 →</a>
         </div>
       </div>
     `;
