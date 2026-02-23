@@ -14,6 +14,16 @@ import Layout from "../../layouts/Layout.astro";
       </a>
     </div>
 
+    <div id="sort-buttons" class="mb-3 hidden flex-wrap items-center justify-end gap-2">
+      <span class="text-sm text-gray-500">정렬:</span>
+      <button type="button" id="sort-btn-email" data-sort="email" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+        이메일
+      </button>
+      <button type="button" id="sort-btn-created-at" data-sort="created_at" data-arrow="▼" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+        신청일시
+      </button>
+    </div>
+
     <div id="signups-container" class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow">
       <p id="signups-loading" class="p-6 text-gray-500">로딩 중...</p>
       <div id="signups-empty" class="hidden p-6 text-center text-gray-500">
@@ -34,18 +44,88 @@ import Layout from "../../layouts/Layout.astro";
   </div>
 </Layout>
 
+<style>
+  .sort-btn[data-arrow]::after {
+    content: " " attr(data-arrow);
+  }
+</style>
+
 <script>
   import { fetchLectureSignups, type LectureSignup } from "../../lib/api";
 
-  const loadingEl = document.getElementById("signups-loading")!;
-  const emptyEl = document.getElementById("signups-empty")!;
-  const tableEl = document.getElementById("signups-table")!;
-  const tbodyEl = document.getElementById("signups-tbody")!;
+  let loadingEl: HTMLElement;
+  let emptyEl: HTMLElement;
+  let tableEl: HTMLElement;
+  let tbodyEl: HTMLElement;
+  let sortButtonsEl: HTMLElement;
 
   function escapeHtml(s: string) {
     const div = document.createElement("div");
     div.textContent = s;
     return div.innerHTML;
+  }
+
+  let allSignups: LectureSignup[] = [];
+  let sortBy: "email" | "created_at" = "created_at";
+  let sortDir: "asc" | "desc" = "desc";
+
+  function sortSignups(signups: LectureSignup[], by: typeof sortBy, dir: typeof sortDir): LectureSignup[] {
+    return [...signups].sort((a, b) => {
+      let cmp = 0;
+      if (by === "email") {
+        cmp = a.email.localeCompare(b.email, "ko");
+      } else {
+        cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      return dir === "asc" ? cmp : -cmp;
+    });
+  }
+
+  function renderTable() {
+    const sorted = sortSignups(allSignups, sortBy, sortDir);
+    tbodyEl.innerHTML = sorted
+      .map(
+        (s: LectureSignup, i: number) => `
+        <tr>
+          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${i + 1}</td>
+          <td class="px-4 py-3 text-sm text-gray-900 sm:px-6"><a href="mailto:${escapeHtml(s.email)}" class="text-blue-600 hover:underline">${escapeHtml(s.email)}</a></td>
+          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${new Date(s.created_at).toLocaleString("ko-KR")}</td>
+        </tr>
+      `
+      )
+      .join("");
+
+    // 화살표는 data-arrow 속성 + CSS ::after로 표시 (JS textContent 덮어쓰기 회피)
+    const ARROW_UP = "\u25B2";
+    const ARROW_DOWN = "\u25BC";
+    const defaultDir: Record<"email" | "created_at", "asc" | "desc"> = { email: "asc", created_at: "desc" };
+
+    const btnEmail = document.getElementById("sort-btn-email");
+    const btnCreatedAt = document.getElementById("sort-btn-created-at");
+    if (btnEmail) {
+      const active = sortBy === "email";
+      const dir = active ? sortDir : defaultDir.email;
+      btnEmail.textContent = "이메일";
+      btnEmail.setAttribute("data-arrow", dir === "asc" ? ARROW_UP : ARROW_DOWN);
+      btnEmail.classList.toggle("border-blue-500", active);
+      btnEmail.classList.toggle("bg-blue-50", active);
+      btnEmail.classList.toggle("text-blue-700", active);
+      btnEmail.classList.toggle("border-gray-300", !active);
+      btnEmail.classList.toggle("bg-white", !active);
+      btnEmail.classList.toggle("text-gray-700", !active);
+    }
+    if (btnCreatedAt) {
+      const active = sortBy === "created_at";
+      const dir = active ? sortDir : defaultDir.created_at;
+      btnCreatedAt.textContent = "신청일시";
+      btnCreatedAt.setAttribute("data-arrow", dir === "asc" ? ARROW_UP : ARROW_DOWN);
+      btnCreatedAt.classList.toggle("border-blue-500", active);
+      btnCreatedAt.classList.toggle("bg-blue-50", active);
+      btnCreatedAt.classList.toggle("text-blue-700", active);
+      btnCreatedAt.classList.toggle("border-gray-300", !active);
+      btnCreatedAt.classList.toggle("bg-white", !active);
+      btnCreatedAt.classList.toggle("text-gray-700", !active);
+    }
   }
 
   async function load() {
@@ -58,19 +138,12 @@ import Layout from "../../layouts/Layout.astro";
         return;
       }
 
+      allSignups = signups;
       emptyEl.classList.add("hidden");
       tableEl.classList.remove("hidden");
-      tbodyEl.innerHTML = signups
-        .map(
-          (s: LectureSignup) => `
-        <tr>
-          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${s.id}</td>
-          <td class="px-4 py-3 text-sm text-gray-900 sm:px-6"><a href="mailto:${escapeHtml(s.email)}" class="text-blue-600 hover:underline">${escapeHtml(s.email)}</a></td>
-          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${new Date(s.created_at).toLocaleString("ko-KR")}</td>
-        </tr>
-      `
-        )
-        .join("");
+      sortButtonsEl.classList.remove("hidden");
+      sortButtonsEl.classList.add("flex");
+      renderTable();
     } catch (e) {
       loadingEl.textContent = "목록을 불러올 수 없습니다: " + (e as Error).message;
       loadingEl.classList.remove("text-gray-500");
@@ -78,5 +151,32 @@ import Layout from "../../layouts/Layout.astro";
     }
   }
 
-  load();
+  function init() {
+    loadingEl = document.getElementById("signups-loading")!;
+    emptyEl = document.getElementById("signups-empty")!;
+    tableEl = document.getElementById("signups-table")!;
+    tbodyEl = document.getElementById("signups-tbody")!;
+    sortButtonsEl = document.getElementById("sort-buttons")!;
+
+    sortButtonsEl.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest(".sort-btn");
+      if (!btn || allSignups.length === 0) return;
+      const key = ((btn as HTMLButtonElement).getAttribute("data-sort") || "") as "email" | "created_at";
+      if (sortBy === key) {
+        sortDir = sortDir === "asc" ? "desc" : "asc";
+      } else {
+        sortBy = key;
+        sortDir = key === "created_at" ? "desc" : "asc";
+      }
+      renderTable();
+    });
+
+    load();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 </script>
