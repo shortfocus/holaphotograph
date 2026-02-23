@@ -156,20 +156,63 @@ body.lecture-bar-collapsed .hero-section {
   animation: hero-glow 4s ease-in-out infinite;
 }
 
-/* 히어로 채널 아이콘: 원본 로고 그대로 (호버 효과 없음). 메일만 화이트 유지 */
+/* 히어로 채널 아이콘: 동일 높이/너비 상자에 맞춤. 원본 로고 유지, 메일만 화이트 */
+.hero-channel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .hero-channel-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
 .hero-channel-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   filter: none;
 }
 .hero-channel-icon img[src*="contact"] {
   filter: brightness(0) invert(1);
 }
+/* 인스타그램 로고만 시각적으로 작게 */
+.hero-channel-icon img[src*="instagram"] {
+  width: 80%;
+  height: 80%;
+}
 
-/* 푸터 채널 아이콘: 히어로와 동일 - 유튜브/네이버/인스타 원본 로고, 메일만 화이트 */
+/* 푸터 채널 아이콘: 동일 높이 상자, 인스타만 작게 맞춤 */
+.footer-channel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .footer-channel-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
 .footer-channel-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   filter: none;
 }
 .footer-channel-icon img[src*="contact"] {
   filter: brightness(0) invert(1);
+}
+.footer-channel-icon img[src*="instagram"] {
+  width: 80%;
+  height: 80%;
 }
 
 /* 히어로 섹션 미세 노이즈 (딥 네이비 배경용 - 밝은 노이즈) */
