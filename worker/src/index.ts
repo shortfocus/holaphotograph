@@ -738,7 +738,7 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
   const file = formData.get("file") as File | null;
   if (!file) return errorResponse("No file provided", 400, request);
   const sizeLimit = 5 * 1024 * 1024; // 5MB
-  if (file.size > sizeLimit) return errorResponse("File too large (max 5MB)", 400, request);
+  if (file.size > sizeLimit) return errorResponse("이미지 용량이 너무 큽니다. 5MB 이하로 올려주세요.", 400, request);
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
     return errorResponse("Invalid file type (allowed: jpeg, png, gif, webp)", 400, request);
