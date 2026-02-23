@@ -50,7 +50,12 @@ function sanitizeReviewContent(html: string): string {
 function getCorsHeaders(request: Request) {
   const origin = request.headers.get("Origin");
   const allowOrigin =
-    origin && (origin.includes("pages.dev") || origin.includes("localhost") || origin.includes("solidwebteam"))
+    origin &&
+    (origin.includes("pages.dev") ||
+      origin.includes("localhost") ||
+      origin.includes("solidwebteam") ||
+      origin.includes("holaphotograph.com") ||
+      origin.includes("holaphoto.com"))
       ? origin
       : "*";
   const headers: Record<string, string> = {
