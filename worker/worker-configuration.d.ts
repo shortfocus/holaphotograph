@@ -9,5 +9,9 @@ declare namespace Cloudflare {
     YOUTUBE_API_KEY?: string;
     /** 네이버 블로그 총 방문자 수 (수동 설정, wrangler secret put NAVER_BLOG_VISITORS) */
     NAVER_BLOG_VISITORS?: string;
+    /** Resend API 키 (강의 신청 일괄 발송). wrangler secret put RESEND_API_KEY */
+    RESEND_API_KEY?: string;
+    /** Resend 발신 주소 (검증된 도메인). 예: noreply@yourdomain.com */
+    RESEND_FROM?: string;
   }
 }

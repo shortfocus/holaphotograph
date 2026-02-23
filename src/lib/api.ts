@@ -66,6 +66,32 @@ export async function fetchLectureSignups(): Promise<LectureSignup[]> {
   return data.signups ?? [];
 }
 
+export interface SendLectureSignupsEmailResult {
+  sent: number;
+  failed: number;
+  total: number;
+  errors?: string[];
+  message?: string;
+}
+
+/** 관리자용: 강의 신청자 일괄 메일 발송 (Resend). recipientIds 없으면 전체 발송. bodyIsHtml true면 본문을 HTML로 처리 */
+export async function sendLectureSignupsEmail(
+  subject: string,
+  body: string,
+  recipientIds?: number[],
+  bodyIsHtml?: boolean
+): Promise<SendLectureSignupsEmailResult> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/lecture-signups/send-email`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subject, body, recipientIds, bodyIsHtml: !!bodyIsHtml }),
+  });
+  const data = (await res.json()) as SendLectureSignupsEmailResult & { error?: string };
+  if (!res.ok) throw new Error(data.error || "Failed to send emails");
+  return data;
+}
+
 export interface SubmitReviewBody {
   title: string;
   content: string;

@@ -12,6 +12,10 @@ export interface Env {
   YOUTUBE_API_KEY?: string;
   /** 네이버 블로그 총 방문자 수 (수동 설정) */
   NAVER_BLOG_VISITORS?: string;
+  /** Resend API 키 (강의 신청 목록 일괄 발송용). wrangler secret put RESEND_API_KEY */
+  RESEND_API_KEY?: string;
+  /** 발신 이메일 (Resend 검증 도메인). 없으면 onboarding@resend.dev 등 기본값 사용 불가 시 에러 */
+  RESEND_FROM?: string;
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
@@ -26,6 +30,17 @@ interface Post {
   updated_at: string;
   status?: "pending" | "approved";
   review_type?: "snap" | "lecture";
+}
+
+/** 이메일 본문 HTML 허용 태그만 통과 (일괄 발송용). 스크립트·스타일 제거 */
+function sanitizeEmailHtml(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: ["p", "br", "div", "span", "strong", "b", "em", "i", "u", "a", "ul", "ol", "li", "h1", "h2", "h3", "blockquote"],
+    allowedAttributes: { a: ["href", "title", "target", "rel"], div: ["class"], span: ["class"] },
+    allowedSchemes: ["http", "https"],
+    allowedSchemesByTag: {},
+    allowedSchemesAppliedToAttributes: ["href"],
+  });
 }
 
 /** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거. img의 data: 스킴 제거(대용량 base64 DoS·레거시 XSS 방지) */
@@ -228,6 +243,12 @@ export default {
     if (url.pathname === "/api/admin/lecture-signups" && request.method === "GET") {
       if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
       return handleListLectureSignups(request, env);
+    }
+
+    // POST /api/admin/lecture-signups/send-email - 강의 신청자 일괄 메일 발송 (Resend, 관리자 전용)
+    if (url.pathname === "/api/admin/lecture-signups/send-email" && request.method === "POST") {
+      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+      return handleSendLectureSignupsEmail(request, env);
     }
 
     // GET /api/reviews - 고객 후기 목록 (승인된 것만, 공개용)
@@ -802,6 +823,100 @@ async function handleListLectureSignups(request: Request, env: Env): Promise<Res
     }
     throw err;
   }
+}
+
+/** Resend로 이메일 1통 발송 */
+async function sendOneResend(
+  apiKey: string,
+  from: string,
+  to: string,
+  subject: string,
+  html: string
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from, to, subject, html }),
+  });
+  const data = (await res.json()) as { id?: string; message?: string };
+  if (!res.ok) {
+    return { ok: false, error: data.message || res.statusText || "Resend error" };
+  }
+  return { ok: true };
+}
+
+/** 강의 신청자 일괄 메일 발송 (관리자 전용, Resend) */
+async function handleSendLectureSignupsEmail(request: Request, env: Env): Promise<Response> {
+  const apiKey = env.RESEND_API_KEY;
+  const from = env.RESEND_FROM;
+  if (!apiKey || !from) {
+    return errorResponse(
+      "Email not configured. Set RESEND_API_KEY and RESEND_FROM (verified domain) in Cloudflare secrets.",
+      503,
+      request
+    );
+  }
+
+  let body: { subject?: string; body?: string; bodyIsHtml?: boolean; recipientIds?: number[] };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+  const subject = typeof body.subject === "string" ? body.subject.trim() : "";
+  const textBody = typeof body.body === "string" ? body.body.trim() : "";
+  if (!subject) return errorResponse("subject is required", 400, request);
+  if (!textBody) return errorResponse("body is required", 400, request);
+
+  const html = body.bodyIsHtml ? sanitizeEmailHtml(textBody) : textBody.replace(/\n/g, "<br>");
+
+  let emails: string[];
+  try {
+    if (Array.isArray(body.recipientIds) && body.recipientIds.length > 0) {
+      const placeholders = body.recipientIds.map(() => "?").join(",");
+      const stmt = env.DB.prepare(
+        `SELECT email FROM lecture_signups WHERE id IN (${placeholders})`
+      ).bind(...body.recipientIds);
+      const { results } = await stmt.all<{ email: string }>();
+      emails = results.map((r) => r.email).filter(Boolean);
+    } else {
+      const { results } = await env.DB.prepare(
+        "SELECT email FROM lecture_signups ORDER BY created_at DESC"
+      ).all<{ email: string }>();
+      emails = results.map((r) => r.email).filter(Boolean);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: lecture_signups table not found.",
+        500,
+        request
+      );
+    }
+    throw err;
+  }
+
+  if (emails.length === 0) {
+    return jsonResponse({ sent: 0, failed: 0, message: "No recipients" }, 200, request);
+  }
+
+  let sent = 0;
+  const errors: string[] = [];
+  for (const to of emails) {
+    const result = await sendOneResend(apiKey, from, to, subject, html);
+    if (result.ok) sent++;
+    else errors.push(`${to}: ${result.error}`);
+  }
+
+  return jsonResponse(
+    { sent, failed: emails.length - sent, total: emails.length, errors: errors.length > 0 ? errors : undefined },
+    200,
+    request
+  );
 }
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {
