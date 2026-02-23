@@ -156,27 +156,20 @@ body.lecture-bar-collapsed .hero-section {
   animation: hero-glow 4s ease-in-out infinite;
 }
 
-/* 히어로 채널 아이콘: 기본 흰색, 호버 시 원본 색상 */
+/* 히어로 채널 아이콘: 원본 로고 그대로 (호버 효과 없음). 메일만 화이트 유지 */
 .hero-channel-icon img {
+  filter: none;
+}
+.hero-channel-icon img[src*="contact"] {
   filter: brightness(0) invert(1);
-  transition: filter 0.25s ease;
-}
-.hero-channel-icon:hover img {
-  filter: none;
-}
-/* 네이버 블로그: 밝은 배경용 SVG라 filter 미적용 (어두운 배경에서 바로 보이도록) */
-.hero-channel-icon img[src*="naver-blog"],
-.footer-channel-icon img[src*="naver-blog"] {
-  filter: none;
 }
 
-/* 푸터 채널 아이콘: 기본 흰색, 호버 시 원본 색상 */
+/* 푸터 채널 아이콘: 히어로와 동일 - 유튜브/네이버/인스타 원본 로고, 메일만 화이트 */
 .footer-channel-icon img {
-  filter: brightness(0) invert(1);
-  transition: filter 0.25s ease;
-}
-.footer-channel-icon:hover img {
   filter: none;
+}
+.footer-channel-icon img[src*="contact"] {
+  filter: brightness(0) invert(1);
 }
 
 /* 히어로 섹션 미세 노이즈 (딥 네이비 배경용 - 밝은 노이즈) */
