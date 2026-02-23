@@ -224,6 +224,12 @@ export default {
       return handleLectureSignup(request, env);
     }
 
+    // GET /api/admin/lecture-signups - 강의 신청 목록 (관리자 전용)
+    if (url.pathname === "/api/admin/lecture-signups" && request.method === "GET") {
+      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+      return handleListLectureSignups(request, env);
+    }
+
     // GET /api/reviews - 고객 후기 목록 (승인된 것만, 공개용)
     if (url.pathname === "/api/reviews" && request.method === "GET") {
       return handleListApprovedReviews(request, env);
@@ -770,6 +776,32 @@ async function handleListApprovedReviews(request: Request, env: Env): Promise<Re
     content: rewriteImageUrlsInHtml(p.content ?? "", origin),
   }));
   return jsonResponse({ posts }, 200, request);
+}
+
+interface LectureSignupRow {
+  id: number;
+  email: string;
+  created_at: string;
+}
+
+/** 강의 신청 목록 (관리자 전용) */
+async function handleListLectureSignups(request: Request, env: Env): Promise<Response> {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT id, email, created_at FROM lecture_signups ORDER BY created_at DESC"
+    ).all<LectureSignupRow>();
+    return jsonResponse({ signups: results }, 200, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: lecture_signups table not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request
+      );
+    }
+    throw err;
+  }
 }
 
 async function handleListPosts(request: Request, env: Env): Promise<Response> {

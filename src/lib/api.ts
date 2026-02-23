@@ -52,6 +52,20 @@ export async function fetchPostsForAdmin(): Promise<Post[]> {
   return data.posts ?? [];
 }
 
+export interface LectureSignup {
+  id: number;
+  email: string;
+  created_at: string;
+}
+
+/** 관리자용: 강의 신청 목록 (credentials 필요) */
+export async function fetchLectureSignups(): Promise<LectureSignup[]> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/lecture-signups`, { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to fetch lecture signups");
+  const data = (await res.json()) as { signups?: LectureSignup[] };
+  return data.signups ?? [];
+}
+
 export interface SubmitReviewBody {
   title: string;
   content: string;

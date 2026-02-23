@@ -1,0 +1,82 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="관리자 - 강의 신청 목록" headerOpaque hideFooter>
+  <div class="mx-auto max-w-4xl px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-8 sm:px-6 sm:pt-24 sm:pb-12">
+    <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-xl font-bold sm:text-2xl">강의 신청 목록</h1>
+      <a
+        href="/admin"
+        class="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+      >
+        ← 고객 후기 관리로
+      </a>
+    </div>
+
+    <div id="signups-container" class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow">
+      <p id="signups-loading" class="p-6 text-gray-500">로딩 중...</p>
+      <div id="signups-empty" class="hidden p-6 text-center text-gray-500">
+        아직 강의 신청 이메일이 없습니다.
+      </div>
+      <table id="signups-table" class="hidden min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">번호</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">이메일</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">신청일시</th>
+          </tr>
+        </thead>
+        <tbody id="signups-tbody" class="divide-y divide-gray-200 bg-white">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { fetchLectureSignups, type LectureSignup } from "../../lib/api";
+
+  const loadingEl = document.getElementById("signups-loading")!;
+  const emptyEl = document.getElementById("signups-empty")!;
+  const tableEl = document.getElementById("signups-table")!;
+  const tbodyEl = document.getElementById("signups-tbody")!;
+
+  function escapeHtml(s: string) {
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  async function load() {
+    try {
+      const signups = await fetchLectureSignups();
+      loadingEl.classList.add("hidden");
+
+      if (signups.length === 0) {
+        emptyEl.classList.remove("hidden");
+        return;
+      }
+
+      emptyEl.classList.add("hidden");
+      tableEl.classList.remove("hidden");
+      tbodyEl.innerHTML = signups
+        .map(
+          (s: LectureSignup) => `
+        <tr>
+          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${s.id}</td>
+          <td class="px-4 py-3 text-sm text-gray-900 sm:px-6"><a href="mailto:${escapeHtml(s.email)}" class="text-blue-600 hover:underline">${escapeHtml(s.email)}</a></td>
+          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${new Date(s.created_at).toLocaleString("ko-KR")}</td>
+        </tr>
+      `
+        )
+        .join("");
+    } catch (e) {
+      loadingEl.textContent = "목록을 불러올 수 없습니다: " + (e as Error).message;
+      loadingEl.classList.remove("text-gray-500");
+      loadingEl.classList.add("text-red-600");
+    }
+  }
+
+  load();
+</script>
