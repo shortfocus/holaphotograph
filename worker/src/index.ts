@@ -162,10 +162,15 @@ function extractR2KeysFromPost(post: { thumbnail_url: string | null; content: st
   return [...new Set(keys)];
 }
 
-/** Access가 추가하는 이메일 헤더. 허용 목록에 있으면 true */
+/** Access가 추가하는 이메일 헤더. 허용 목록에 있으면 true. 프로덕션에서 ALLOWED_EMAILS 미설정 시 관리자 차단 */
 function isAllowedAdmin(request: Request, env: Env): boolean {
   const allowed = env.ALLOWED_EMAILS?.trim();
-  if (!allowed) return true; // 로컬 개발: 검증 생략
+  const host = new URL(request.url).hostname.toLowerCase();
+  const isLocal = host === "localhost" || host === "127.0.0.1";
+  if (!allowed) {
+    if (isLocal) return true; // 로컬 개발: 검증 생략
+    return false; // 프로덕션에서 미설정 시 관리자 API 차단
+  }
   const email = request.headers.get("Cf-Access-Authenticated-User-Email")?.trim().toLowerCase();
   if (!email) return false;
   const list = allowed.split(",").map((e) => e.trim().toLowerCase());
