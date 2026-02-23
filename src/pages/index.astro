@@ -487,13 +487,13 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
   import {
-    fetchNaverRss,
     fetchYoutubeLatest,
     fetchChannelStats,
     getRssThumbnailUrl,
     type NaverRssItem,
     type YoutubeVideoItem,
   } from "../lib/api";
+  import { FEATURED_BLOG } from "../data/featured-blog";
 
   // Hero Carousel
   (function initHeroCarousel() {
@@ -652,21 +652,35 @@ import Layout from "../layouts/Layout.astro";
   };
   const YOUTUBE_CHANNEL_FALLBACK = "https://www.youtube.com/@holaphotograph";
 
+  /** 블로그 카드에 필요한 최소 필드 (RSS 아이템 또는 정적 데이터 공통) */
+  type BlogCardItem = {
+    title: string;
+    link: string;
+    description?: string;
+    thumbnail_url?: string | null;
+    thumbnail_proxy_url?: string | null;
+    youtube_url?: string;
+  };
+
   function renderRssCard(
-    item: NaverRssItem,
+    item: BlogCardItem,
     options?: { priority?: "high" | "low" },
   ) {
     const imgUrl = getRssThumbnailUrl(item);
     const fetchPriority =
       options?.priority === "high" ? ' fetchpriority="high"' : "";
     const thumb = imgUrl
-      ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
+      ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" onerror="this.style.display='none'" /></div>`
       : '<div class="aspect-[209/314] w-full bg-gray-200" />';
+    const rawDesc = item.description ?? "";
     const desc =
-      stripHtml(item.description).slice(0, 80) +
-      (stripHtml(item.description).length > 80 ? "..." : "");
+      stripHtml(rawDesc).slice(0, 80) +
+      (stripHtml(rawDesc).length > 80 ? "..." : "");
     const blogPostId = item.link?.split("/").pop()?.trim() || "";
-    const youtubeUrl = BLOG_TO_YOUTUBE[blogPostId] ?? YOUTUBE_CHANNEL_FALLBACK;
+    const youtubeUrl =
+      item.youtube_url ??
+      BLOG_TO_YOUTUBE[blogPostId] ??
+      YOUTUBE_CHANNEL_FALLBACK;
     return `
       <div class="blog-card scroll-row-item shrink-0 w-[209px] rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
         <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="block">
@@ -727,7 +741,7 @@ import Layout from "../layouts/Layout.astro";
 
   function renderRssSection(
     grid: HTMLElement,
-    items: NaverRssItem[],
+    items: BlogCardItem[],
     emptyMsg: string,
     priority: "high" | "low" = "low",
   ) {
@@ -770,8 +784,7 @@ import Layout from "../layouts/Layout.astro";
 
   async function load() {
     try {
-      const [rssRes, youtubeRes, statsRes] = await Promise.all([
-        fetchNaverRss().catch(() => ({ reviews: [], guides: [], models: [], compare: [] })),
+      const [youtubeRes, statsRes] = await Promise.all([
         fetchYoutubeLatest().catch(() => ({ videos: [], shorts: [], error: "Failed to load" })),
         fetchChannelStats().catch(() => null),
       ]);
@@ -810,17 +823,11 @@ import Layout from "../layouts/Layout.astro";
         );
       }, 80);
 
-      const compareBlog = (rssRes.compare || [])
-        .filter((item) => !item.title.includes("보금자리론"))
-        .sort(
-          (a, b) =>
-            new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime(),
-        )
-        .slice(0, 6);
+      // 블로그 섹션: RSS 대신 정적 데이터 사용
       setTimeout(() => {
         renderRssSection(
           blogGrid,
-          compareBlog,
+          FEATURED_BLOG,
           "장비 비교·상세 분석 콘텐츠가 없습니다.",
           "high",
         );

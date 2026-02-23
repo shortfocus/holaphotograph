@@ -1,0 +1,8 @@
+# 메인 "카메라/렌즈 리뷰"용: 한 줄에 네이버URL + 공백/탭 + 유튜브URL
+# node scripts/download-blog-thumbnails.mjs --from=scripts/featured-urls.txt
+https://blog.naver.com/holaphotograph/223554336299	https://youtu.be/GBRSgYPD_v8?si=4Rhhrm2Eu9ojgDDD
+https://blog.naver.com/holaphotograph/223630921092	https://youtu.be/4W-6_M39Jr4?si=z5G76lXho02zYvPc
+https://blog.naver.com/holaphotograph/223918535079	https://youtu.be/Q9_ootsvDgQ?si=OIgX9Bao6dx3pZG5
+https://blog.naver.com/holaphotograph/223723467910	https://youtu.be/daabLwDGO7g?si=zDZE6rch9fiDDc0G
+https://blog.naver.com/holaphotograph/223715629379	https://youtu.be/oQXueYPPoSg?si=iwYOidkc31MQV99Q
+https://blog.naver.com/holaphotograph/223594532420	https://youtu.be/FsObBG1YIEA?si=PU24l0WbCn9RZaF9

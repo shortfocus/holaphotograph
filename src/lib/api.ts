@@ -109,13 +109,16 @@ export async function fetchNaverRss(): Promise<NaverRssResponse> {
   return res.json();
 }
 
-/** pstatic.net 썸네일은 핫링크 차단 → 프록시 URL 사용 */
-export function getRssThumbnailUrl(item: NaverRssItem): string | null {
+/** pstatic.net 썸네일은 핫링크 차단 → 프록시 URL 사용 (RSS 아이템 또는 정적 블로그 데이터 공통) */
+export function getRssThumbnailUrl(item: {
+  thumbnail_url?: string | null;
+  thumbnail_proxy_url?: string | null;
+}): string | null {
   if (item.thumbnail_proxy_url) return item.thumbnail_proxy_url;
   if (item.thumbnail_url?.includes("pstatic.net")) {
     return `${API_BASE}/api/image-proxy?url=${encodeURIComponent(item.thumbnail_url)}`;
   }
-  return item.thumbnail_url;
+  return item.thumbnail_url ?? null;
 }
 
 export interface YoutubeVideoItem {
