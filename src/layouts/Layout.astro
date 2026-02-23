@@ -168,7 +168,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         if (!form || !input || !btn || !status) return;
 
         const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
-        const API_BASE = isProd ? 'https://holaphotograph-api.chs4413.workers.dev' : 'http://localhost:8787';
+        const API_BASE = isProd ? 'https://api.holaphoto.com' : 'http://localhost:8787';
 
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
