@@ -2,10 +2,16 @@
 /// <reference types="node" />
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://example.pages.dev',
+  site: 'https://holaphoto.com',
   output: 'static',
+  integrations: [
+    sitemap({
+      filter: (page) => !new URL(page).pathname.startsWith('/admin'),
+    }),
+  ],
   vite: {
     plugins: [
       // @ts-ignore - Astro 내부 Vite와 @tailwindcss/vite 플러그인 타입 불일치 (런타임 정상 동작)
