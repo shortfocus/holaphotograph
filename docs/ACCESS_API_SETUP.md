@@ -4,6 +4,27 @@
 
 ---
 
+## 왜 개발에서는 되고, 커스텀 도메인 연결 후에만 CORS/오류가 나는가
+
+- **개발**: API를 `localhost:8787`로 쓰면 **Cloudflare Access가 없습니다.** 요청이 곧바로 Worker로 가고, Worker가 CORS 헤더를 붙여서 응답하므로 문제 없음.
+- **커스텀 도메인(api.holaphoto.com) + Access**: 이 구간에 **Access를 붙이면** 요청이 **먼저 Access**를 통과합니다.  
+  - 로그인된 쿠키가 없거나, preflight(OPTIONS)가 Access에서 막히면 → **응답은 Worker가 아니라 Cloudflare(Access)에서 나갑니다.**  
+  - 그 응답(403, 리다이렉트, HTML 로그인 페이지)에는 **우리 Worker의 CORS 헤더가 없습니다.**  
+  → 브라우저는 “교차 출처 응답에 CORS 헤더 없음” → **CORS 에러 / Failed to fetch**로 보여 줍니다.
+
+즉, **CORS 수정 코드를 Worker에 아무리 해도**, “Access에서 막혀서 Worker까지 도달하지 못한 요청”에는 적용되지 않습니다. 그래서 배포해도 같은 오류가 반복되는 것입니다.
+
+**선택지:**
+
+| 방식 | 설명 |
+|------|------|
+| **A. Access 유지** | Access 로그인(쿠키)이 성공해야 Worker까지 도달 → CORS가 의미 있음. holaphoto.com에서 api.holaphoto.com 호출은 교차 출처라 쿠키가 제3자로 취급될 수 있어, “api.holaphoto.com 먼저 직접 열어서 로그인” 또는 **관리자 페이지를 api.holaphoto.com 아래로 이전**(예: api.holaphoto.com/admin)하면 같은 출처로 쿠키 문제가 줄어듦. |
+| **B. Access 제거** | api.holaphoto.com(또는 /api/admin/*)을 Access 앱에서 **빼면** 요청이 Worker로 직행합니다. Worker의 ALLOWED_EMAILS·API 키 등만으로 관리자 인증하면, 개발할 때처럼 CORS만 맞추면 됨. Access 로그인 화면은 없어짐. |
+
+아래는 **Access를 쓰기로 했을 때**의 등록 절차입니다. Access 없이 Worker만으로 관리자 API를 보호하려면 `docs/TODO_SECURITY.md` 등 참고.
+
+---
+
 ## 참고: Cloudflare MCP
 
 이 프로젝트에 연결된 Cloudflare MCP는 **문서 검색**(`search_cloudflare_documentation`)만 제공합니다. Access 앱/정책 생성·수정 도구는 없으므로, 설정은 **대시보드** 또는 [Cloudflare API](https://developers.cloudflare.com/api/)/Terraform으로 진행해야 합니다.  
@@ -88,7 +109,8 @@
    Workers & Pages → **holaphotograph-api** → Settings → Variables  
    - **ALLOWED_EMAILS** = 관리자 이메일(쉼표 구분) 이 있어야 Worker가 “관리자”로 인정합니다.
 3. 브라우저에서 **https://api.holaphoto.com/** 한 번 열어서 Access 로그인  
-   → 같은 브라우저에서 **holaphoto.com/admin** 사용 시 API 요청에 쿠키가 붙어 401이 사라지고, 후기 5개 전부 + 승인 되돌리기 버튼이 보입니다.
+   → 같은 브라우저에서 **holaphoto.com/admin** 사용 시 API 요청에 쿠키가 붙어 401이 사라지고, 후기 5개 전부 + 승인 되돌리기 버튼이 보입니다.  
+   **중요:** 관리자 페이지에서 "Failed to fetch"가 나면, **먼저 api.holaphoto.com을 직접 열어** 로그인한 뒤 admin으로 이동하세요. holaphoto.com에서 api로 가는 요청은 교차 사이트라 CF_Session 쿠키가 제3자 쿠키로 취급될 수 있고, Chrome "제3자 쿠키 차단"이 켜져 있으면 쿠키가 막혀 실패합니다. api.holaphoto.com에서 한 번 로그인해 두면 같은 브라우저에서 admin 호출 시 쿠키가 붙습니다.
 
 ---
 
@@ -127,4 +149,5 @@
 **여전히 CORS 에러가 나면 확인할 것**
 
 - **호스트 일치**: Access 앱의 **응용 프로그램 URL**이 실제로 호출하는 API 호스트와 같아야 합니다. 프론트가 `https://api.holaphoto.com` 으로 요청하면 Access 앱도 `api.holaphoto.com` (경로 `/api/admin/*` 등)으로 등록되어 있어야 합니다. `api.holaphotograph.com` 과 `api.holaphoto.com` 은 서로 다른 호스트이므로, 옵션을 켠 앱이 요청이 가는 쪽이어야 합니다.
+- **Set-Cookie / 쿠키 경고 아이콘**: Network 탭에서 응답 헤더의 `Set-Cookie`(CF_Session) 옆에 경고가 뜨면, 교차 사이트(third-party) 쿠키 제한 때문일 수 있습니다. **api.holaphoto.com** 을 탭에서 먼저 열어 Access 로그인을 끝낸 뒤 **holaphoto.com/admin** 을 사용하고, Chrome 설정에서 "제3자 쿠키" 예외에 api.holaphoto.com을 넣어 보세요.
 - **Network 탭**: 브라우저 개발자도구 → Network에서 실패한 요청 옆의 **OPTIONS** 요청을 확인하세요. OPTIONS가 **204**이고 응답 헤더에 `Access-Control-Allow-Origin`, `Access-Control-Allow-Credentials: true` 가 있으면 Worker까지 도달한 것입니다. OPTIONS가 **403**이면 아직 Access에서 막힌 것이므로, 해당 URL의 호스트와 동일한 Access 앱에서 "옵션 요청을 원본으로 바이패스"가 켜져 있는지 확인하세요.
