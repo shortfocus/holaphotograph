@@ -191,20 +191,27 @@ export default {
       return jsonResponse({
         name: "holaphotograph-api",
         endpoints: {
-          "GET /api/naver-rss": "네이버 블로그 RSS (섹션별 분류)",
-          "GET /api/image-proxy?url=...": "네이버 썸네일 이미지 프록시",
-          "GET /api/youtube-latest": "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
-          "GET /api/channel-stats": "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
-          "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
-          "GET /api/posts": "리뷰 목록 (공개: approved만, 관리자: 전체+status)",
-          "GET /api/posts/:id": "리뷰 상세 (approved만)",
-          "POST /api/posts": "리뷰 작성 (관리자, approved)",
-          "POST /api/reviews": "고객 후기 제출 (로그인 없음, pending)",
-          "PUT /api/posts/:id": "리뷰 수정/승인 (관리자)",
-          "DELETE /api/posts/:id": "리뷰 삭제 (관리자)",
-          "POST /api/upload": "이미지 업로드 (관리자)",
-          "GET /api/images/:path": "이미지 조회",
-          "DELETE /api/images/:path": "이미지 삭제 (롤백용)",
+          public: {
+            "GET /api/naver-rss": "네이버 블로그 RSS (섹션별 분류)",
+            "GET /api/image-proxy?url=...": "네이버 썸네일 이미지 프록시",
+            "GET /api/youtube-latest": "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
+            "GET /api/channel-stats": "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
+            "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
+            "GET /api/posts": "리뷰 목록 (approved만)",
+            "GET /api/posts/:id": "리뷰 상세 (approved만)",
+            "POST /api/reviews": "고객 후기 제출 (pending 저장)",
+            "GET /api/images/:path": "이미지 조회",
+          },
+          admin: {
+            "GET /api/admin/lecture-signups": "강의 신청 목록",
+            "GET /api/admin/posts": "리뷰 목록 (전체+status)",
+            "GET /api/admin/posts/:id": "리뷰 상세 (pending 포함)",
+            "POST /api/admin/posts": "리뷰 작성",
+            "PUT /api/admin/posts/:id": "리뷰 수정/승인",
+            "DELETE /api/admin/posts/:id": "리뷰 삭제",
+            "POST /api/admin/upload": "이미지 업로드",
+            "DELETE /api/admin/images/:path": "이미지 삭제 (롤백용)",
+          },
         },
       }, 200, request);
     }
@@ -256,41 +263,61 @@ export default {
     }
 
     const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
+    const adminPostsMatch = url.pathname.match(/^\/api\/admin\/posts(?:\/(\d+))?$/);
 
-    // POST /api/upload - 이미지 업로드 (관리자 전용)
-    if (url.pathname === "/api/upload" && request.method === "POST") {
+    // --- /api/admin/* (관리자 전용, Access에서 /api/admin/* 만 보호하면 됨) ---
+
+    // POST /api/admin/upload - 이미지 업로드 (관리자 전용)
+    if (url.pathname === "/api/admin/upload" && request.method === "POST") {
       if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
       const contentType = request.headers.get("Content-Type") || "";
       if (!contentType.startsWith("multipart/form-data")) {
         return errorResponse("Expected multipart/form-data", 400, request);
       }
-
       const formData = await request.formData();
       const file = formData.get("file") as File | null;
       if (!file) return errorResponse("No file provided", 400, request);
-
       const ext = file.name.split(".").pop() || "jpg";
       const key = `uploads/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
-
-      await env.BUCKET.put(key, file.stream(), {
-        httpMetadata: { contentType: file.type },
-      });
-
-      // R2 public URL (Custom Domain 설정 시 해당 URL 사용)
+      await env.BUCKET.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
       const baseUrl = url.origin.replace(/^https?:\/\//, "");
       const imageUrl = `https://${baseUrl}/api/images/${key}`;
       return jsonResponse({ url: imageUrl, key }, 200, request);
     }
 
-    // GET /api/images/:path - R2 이미지 조회 (공개)
-    // DELETE /api/images/:path - R2 이미지 삭제 (글 등록 실패 시 롤백용)
+    // DELETE /api/admin/images/:path - 이미지 삭제 (관리자 전용)
+    if (url.pathname.startsWith("/api/admin/images/") && request.method === "DELETE") {
+      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+      const key = url.pathname.replace("/api/admin/images/", "");
+      await env.BUCKET.delete(key);
+      return jsonResponse({ success: true }, 200, request);
+    }
+
+    // /api/admin/posts, /api/admin/posts/:id - 관리자 전용 CRUD
+    if (adminPostsMatch) {
+      const id = adminPostsMatch[1] ? parseInt(adminPostsMatch[1], 10) : null;
+      switch (request.method) {
+        case "GET":
+          if (id) return handleGetPost(request, env, id);
+          return handleListPosts(request, env);
+        case "POST":
+          if (id) return errorResponse("Method not allowed", 405, request);
+          return handleCreatePost(request, env);
+        case "PUT":
+          if (!id) return errorResponse("ID required", 400, request);
+          return handleUpdatePost(request, env, id);
+        case "DELETE":
+          if (!id) return errorResponse("ID required", 400, request);
+          return handleDeletePost(request, env, id);
+        default:
+          return errorResponse("Method not allowed", 405, request);
+      }
+    }
+
+    // GET /api/images/:path - R2 이미지 조회 (공개, DELETE는 /api/admin/images/:path)
     if (url.pathname.startsWith("/api/images/")) {
       const key = url.pathname.replace("/api/images/", "");
-      if (request.method === "DELETE") {
-        if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-        await env.BUCKET.delete(key);
-        return jsonResponse({ success: true }, 200, request);
-      }
+      if (request.method !== "GET") return errorResponse("Method not allowed", 405, request);
       const object = await env.BUCKET.get(key);
       if (!object) return errorResponse("Not found", 404, request);
       return new Response(object.body, {
@@ -301,30 +328,12 @@ export default {
       });
     }
 
-    // /api/posts 라우팅
+    // /api/posts, /api/posts/:id - 공개용 GET만 허용
     if (pathMatch) {
       const id = pathMatch[1] ? parseInt(pathMatch[1], 10) : null;
-
-      switch (request.method) {
-        case "GET":
-          if (id) return handleGetPost(request, env, id);
-          return handleListPosts(request, env);
-
-        case "POST":
-          if (id) return errorResponse("Method not allowed", 405, request);
-          return handleCreatePost(request, env);
-
-        case "PUT":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleUpdatePost(request, env, id);
-
-        case "DELETE":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleDeletePost(request, env, id);
-
-        default:
-          return errorResponse("Method not allowed", 405, request);
-      }
+      if (request.method !== "GET") return errorResponse("Method not allowed", 405, request);
+      if (id) return handleGetPost(request, env, id);
+      return handleListPosts(request, env);
     }
 
     return errorResponse("Not found", 404, request);
@@ -826,6 +835,8 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
   const origin = new URL(request.url).origin;
   const posts = results.map((p) => ({
     ...p,
+    // 비관리자 응답은 status를 SELECT하지 않으므로, 목록은 전부 approved이니 명시적으로 넣어 UI(승인 되돌리기 등)가 동작하도록 함
+    ...(p.status === undefined && !isAdmin ? { status: "approved" as const } : {}),
     thumbnail_url: normalizeImageUrl(p.thumbnail_url, origin),
     content: rewriteImageUrlsInHtml(p.content ?? "", origin),
   }));
@@ -843,6 +854,7 @@ async function handleGetPost(request: Request, env: Env, id: number): Promise<Re
   const origin = new URL(request.url).origin;
   const normalized = {
     ...post,
+    ...(post.status === undefined && !isAdmin ? { status: "approved" as const } : {}),
     thumbnail_url: normalizeImageUrl(post.thumbnail_url, origin),
     content: rewriteImageUrlsInHtml(post.content ?? "", origin),
   };

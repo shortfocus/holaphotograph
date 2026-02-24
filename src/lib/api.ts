@@ -46,7 +46,7 @@ export async function fetchApprovedReviews(): Promise<Post[]> {
 
 /** 관리자용: 전체 목록 (pending 포함, credentials 필요) */
 export async function fetchPostsForAdmin(): Promise<Post[]> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/posts`, { credentials: "include" });
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts`, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to fetch posts");
   const data = (await res.json()) as { posts?: Post[] };
   return data.posts ?? [];
@@ -193,13 +193,13 @@ export async function fetchPost(id: number): Promise<Post | null> {
 
 /** 관리자용: 단건 조회 (pending 포함, credentials 필요) */
 export async function fetchPostForAdmin(id: number): Promise<Post | null> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, { credentials: "include" });
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, { credentials: "include" });
   if (!res.ok) return null;
   return res.json();
 }
 
 export async function createPost(body: Partial<Post>): Promise<Post> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/posts`, {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -215,7 +215,7 @@ export async function createPost(body: Partial<Post>): Promise<Post> {
 export async function updatePost(
   id: number,
   body: Partial<Post> & { thumbnail_url?: string | null; status?: ReviewStatus; review_type?: ReviewType }): Promise<Post> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -229,7 +229,7 @@ export async function updatePost(
 }
 
 export async function deletePost(id: number): Promise<void> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/posts/${id}`, {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -247,7 +247,7 @@ export interface UploadResult {
 export async function uploadImage(file: File): Promise<UploadResult> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${ADMIN_API_BASE}/api/upload`, {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/upload`, {
     method: "POST",
     body: formData,
     credentials: "include",
@@ -277,7 +277,7 @@ export async function uploadReviewImage(file: File): Promise<UploadResult> {
 }
 
 export async function deleteImage(key: string): Promise<void> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/images/${key}`, {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/images/${key}`, {
     method: "DELETE",
     credentials: "include",
   });
