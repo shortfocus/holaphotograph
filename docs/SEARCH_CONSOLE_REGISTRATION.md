@@ -25,7 +25,8 @@
 3. **소유 확인**
    - **HTML 메타 태그**: `<meta name="naver-site-verification" content="…" />` 를 사이트 `<head>`에 넣고 배포 후 "확인" 클릭
    - **HTML 파일 업로드**: 안내된 파일명으로 루트에 업로드
-4. 확인 완료 후 **사이트맵 제출** (제공 시): 사이트맵 URL 입력
+4. 확인 완료 후 **사이트맵 제출** (제공 시): 사이트맵 URL 입력  
+   - **RSS 제출** (선택): 사이트 소유 RSS가 있으면 URL 입력. 본 사이트 피드: `https://holaphoto.com/feed.xml`
 
 ---
 
@@ -43,9 +44,10 @@
 
 ---
 
-## 4. 사이트맵 · robots.txt
+## 4. 사이트맵 · RSS · robots.txt
 
 - **사이트맵**: 검색엔진이 페이지 목록을 수집하기 쉬움. Astro에 `@astrojs/sitemap` 사용 시 빌드 시점에 `/sitemap-index.xml` 등이 생성됨.
+- **RSS 피드**: `https://holaphoto.com/feed.xml` — 메인 페이지(홈, 고객 후기, 후기 작성)를 RSS 2.0 형식으로 제공. 네이버 서치어드바이저·RSS 리더 제출용.
 - **robots.txt**: `User-agent: *` 와 `Sitemap: https://holaphoto.com/sitemap-index.xml` 등을 넣어 두면 제출 URL로 활용 가능.
 
-사이트맵·robots.txt가 없어도 등록·확인은 가능하고, 나중에 추가하면 색인 요청에 유리합니다.
+사이트맵·RSS·robots.txt가 없어도 등록·확인은 가능하고, 있으면 색인·제출에 유리합니다.
