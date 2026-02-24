@@ -59,6 +59,8 @@
 2. **로그인**: 처음 한 번만 **구글 로그인** 하면 됩니다. 그 다음부터는 고객 후기 관리, 강의 신청 목록 등 **데이터가 그대로** 불러와집니다.
 3. **설정할 일**: Zero Trust에서 api.holaphoto.com 앱의 **보호 경로**에 **/admin**, **/admin/*** 를 추가해 두기. 최초 1회 **R2에 관리자 파일 올리기** (`npm run build && npm run upload-admin-ui` 하거나, main 푸시해서 CI가 하게 두기).
 
+**CI에서 "Upload admin UI to R2" 단계가 403 Forbidden이면** GitHub Actions에 쓰는 `CLOUDFLARE_API_TOKEN`에 **Account → R2 Object Read & Write** 권한을 추가한 뒤, Secrets에 토큰을 갱신하고 워크플로를 다시 실행하세요. 자세한 절차는 [DEPLOY.md](./DEPLOY.md) §1 참고.
+
 ---
 
 ## 5. 한 문장으로 정리

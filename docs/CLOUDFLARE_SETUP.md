@@ -83,7 +83,7 @@ npx wrangler d1 create holaphotograph-db
 
 - 고객 후기 썸네일·본문 이미지 업로드 (POST /api/admin/upload)
 - 이미지 조회: GET /api/images/:path (공개), 삭제: DELETE /api/admin/images/:path (관리자)
-- **관리자 UI 정적 파일**: `admin-ui/` 프리픽스로 업로드 (dist/admin, dist/_astro). Worker가 GET /admin, /_astro 요청 시 이 객체를 서빙. 배포 시 `npm run upload-admin-ui` 실행 (또는 CI에 포함).
+- **관리자 UI 정적 파일**: `admin-ui/` 프리픽스로 업로드 (dist/admin, dist/_astro). Worker가 GET /admin, /_astro 요청 시 이 객체를 서빙. 배포 시 `npm run upload-admin-ui` 실행 (또는 CI에 포함). **CI에서 403이 나면** GitHub Secrets의 `CLOUDFLARE_API_TOKEN`에 **Account → R2 Object Read & Write** 권한이 있어야 함 → [DEPLOY.md](./DEPLOY.md) §1 참고.
 
 ### 4.2 생성
 
@@ -203,6 +203,7 @@ cd .. && npx wrangler pages deploy dist --project-name=holaphotograph
 - [ ] **R2**: 버킷 `camera-review-images` 생성, wrangler.toml에 바인딩
 - [ ] **KV**: `APP_KV` 프로덕션·프리뷰 네임스페이스 생성 후 id/preview_id 반영
 - [ ] **Worker**: ALLOWED_EMAILS(또는 시크릿), YOUTUBE_API_KEY(시크릿) 설정
-- [ ] **Access**: api.holaphoto.com 앱 등록, 경로 `/api/admin/*`, CORS 옵션 요청 바이패스 켜기
+- [ ] **Access**: api.holaphoto.com 앱 등록, 경로 `/api/admin/*`, `/admin`, `/admin/*`, CORS 옵션 요청 바이패스 켜기
+- [ ] **GitHub CI** (admin UI R2 업로드 사용 시): `CLOUDFLARE_API_TOKEN`에 **R2 Object Read & Write** 권한 포함
 - [ ] **Pages**: 프로젝트 `holaphotograph` 생성, 커스텀 도메인 holaphoto.com 연결
 - [ ] **도메인**: Cloudflare에 도메인 추가, 네임서버 전환, Pages/Worker에 도메인 연결
