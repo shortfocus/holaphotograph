@@ -7,9 +7,11 @@ interface Props {
   headerOpaque?: boolean;
   /** true면 푸터 영역 숨김 (관리자 페이지 등) */
   hideFooter?: boolean;
+  /** true면 헤더·플로팅 바 없음 (api.holaphoto.com/admin 전용) */
+  adminFrame?: boolean;
 }
 
-const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false } = Astro.props;
+const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false, adminFrame = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ko">
@@ -26,7 +28,8 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <slot name="head" />
   </head>
-  <body class="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased pb-[var(--lecture-bar-height)]" data-header-opaque={headerOpaque}>
+  <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased', !adminFrame && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
+    {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <a href="/" class="flex items-center gap-2">
@@ -57,7 +60,11 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         </ul>
       </nav>
     </header>
+    )}
+    {!adminFrame && (
     <div id="nav-backdrop" class="nav-backdrop fixed inset-0 z-40 bg-black/60 backdrop-blur-sm hidden md:hidden" aria-hidden="true"></div>
+    )}
+    {!adminFrame && (
     <script>
       const header = document.getElementById('main-header');
       const toggle = document.getElementById('nav-toggle');
@@ -101,9 +108,11 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         a.addEventListener('click', () => { if (window.innerWidth < 768) setMenuOpen(false); });
       });
     </script>
+    )}
     <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
+    {!adminFrame && (
     <!-- 강의 소식 플로팅 CTA (토글 가능) -->
     <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
       <!-- 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 (bottom: 100%), CTA 오른쪽에 맞춤 -->
@@ -210,6 +219,7 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
         });
       })();
     </script>
+    )}
 
     {!hideFooter && (
     <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
