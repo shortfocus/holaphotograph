@@ -1,6 +1,6 @@
 /// <reference path="../worker-configuration.d.ts" />
 import sanitizeHtml from "sanitize-html";
-import { logger } from "./logger";
+import { logger, setLogFormat } from "./logger";
 
 export interface Env {
   DB: D1Database;
@@ -13,6 +13,8 @@ export interface Env {
   YOUTUBE_API_KEY?: string;
   /** 네이버 블로그 총 방문자 수 (수동 설정) */
   NAVER_BLOG_VISITORS?: string;
+  /** 로그 포맷: json(기본) | readable(이쁜 한 줄). wrangler tail 보기 좋게 하려면 readable */
+  LOG_FORMAT?: string;
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
@@ -400,6 +402,7 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    setLogFormat(env.LOG_FORMAT === "readable" ? "readable" : "json");
     const start = Date.now();
     let res: Response;
     try {
@@ -408,7 +411,10 @@ export default {
       logger.error("unhandled exception", { err: err instanceof Error ? err.message : String(err) });
       res = errorResponse("Internal Server Error", 500, request);
     }
-    logger.request(request, res, Date.now() - start);
+    logger.request(request, res, Date.now() - start, {
+      ip: getClientIp(request),
+      user: request.headers.get("Cf-Access-Authenticated-User-Email") ?? undefined,
+    });
     return res;
   },
 };

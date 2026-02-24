@@ -9,8 +9,12 @@
 - **로거 모듈**: `worker/src/logger.ts`
   - `logger.info(msg, data?)` / `logger.warn` / `logger.error` / `logger.debug`
   - `logger.request(request, response, durationMs)` — 요청/응답 한 줄 로그 (매 요청마다 자동 호출)
-- **출력 형식**: JSON 한 줄 (`level`, `msg`, `ts`, `path`, `method`, `status`, `duration_ms` 등)
-  - Cloudflare Real-time Logs, `wrangler tail`, Logpush에서 파싱·검색하기 좋음
+- **출력 형식**
+  - **json** (기본): JSON 한 줄 — Logpush·파싱용
+  - **readable**: 사람이 보기 좋은 한 줄 — `wrangler tail` 보기 좋음
+- **readable 켜기**: 환경 변수 `LOG_FORMAT=readable` 설정 시 적용
+  - 로컬/프리뷰: `wrangler.toml`의 `[vars]`에 `LOG_FORMAT = "readable"` 추가
+  - 프로덕션: 대시보드 Workers → holaphotograph-api → Settings → Variables 에서 추가 (tail 볼 때만 쓰려면 선택)
 - **적용 위치**: `index.ts` fetch 진입부에서 모든 요청에 대해 `logger.request()` 호출, 기존 `console.error`는 `logger.error()`로 교체
 
 ---
@@ -24,11 +28,10 @@ cd worker
 npx wrangler tail
 ```
 
-배포된 Worker로 들어오는 요청과 `console.log` / `console.error` 출력이 실시간으로 스트리밍됩니다. JSON 한 줄씩 나오므로 `jq`로 필터링 가능합니다.
+배포된 Worker로 들어오는 요청과 `console.log` / `console.error` 출력이 실시간으로 스트리밍됩니다.
 
-```bash
-npx wrangler tail | jq 'select(.logs)'
-```
+- **readable** 포맷이면 예: `[INFO ]  GET /api/reviews  200  12ms  ip=1.2.3.4  user=admin@example.com`
+- **json** 포맷이면 `jq`로 필터링 가능: `npx wrangler tail | jq 'select(.logs)'`
 
 ### 2.2 대시보드 (Real-time Logs)
 

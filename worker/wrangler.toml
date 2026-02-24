@@ -32,5 +32,7 @@ preview_id = "f7f176a5728142329e3e568d2b0a1fde"
 # YouTube Data API v3 활성화 필요
 
 # 네이버 블로그 총 방문자 수 (수동 업데이트)
+# 로그 포맷: readable 이면 wrangler tail에서 보기 좋은 한 줄 (기본 json)
+# LOG_FORMAT = "readable"
 [vars]
 NAVER_BLOG_VISITORS = "657550"
