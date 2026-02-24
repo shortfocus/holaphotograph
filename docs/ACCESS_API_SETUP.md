@@ -103,3 +103,28 @@
 | 5 | 저장 → Worker에 ALLOWED_EMAILS 설정 확인 → 브라우저에서 api.holaphoto.com 한 번 로그인 |
 
 이렇게 등록하면 “api.holaphoto.com 은 Access 등록을 못했어” 때문에 생기던 401·목록 4개만 보이는 문제가 해결됩니다.
+
+---
+
+## 6. CORS 에러가 날 때 (preflight OPTIONS)
+
+관리자 화면에서 API 호출 시 **CORS error**가 나고, Network 탭에서 **실제 요청은 200**인데도 에러가 난다면 **OPTIONS(preflight) 요청이 Access에서 막힌 것**일 가능성이 큽니다.  
+브라우저는 credentials/커스텀 헤더가 있으면 먼저 **OPTIONS**를 보내는데, **OPTIONS에는 쿠키가 붙지 않기 때문에** Access가 인증 실패로 403을 돌리고, 그 응답에는 CORS 헤더가 없어 브라우저가 CORS 에러로 처리합니다.
+
+**해결: Access 앱에서 OPTIONS를 origin(Worker)으로 보내기**
+
+1. **Zero Trust** → **Access** → **Applications** → **api.holaphoto.com** 앱 선택
+2. **고급 설정** (Advanced settings) 또는 **설정** 탭으로 이동
+3. **Cross-Origin Resource Sharing (CORS) settings** / **CORS 설정** 찾기
+4. **Bypass options requests to origin** (OPTIONS 요청을 origin으로 보내기) 를 **켜기**  
+   → OPTIONS 요청이 Access 인증 없이 Worker까지 가고, Worker가 204 + CORS 헤더를 반환해 preflight가 성공합니다.
+5. 저장
+
+(대안: 같은 CORS 설정 화면에서 "Configure response to preflight requests"로 Cloudflare가 OPTIONS에 직접 CORS 헤더를 붙여 응답하도록 할 수 있습니다. 이 경우 Allow-Origin, Allow-Methods, Allow-Headers, Allow-Credentials를 Worker와 맞춰 설정해야 합니다.)
+
+참고: [Cloudflare – Allow preflighted requests](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/cors/#allow-preflighted-requests)
+
+**여전히 CORS 에러가 나면 확인할 것**
+
+- **호스트 일치**: Access 앱의 **응용 프로그램 URL**이 실제로 호출하는 API 호스트와 같아야 합니다. 프론트가 `https://api.holaphoto.com` 으로 요청하면 Access 앱도 `api.holaphoto.com` (경로 `/api/admin/*` 등)으로 등록되어 있어야 합니다. `api.holaphotograph.com` 과 `api.holaphoto.com` 은 서로 다른 호스트이므로, 옵션을 켠 앱이 요청이 가는 쪽이어야 합니다.
+- **Network 탭**: 브라우저 개발자도구 → Network에서 실패한 요청 옆의 **OPTIONS** 요청을 확인하세요. OPTIONS가 **204**이고 응답 헤더에 `Access-Control-Allow-Origin`, `Access-Control-Allow-Credentials: true` 가 있으면 Worker까지 도달한 것입니다. OPTIONS가 **403**이면 아직 Access에서 막힌 것이므로, 해당 URL의 호스트와 동일한 Access 앱에서 "옵션 요청을 원본으로 바이패스"가 켜져 있는지 확인하세요.
