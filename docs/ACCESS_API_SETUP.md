@@ -76,11 +76,11 @@
 
 ### 3.2 공개 API는 막지 않게 하려면 (Application paths) — 권장
 
-**이 프로젝트는 관리자 전용 API를 모두 `/api/admin/*` 아래로 두었습니다.** Access에서는 공개 호스트 이름에 **경로 `/api/admin/*` 만** 등록하면 됩니다. 공개용 `/api/posts`, `/api/images/*` 등은 Access를 타지 않아 일반 방문자도 정상 호출됩니다.
+**이 프로젝트는 관리자 전용 API를 `/api/admin/*` 아래로 두고, 관리자 화면(HTML)도 api.holaphoto.com의 `/admin`, `/admin/*` 에서 서빙합니다.** Access에서는 공개 호스트 이름에 **경로 `/api/admin/*` 와 `/admin`, `/admin/*`** 를 등록하면 됩니다. 그러면 **api.holaphoto.com/admin** 접속 시 구글 로그인 한 번으로 화면과 API 데이터를 모두 사용할 수 있습니다. 공개용 `/api/posts`, `/api/images/*` 등은 Access를 타지 않아 일반 방문자도 정상 호출됩니다.
 
 [Application paths](https://developers.cloudflare.com/cloudflare-one/access-controls/policies/app-paths/) 문서대로, 응용 프로그램에서 **특정 경로만** 보호할 수 있습니다. **공개 호스트 이름**에 경로를 넣으면 “그 경로만 이 앱으로 보호”되고, 나머지 경로는 Access를 타지 않아 일반 유저도 호출할 수 있습니다.
 
-- **경로만 등록하는 경우**: 예) `/api/admin/*`, `/api/upload` 만 등록 → 공개용 GET `/api/posts`, GET `/api/images/*` 등은 Access를 거치지 않음 → 메인 사이트 정상.
+- **경로만 등록하는 경우**: 예) `/api/admin/*`, `/admin`, `/admin/*` (및 필요 시 `/api/upload`) 등록 → 공개용 GET `/api/posts`, GET `/api/images/*` 등은 Access를 거치지 않음 → 메인 사이트 정상. `/admin`을 넣으면 관리자 UI도 같은 Access 로그인으로 이용 가능.
 - **한계**: `/api/posts` 를 넣으면 GET까지 막혀서 공개 후기 목록이 깨짐. 안 넣으면 POST/PUT/DELETE `/api/posts` 요청에 Access 헤더가 안 붙어 Worker가 401을 반환함. 정책에는 **URI Path / Request Method** 선택기가 없어 ([Policies Selectors](https://developers.cloudflare.com/cloudflare-one/access-controls/policies/#selectors)) “같은 경로는 GET만 Bypass”를 정책만으로는 만들기 어렵습니다.
 - **정리**: “관리자 전용 경로만” 보호하려면 `/api/admin/*`, `/api/upload` 만 경로로 등록하는 방식이 공식 문서와 맞습니다. `/api/posts` 쓰기(POST/PUT/DELETE)까지 Access로 보호하려면 **전체 호스트(api.holaphoto.com) 한 개 등록 + 관리자 로그인**이 필요하고, 공개 경로는 같은 문서상으로는 Bypass 정책에 “경로” 조건을 줄 수 있는 선택기가 없어, **API 키로 관리자 API만 보호**하는 방식이 대안입니다.
 
@@ -108,9 +108,8 @@
 2. **Worker 환경 변수** 확인:  
    Workers & Pages → **holaphotograph-api** → Settings → Variables  
    - **ALLOWED_EMAILS** = 관리자 이메일(쉼표 구분) 이 있어야 Worker가 “관리자”로 인정합니다.
-3. 브라우저에서 **https://api.holaphoto.com/** 한 번 열어서 Access 로그인  
-   → 같은 브라우저에서 **holaphoto.com/admin** 사용 시 API 요청에 쿠키가 붙어 401이 사라지고, 후기 5개 전부 + 승인 되돌리기 버튼이 보입니다.  
-   **중요:** 관리자 페이지에서 "Failed to fetch"가 나면, **먼저 api.holaphoto.com을 직접 열어** 로그인한 뒤 admin으로 이동하세요. holaphoto.com에서 api로 가는 요청은 교차 사이트라 CF_Session 쿠키가 제3자 쿠키로 취급될 수 있고, Chrome "제3자 쿠키 차단"이 켜져 있으면 쿠키가 막혀 실패합니다. api.holaphoto.com에서 한 번 로그인해 두면 같은 브라우저에서 admin 호출 시 쿠키가 붙습니다.
+3. **관리자 사용**: **https://api.holaphoto.com/admin** 으로 접속해 Access(구글) 로그인 한 번 하면, 고객 후기·강의 신청 목록 등 데이터가 그대로 불러와집니다. holaphoto.com/admin 으로 들어가도 자동으로 api.holaphoto.com/admin 으로 넘어가므로, 같은 한 번 로그인으로 사용하면 됩니다.
+4. (선택) 루트 **https://api.holaphoto.com/** 에서 로그인해 두어도, 같은 브라우저에서 /admin 사용 시 쿠키가 붙습니다. (관리자는 **api.holaphoto.com/admin** 접속을 권장.)
 
 ---
 

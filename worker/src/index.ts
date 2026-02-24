@@ -79,6 +79,25 @@ function getCorsHeaders(request: Request) {
   return headers;
 }
 
+/** R2 admin-ui 정적 파일 Content-Type */
+function contentTypeForKey(key: string): string {
+  const ext = key.includes(".") ? key.slice(key.lastIndexOf(".")) : "";
+  const map: Record<string, string> = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".woff2": "font/woff2",
+    ".woff": "font/woff",
+  };
+  return map[ext.toLowerCase()] || "application/octet-stream";
+}
+
 function jsonResponse(data: unknown, status = 200, request?: Request) {
   const cors = request ? getCorsHeaders(request) : { "Access-Control-Allow-Origin": "*" };
   return Response.json(data, { status, headers: cors });
@@ -197,6 +216,34 @@ export default {
     }
 
     const url = new URL(request.url);
+
+    // 관리자 UI 정적 파일 (R2 admin-ui/ 프리픽스). GET만. /admin 진입 시 Access 한 번 로그인으로 화면+API 동시 사용.
+    if (request.method === "GET") {
+      const path = url.pathname;
+      if (path === "/admin" || path === "/admin/") {
+        const obj = await env.BUCKET.get("admin-ui/admin/index.html");
+        if (obj) return new Response(obj.body, { headers: { "Content-Type": "text/html; charset=utf-8", ...cors } });
+      }
+      if (path.startsWith("/admin/") && !path.startsWith("/api/")) {
+        const sub = path.slice("/admin".length).replace(/^\/+/, "") || "index";
+        const tryKeys = [`admin-ui/admin/${sub}/index.html`, `admin-ui/admin/${sub}.html`, `admin-ui/admin/${sub}`];
+        for (const key of tryKeys) {
+          const obj = await env.BUCKET.get(key);
+          if (obj) {
+            const ct = contentTypeForKey(key);
+            return new Response(obj.body, { headers: { "Content-Type": ct, ...cors } });
+          }
+        }
+      }
+      if (path.startsWith("/_astro/")) {
+        const key = "admin-ui" + path;
+        const obj = await env.BUCKET.get(key);
+        if (obj) {
+          const ct = contentTypeForKey(key);
+          return new Response(obj.body, { headers: { "Content-Type": ct, ...cors } });
+        }
+      }
+    }
 
     // 루트 - API 정보
     if (url.pathname === "/" || url.pathname === "/api") {

@@ -22,6 +22,12 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Upload admin UI to R2
+        run: npm run upload-admin-ui
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Install Worker dependencies
         run: npm ci
         working-directory: worker

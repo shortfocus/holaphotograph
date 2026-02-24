@@ -83,6 +83,7 @@ npx wrangler d1 create holaphotograph-db
 
 - 고객 후기 썸네일·본문 이미지 업로드 (POST /api/admin/upload)
 - 이미지 조회: GET /api/images/:path (공개), 삭제: DELETE /api/admin/images/:path (관리자)
+- **관리자 UI 정적 파일**: `admin-ui/` 프리픽스로 업로드 (dist/admin, dist/_astro). Worker가 GET /admin, /_astro 요청 시 이 객체를 서빙. 배포 시 `npm run upload-admin-ui` 실행 (또는 CI에 포함).
 
 ### 4.2 생성
 
@@ -122,8 +123,7 @@ npx wrangler kv namespace create "APP_KV" --preview # 프리뷰(로컬) preview_
 
 | 앱(이름 예시) | 보호 대상 | 비고 |
 |---------------|-----------|------|
-| 관리자 페이지 | `holaphoto.com/admin` (Pages) | Zero Trust → Applications에서 holaphoto.com 경로 /admin |
-| API (관리자 경로) | `api.holaphoto.com` 경로 `/api/admin/*` | Self-hosted, 공개 호스트명 api.holaphoto.com, 경로만 /api/admin/* |
+| API + 관리자 UI | `api.holaphoto.com` 경로 `/api/admin/*`, `/admin`, `/admin/*` | Self-hosted. 관리자 화면도 api.holaphoto.com/admin 에서 서빙하므로, 한 번 로그인으로 화면+API 모두 사용. holaphoto.com/admin 접속 시 자동으로 api.holaphoto.com/admin 으로 리다이렉트됨. |
 
 ### 6.2 API Access 설정 요약
 
