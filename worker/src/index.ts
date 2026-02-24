@@ -47,23 +47,35 @@ function sanitizeReviewContent(html: string): string {
   });
 }
 
+const ALLOWED_ORIGINS = [
+  "pages.dev",
+  "localhost",
+  "127.0.0.1",
+  "solidwebteam",
+  "holaphotograph.com",
+  "holaphoto.com",
+];
+
 function getCorsHeaders(request: Request) {
-  const origin = request.headers.get("Origin");
+  let origin = request.headers.get("Origin");
+  if (!origin && request.headers.get("Referer")) {
+    try {
+      origin = new URL(request.headers.get("Referer")!).origin;
+    } catch {
+      origin = null;
+    }
+  }
   const allowOrigin =
-    origin &&
-    (origin.includes("pages.dev") ||
-      origin.includes("localhost") ||
-      origin.includes("solidwebteam") ||
-      origin.includes("holaphotograph.com") ||
-      origin.includes("holaphoto.com"))
+    origin && ALLOWED_ORIGINS.some((allowed) => origin!.toLowerCase().includes(allowed))
       ? origin
       : "*";
   const headers: Record<string, string> = {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": allowOrigin !== "*" ? "true" : "false",
+    "Vary": "Origin",
   };
-  if (allowOrigin !== "*") headers["Access-Control-Allow-Credentials"] = "true";
   return headers;
 }
 
@@ -181,7 +193,7 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const cors = getCorsHeaders(request);
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: cors });
+      return new Response(null, { status: 204, headers: { ...cors, "Access-Control-Max-Age": "86400" } });
     }
 
     const url = new URL(request.url);
