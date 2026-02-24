@@ -1,5 +1,6 @@
 /// <reference path="../worker-configuration.d.ts" />
 import sanitizeHtml from "sanitize-html";
+import { logger } from "./logger";
 
 export interface Env {
   DB: D1Database;
@@ -208,10 +209,9 @@ function isAllowedAdmin(request: Request, env: Env): boolean {
   return list.includes(email);
 }
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const cors = getCorsHeaders(request);
-    if (request.method === "OPTIONS") {
+async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+  const cors = getCorsHeaders(request);
+  if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: { ...cors, "Access-Control-Max-Age": "86400" } });
     }
 
@@ -395,7 +395,21 @@ export default {
       return handleListPosts(request, env);
     }
 
-    return errorResponse("Not found", 404, request);
+  return errorResponse("Not found", 404, request);
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const start = Date.now();
+    let res: Response;
+    try {
+      res = await handleRequest(request, env, ctx);
+    } catch (err) {
+      logger.error("unhandled exception", { err: err instanceof Error ? err.message : String(err) });
+      res = errorResponse("Internal Server Error", 500, request);
+    }
+    logger.request(request, res, Date.now() - start);
+    return res;
   },
 };
 
@@ -470,7 +484,7 @@ async function handleImageProxy(request: Request): Promise<Response> {
       },
     });
   } catch (err) {
-    console.error("image-proxy error:", err);
+    logger.error("image-proxy", { err: err instanceof Error ? err.message : String(err) });
     return errorResponse("Image fetch failed", 502, request);
   }
 }
@@ -504,7 +518,7 @@ async function handleNaverRss(request: Request): Promise<Response> {
       compare,
     }, 200, request);
   } catch (err) {
-    console.error("naver-rss error:", err);
+    logger.error("naver-rss", { err: err instanceof Error ? err.message : String(err) });
     return errorResponse("RSS fetch failed", 502, request);
   }
 }
@@ -659,7 +673,7 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     }
     return jsonResponse(body, 200, request);
   } catch (err) {
-    console.error("youtube-latest error:", err);
+    logger.error("youtube-latest", { err: err instanceof Error ? err.message : String(err) });
     return errorResponse("YouTube fetch failed", 502, request);
   }
 }
@@ -682,7 +696,7 @@ async function handleChannelStats(request: Request, env: Env): Promise<Response>
         }
       }
     } catch (err) {
-      console.error("channel-stats youtube error:", err);
+      logger.error("channel-stats youtube", { err: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -729,7 +743,7 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
         request
       );
     }
-    console.error("lecture-signup error:", err);
+    logger.error("lecture-signup", { err: err instanceof Error ? err.message : String(err) });
     return errorResponse("Failed to save", 500, request);
   }
 }
@@ -951,7 +965,7 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
     return jsonResponse(post, 201, request);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("createPost error:", msg, err);
+    logger.error("createPost", { msg, err: String(err) });
     // no such table → 원격 DB에 마이그레이션 미적용
     if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
       return errorResponse(
