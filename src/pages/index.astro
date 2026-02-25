@@ -3,6 +3,61 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
+  <!-- 강의 홍보 팝업 (메인 진입 시 1회) -->
+  <div
+    id="class-promo-popup"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="class-promo-title"
+  >
+    <div class="relative mt-8 flex max-h-[85vh] w-full max-w-sm flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12">
+      <!-- 헤더 -->
+      <div class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#0F172A] p-4">
+        <h2 id="class-promo-title" class="text-lg font-bold text-white sm:text-xl">올라포토 강의 안내</h2>
+        <button
+          type="button"
+          id="class-promo-close"
+          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+          aria-label="팝업 닫기"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <!-- 슬라이드 영역: 이미지 기준 상하좌우 동일 여백(p-4) -->
+      <div id="class-promo-slider" class="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div class="relative min-h-0 flex-1 overflow-hidden">
+          <div class="class-promo-track flex h-full transition-transform duration-300 ease-out" style="transform: translateX(0);">
+            <div class="class-promo-slide flex min-h-0 min-w-full shrink-0 flex-col px-2 py-4">
+              <div class="flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
+                <a href="/notice?id=2" class="class-promo-image-link block w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                  <img src="/images/class-exposure.png" alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원" class="max-h-[60vh] w-full rounded-lg object-contain object-center" />
+                </a>
+              </div>
+            </div>
+            <div class="class-promo-slide flex min-h-0 min-w-full shrink-0 flex-col px-2 py-4">
+              <div class="flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
+                <a href="/notice?id=2" class="class-promo-image-link block w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                  <img src="/images/class-xe5.png" alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원" class="max-h-[60vh] w-full rounded-lg object-contain object-center" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 푸터 -->
+      <div class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <label class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400">
+          <input type="checkbox" id="class-promo-dont-show" class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]" />
+          오늘 하루 안 보기
+        </label>
+        <button type="button" id="class-promo-close-btn" class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 2. 히어로 섹션 (캐러셀) - 플로팅 바 높이 제외한 뷰포트 -->
   <section
     class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]"
@@ -814,4 +869,82 @@ import Layout from "../layouts/Layout.astro";
   }
 
   load();
+
+  // 강의 홍보 팝업: 메인 진입 시 1회 (오늘 하루 안 보기 가능)
+  (function initClassPromoPopup() {
+    const STORAGE_KEY = 'holaphoto-class-popup-seen';
+    const popup = document.getElementById('class-promo-popup');
+    const closeBtn = document.getElementById('class-promo-close');
+    const closeBtn2 = document.getElementById('class-promo-close-btn');
+    const dontShow = document.getElementById('class-promo-dont-show') as HTMLInputElement | null;
+
+    function hidePopup() {
+      popup?.classList.add('hidden');
+      popup?.classList.remove('flex');
+    }
+
+    function showPopup() {
+      popup?.classList.remove('hidden');
+      popup?.classList.add('flex');
+    }
+
+    function shouldShowPopup(): boolean {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return true;
+        const data = JSON.parse(raw) as { date?: string };
+        if (!data.date) return true;
+        const today = new Date().toDateString();
+        return data.date !== today;
+      } catch {
+        return true;
+      }
+    }
+
+    function setDontShowToday() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ date: new Date().toDateString() }));
+      } catch (_) {}
+    }
+
+    if (shouldShowPopup()) {
+      showPopup();
+    }
+
+    function close() {
+      if (dontShow?.checked) setDontShowToday();
+      hidePopup();
+    }
+
+    closeBtn?.addEventListener('click', close);
+    closeBtn2?.addEventListener('click', close);
+    popup?.addEventListener('click', (e) => {
+      if (e.target === popup) close();
+      const link = (e.target as Element).closest('.class-promo-image-link');
+      if (link) hidePopup(); // 이미지 클릭 시 팝업만 닫고, 링크 기본 동작(/notice?id=2 상세 이동)은 그대로
+    });
+  })();
+
+  // 강의 팝업 내부 슬라이드 (자동 재생, 반복)
+  (function initClassPromoSlider() {
+    const track = document.querySelector('.class-promo-track') as HTMLElement | null;
+    const total = 2;
+    let current = 0;
+    const AUTOPLAY_MS = 3000;
+
+    function goTo(i: number) {
+      current = ((i % total) + total) % total;
+      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+    }
+
+    const slider = document.getElementById('class-promo-slider');
+    let touchStartX = 0;
+    slider?.addEventListener('touchstart', (e) => { touchStartX = (e as TouchEvent).touches[0].clientX; }, { passive: true });
+    slider?.addEventListener('touchend', (e) => {
+      const dx = (e as TouchEvent).changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) dx < 0 ? goTo(current + 1) : goTo(current - 1);
+    }, { passive: true });
+
+    setInterval(() => goTo(current + 1), AUTOPLAY_MS);
+  })();
 </script>

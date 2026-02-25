@@ -1,0 +1,113 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="공지 수정 - 관리자" headerOpaque hideFooter adminFrame>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css" />
+    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+  </Fragment>
+  <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <div class="mb-6 flex items-center gap-3">
+      <a href="/admin/notices" class="text-gray-600 hover:text-gray-900">← 공지사항 관리</a>
+    </div>
+    <h1 class="mb-6 text-xl font-bold sm:mb-8 sm:text-2xl">공지 수정</h1>
+    <form id="notice-form" class="space-y-6">
+      <input type="hidden" id="notice-id" name="id" />
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
+      <div>
+        <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
+        <input id="content" name="content" type="hidden" />
+        <trix-editor input="content" class="trix-content mt-1 min-h-[400px] rounded-lg border border-gray-300 bg-white px-3 py-2"></trix-editor>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <button
+          type="submit"
+          id="submit-btn"
+          class="cursor-pointer rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 sm:py-2"
+        >
+          저장
+        </button>
+        <a href="/admin/notices" class="cursor-pointer rounded-lg border border-gray-300 px-6 py-2.5 text-center font-medium hover:bg-gray-50 sm:py-2">취소</a>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { fetchNotice, updateNotice, uploadImage } from '../../../lib/api';
+
+  const form = document.getElementById('notice-form') as HTMLFormElement;
+  const idEl = document.getElementById('notice-id') as HTMLInputElement;
+  const titleEl = document.getElementById('title') as HTMLInputElement;
+  const contentEl = document.getElementById('content') as HTMLInputElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id') || '0', 10);
+
+  document.addEventListener('trix-attachment-add', async (e: Event) => {
+    const attachment = (e as CustomEvent & { attachment: { file?: File; setAttributes: (a: { url: string }) => void; remove: () => void } }).attachment;
+    if (!attachment.file) return;
+    try {
+      const result = await uploadImage(attachment.file);
+      attachment.setAttributes({ url: result.url });
+    } catch (err) {
+      console.error('이미지 업로드 실패:', err);
+      attachment.remove();
+      alert('이미지 업로드에 실패했습니다.');
+    }
+  });
+
+  if (!id) {
+    window.location.href = '/admin/notices';
+  } else {
+    (async () => {
+      try {
+        const notice = await fetchNotice(id);
+        if (!notice) {
+          alert('공지를 찾을 수 없습니다.');
+          window.location.href = '/admin/notices';
+          return;
+        }
+        idEl.value = String(notice.id);
+        titleEl.value = notice.title;
+        contentEl.value = notice.content;
+      } catch (_) {
+        alert('공지를 불러오지 못했습니다.');
+        window.location.href = '/admin/notices';
+      }
+    })();
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = titleEl?.value?.trim();
+    const content = contentEl?.value?.trim() ?? '';
+    if (!title) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    if (!content) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+    submitBtn.disabled = true;
+    try {
+      await updateNotice(id, { title, content });
+      window.location.href = '/admin/notices';
+    } catch (err) {
+      submitBtn.disabled = false;
+      alert((err as Error).message);
+    }
+  });
+</script>

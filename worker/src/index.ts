@@ -31,6 +31,15 @@ interface Post {
   review_type?: "snap" | "lecture";
 }
 
+/** 공지사항 (관리자만 등록, 공개 조회) */
+interface Notice {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 /** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거. img의 data: 스킴 제거(대용량 base64 DoS·레거시 XSS 방지) */
 function sanitizeReviewContent(html: string): string {
   return sanitizeHtml(html, {
@@ -260,11 +269,18 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
             "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
             "GET /api/posts": "리뷰 목록 (approved만)",
             "GET /api/posts/:id": "리뷰 상세 (approved만)",
+            "GET /api/notices": "공지사항 목록",
+            "GET /api/notices/:id": "공지사항 상세",
             "POST /api/reviews": "고객 후기 제출 (pending 저장)",
             "GET /api/images/:path": "이미지 조회",
           },
           admin: {
             "GET /api/admin/lecture-signups": "강의 신청 목록",
+            "GET /api/admin/notices": "공지사항 목록",
+            "GET /api/admin/notices/:id": "공지사항 상세",
+            "POST /api/admin/notices": "공지사항 작성",
+            "PUT /api/admin/notices/:id": "공지사항 수정",
+            "DELETE /api/admin/notices/:id": "공지사항 삭제",
             "GET /api/admin/posts": "리뷰 목록 (전체+status)",
             "GET /api/admin/posts/:id": "리뷰 상세 (pending 포함)",
             "POST /api/admin/posts": "리뷰 작성",
@@ -321,6 +337,37 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
     // POST /api/reviews/upload - 고객 후기 본문 이미지 업로드 (로그인 없음)
     if (url.pathname === "/api/reviews/upload" && request.method === "POST") {
       return handleReviewImageUpload(request, env);
+    }
+
+    // GET /api/notices, GET /api/notices/:id - 공지사항 목록/상세 (공개)
+    const noticesMatch = url.pathname.match(/^\/api\/notices(?:\/(\d+))?$/);
+    if (noticesMatch && request.method === "GET") {
+      const id = noticesMatch[1] ? parseInt(noticesMatch[1], 10) : null;
+      if (id) return handleGetNotice(request, env, id);
+      return handleListNotices(request, env);
+    }
+
+    // /api/admin/notices - 공지사항 CRUD (관리자 전용)
+    const adminNoticesMatch = url.pathname.match(/^\/api\/admin\/notices(?:\/(\d+))?$/);
+    if (adminNoticesMatch) {
+      const id = adminNoticesMatch[1] ? parseInt(adminNoticesMatch[1], 10) : null;
+      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+      switch (request.method) {
+        case "GET":
+          if (id) return handleGetNotice(request, env, id);
+          return handleListNotices(request, env);
+        case "POST":
+          if (id) return errorResponse("Method not allowed", 405, request);
+          return handleCreateNotice(request, env);
+        case "PUT":
+          if (!id) return errorResponse("ID required", 400, request);
+          return handleUpdateNotice(request, env, id);
+        case "DELETE":
+          if (!id) return errorResponse("ID required", 400, request);
+          return handleDeleteNotice(request, env, id);
+        default:
+          return errorResponse("Method not allowed", 405, request);
+      }
     }
 
     const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
@@ -1029,6 +1076,139 @@ async function handleDeletePost(request: Request, env: Env, id: number): Promise
     }
   }
   const result = await env.DB.prepare("DELETE FROM customer_reviews WHERE id = ?").bind(id).run();
+  if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
+  return jsonResponse({ success: true }, 200, request);
+}
+
+// --- 공지사항 (notices) ---
+
+async function handleListNotices(request: Request, env: Env): Promise<Response> {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT id, title, content, created_at, updated_at FROM notices ORDER BY created_at DESC"
+    ).all<Notice>();
+    const origin = new URL(request.url).origin;
+    const notices = results.map((n) => ({
+      ...n,
+      content: rewriteImageUrlsInHtml(n.content ?? "", origin),
+    }));
+    return jsonResponse({ notices }, 200, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: notices table not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request
+      );
+    }
+    throw err;
+  }
+}
+
+async function handleGetNotice(request: Request, env: Env, id: number): Promise<Response> {
+  const row = await env.DB.prepare(
+    "SELECT id, title, content, created_at, updated_at FROM notices WHERE id = ?"
+  )
+    .bind(id)
+    .first<Notice>();
+  if (!row) return errorResponse("Not found", 404, request);
+  const origin = new URL(request.url).origin;
+  const notice = {
+    ...row,
+    content: rewriteImageUrlsInHtml(row.content ?? "", origin),
+  };
+  return jsonResponse(notice, 200, request);
+}
+
+async function handleCreateNotice(request: Request, env: Env): Promise<Response> {
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+  const title = String(body.title ?? "").trim();
+  const content = sanitizeReviewContent(String(body.content ?? ""));
+
+  if (!title) return errorResponse("title required", 400, request);
+  if (!content) return errorResponse("content required", 400, request);
+
+  try {
+    const now = new Date().toISOString();
+    const result = await env.DB.prepare(
+      "INSERT INTO notices (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)"
+    )
+      .bind(title, content, now, now)
+      .run();
+
+    const id = result.meta.last_row_id;
+    const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
+    if (!notice) return errorResponse("Failed to fetch created notice", 500, request);
+    return jsonResponse(notice, 201, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.error("createNotice", { msg, err: String(err) });
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: notices table not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request
+      );
+    }
+    return errorResponse("Failed to create notice", 500, request);
+  }
+}
+
+async function handleUpdateNotice(request: Request, env: Env, id: number): Promise<Response> {
+  const body = (await request.json()) as Record<string, unknown>;
+  const title = body.title != null ? String(body.title).trim() : null;
+  const contentRaw = body.content != null ? String(body.content) : null;
+  const content = contentRaw !== null ? sanitizeReviewContent(contentRaw) : null;
+
+  const existing = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
+  if (!existing) return errorResponse("Not found", 404, request);
+
+  const finalTitle = title ?? existing.title;
+  const finalContent = content ?? existing.content;
+  const now = new Date().toISOString();
+
+  await env.DB.prepare("UPDATE notices SET title = ?, content = ?, updated_at = ? WHERE id = ?")
+    .bind(finalTitle, finalContent, now, id)
+    .run();
+
+  const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
+  return jsonResponse(notice!, 200, request);
+}
+
+function extractR2KeysFromContent(content: string | null): string[] {
+  const keys: string[] = [];
+  if (!content?.trim()) return keys;
+  const re = /\/api\/images\/([^"'\s?#]+)/gi;
+  let match;
+  while ((match = re.exec(content)) !== null) {
+    try {
+      keys.push(decodeURIComponent(match[1]));
+    } catch {
+      keys.push(match[1]);
+    }
+  }
+  return [...new Set(keys)];
+}
+
+async function handleDeleteNotice(request: Request, env: Env, id: number): Promise<Response> {
+  const row = await env.DB.prepare("SELECT content FROM notices WHERE id = ?").bind(id).first<{ content: string | null }>();
+  if (row) {
+    const keys = extractR2KeysFromContent(row.content);
+    for (const key of keys) {
+      try {
+        await env.BUCKET.delete(key);
+      } catch {
+        // R2에 없거나 실패해도 공지 삭제는 진행
+      }
+    }
+  }
+  const result = await env.DB.prepare("DELETE FROM notices WHERE id = ?").bind(id).run();
   if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
 }

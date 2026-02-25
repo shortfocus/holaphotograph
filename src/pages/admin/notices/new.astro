@@ -1,0 +1,98 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="공지 등록 - 관리자" headerOpaque hideFooter adminFrame>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css" />
+    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+  </Fragment>
+  <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <div class="mb-6 flex items-center gap-3">
+      <a href="/admin/notices" class="text-gray-600 hover:text-gray-900">← 공지사항 관리</a>
+    </div>
+    <h1 class="mb-6 text-xl font-bold sm:mb-8 sm:text-2xl">공지 등록</h1>
+    <form id="notice-form" class="space-y-6">
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+          placeholder="공지 제목"
+        />
+      </div>
+      <div>
+        <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
+        <input id="content" name="content" type="hidden" required />
+        <trix-editor input="content" class="trix-content mt-1 min-h-[400px] rounded-lg border border-gray-300 bg-white px-3 py-2" placeholder="공지 내용"></trix-editor>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <button
+          type="submit"
+          id="submit-btn"
+          class="cursor-pointer rounded-lg bg-red-600 px-6 py-2.5 font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 sm:py-2"
+        >
+          <span id="submit-text">등록</span>
+          <svg id="submit-spinner" class="hidden h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12H4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        </button>
+        <a href="/admin/notices" class="cursor-pointer rounded-lg border border-gray-300 px-6 py-2.5 text-center font-medium hover:bg-gray-50 sm:py-2">취소</a>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { createNotice, uploadImage } from '../../../lib/api';
+
+  const form = document.getElementById('notice-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const submitText = document.getElementById('submit-text')!;
+  const submitSpinner = document.getElementById('submit-spinner')!;
+
+  document.addEventListener('trix-attachment-add', async (e: Event) => {
+    const attachment = (e as CustomEvent & { attachment: { file?: File; setAttributes: (a: { url: string }) => void; remove: () => void } }).attachment;
+    if (!attachment.file) return;
+    try {
+      const result = await uploadImage(attachment.file);
+      attachment.setAttributes({ url: result.url });
+    } catch (err) {
+      console.error('이미지 업로드 실패:', err);
+      attachment.remove();
+      alert('이미지 업로드에 실패했습니다.');
+    }
+  });
+
+  function setLoading(loading: boolean) {
+    submitBtn.disabled = loading;
+    submitText.classList.toggle('hidden', loading);
+    submitSpinner.classList.toggle('hidden', !loading);
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = (document.getElementById('title') as HTMLInputElement)?.value?.trim();
+    const content = (document.getElementById('content') as HTMLInputElement)?.value?.trim() ?? '';
+    if (!title) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    if (!content) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await createNotice({ title, content });
+      window.location.href = '/admin/notices';
+    } catch (err) {
+      setLoading(false);
+      alert((err as Error).message);
+    }
+  });
+</script>

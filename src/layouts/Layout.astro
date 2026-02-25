@@ -9,9 +9,11 @@ interface Props {
   hideFooter?: boolean;
   /** true면 헤더·플로팅 바 없음 (api.holaphoto.com/admin 전용) */
   adminFrame?: boolean;
+  /** true면 하단 강의 소식 플로팅 바 숨김 (/notice 공지사항 페이지 등) */
+  hideLectureBar?: boolean;
 }
 
-const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false, adminFrame = false } = Astro.props;
+const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false, adminFrame = false, hideLectureBar = false } = Astro.props;
 
 const SITE = 'https://holaphoto.com';
 const canonicalUrl = new URL(Astro.url.pathname, SITE).href;
@@ -56,7 +58,7 @@ const ogImage = `${SITE}/og-image.png`;
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <slot name="head" />
   </head>
-  <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased', !adminFrame && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
+  <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased', !adminFrame && !hideLectureBar && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
     {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -84,7 +86,7 @@ const ogImage = `${SITE}/og-image.png`;
           <li><a href="/#youtube-shorts" class="nav-link-premium nav-link-mobile">장비 팁</a></li>
           <li><a href="/#about" class="nav-link-premium nav-link-mobile">협업 및 광고 문의</a></li>
           <li><a href="/reviews" class="nav-link-premium nav-link-mobile">고객 후기</a></li>
-          <li><a href="/#lecture" class="nav-link-premium nav-link-mobile text-slate-400">강의 (예정)</a></li>
+          <li><a href="/notice" class="nav-link-premium nav-link-mobile">공지사항</a></li>
         </ul>
       </nav>
     </header>
@@ -165,7 +167,7 @@ const ogImage = `${SITE}/og-image.png`;
     <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
-    {!adminFrame && (
+    {!adminFrame && !hideLectureBar && (
     <!-- 강의 소식 플로팅 CTA (토글 가능) -->
     <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
       <!-- 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 (bottom: 100%), CTA 오른쪽에 맞춤 -->
@@ -225,8 +227,12 @@ const ogImage = `${SITE}/og-image.png`;
         collapseBtn?.addEventListener('click', () => setCollapsed(true));
         expandBtn?.addEventListener('click', () => setCollapsed(false));
       })();
+    </script>
+    )}
 
-      // 강의 소식 수신 신청 폼 (모든 페이지에서 동작)
+    {!adminFrame && (
+    <script>
+      // 강의 소식 수신 신청 폼 (플로팅 바 + /notice 페이지 공통)
       (function initLectureSignup() {
         const form = document.getElementById('lecture-signup-form') as HTMLFormElement | null;
         const input = document.getElementById('lecture-email') as HTMLInputElement | null;

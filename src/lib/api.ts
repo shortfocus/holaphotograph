@@ -3,9 +3,16 @@
  * - PUBLIC_API_URL: 메인 페이지용 (GET)
  * - PUBLIC_ADMIN_API_URL: 관리자용 (POST/PUT/DELETE/upload). 없으면 PUBLIC_API_URL 사용
  */
-const env = (typeof import.meta.env !== "undefined" ? import.meta.env : {}) as { PUBLIC_API_URL?: string; PUBLIC_ADMIN_API_URL?: string };
-const isProd = typeof window !== "undefined" && !window.location.hostname.includes("localhost");
-const defaultUrl = isProd ? "https://api.holaphoto.com" : "http://localhost:8787";
+const env = (typeof import.meta.env !== "undefined" ? import.meta.env : {}) as {
+  PUBLIC_API_URL?: string;
+  PUBLIC_ADMIN_API_URL?: string;
+};
+const isProd =
+  typeof window !== "undefined" &&
+  !window.location.hostname.includes("localhost");
+const defaultUrl = isProd
+  ? "https://api.holaphoto.com"
+  : "http://localhost:8787";
 const PUBLIC = env.PUBLIC_API_URL || defaultUrl;
 const ADMIN = env.PUBLIC_ADMIN_API_URL || PUBLIC;
 
@@ -46,7 +53,9 @@ export async function fetchApprovedReviews(): Promise<Post[]> {
 
 /** 관리자용: 전체 목록 (pending 포함, credentials 필요) */
 export async function fetchPostsForAdmin(): Promise<Post[]> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts`, { credentials: "include" });
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts`, {
+    credentials: "include",
+  });
   if (!res.ok) throw new Error("Failed to fetch posts");
   const data = (await res.json()) as { posts?: Post[] };
   return data.posts ?? [];
@@ -60,10 +69,91 @@ export interface LectureSignup {
 
 /** 관리자용: 강의 신청 목록 (credentials 필요) */
 export async function fetchLectureSignups(): Promise<LectureSignup[]> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/admin/lecture-signups`, { credentials: "include" });
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/lecture-signups`, {
+    credentials: "include",
+  });
   if (!res.ok) throw new Error("Failed to fetch lecture signups");
   const data = (await res.json()) as { signups?: LectureSignup[] };
   return data.signups ?? [];
+}
+
+/** 공지사항 (관리자만 등록, 공개 조회) */
+export interface Notice {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** 공지사항 목록 (공개) */
+export async function fetchNotices(): Promise<Notice[]> {
+  const res = await fetch(`${API_BASE}/api/notices`);
+  if (!res.ok) throw new Error("Failed to fetch notices");
+  const data = (await res.json()) as { notices?: Notice[] };
+  return data.notices ?? [];
+}
+
+/** 공지사항 단건 조회 (공개) */
+export async function fetchNotice(id: number): Promise<Notice | null> {
+  const res = await fetch(`${API_BASE}/api/notices/${id}`);
+  if (!res.ok) return null;
+  return res.json();
+}
+
+/** 관리자용: 공지사항 목록 (credentials 필요) */
+export async function fetchNoticesForAdmin(): Promise<Notice[]> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to fetch notices");
+  const data = (await res.json()) as { notices?: Notice[] };
+  return data.notices ?? [];
+}
+
+/** 관리자용: 공지사항 등록 */
+export async function createNotice(body: { title: string; content: string }): Promise<Notice> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to create notice");
+  }
+  return res.json();
+}
+
+/** 관리자용: 공지사항 수정 */
+export async function updateNotice(
+  id: number,
+  body: { title?: string; content?: string }
+): Promise<Notice> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to update notice");
+  }
+  return res.json();
+}
+
+/** 관리자용: 공지사항 삭제 */
+export async function deleteNotice(id: number): Promise<void> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to delete notice");
+  }
 }
 
 export interface SubmitReviewBody {
@@ -80,7 +170,9 @@ export interface SubmitReviewResponse {
   message: string;
 }
 
-export async function submitReview(body: SubmitReviewBody): Promise<SubmitReviewResponse> {
+export async function submitReview(
+  body: SubmitReviewBody,
+): Promise<SubmitReviewResponse> {
   const res = await fetch(`${API_BASE}/api/reviews`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -174,7 +266,9 @@ export interface LectureSignupResponse {
   message: string;
 }
 
-export async function submitLectureSignup(email: string): Promise<LectureSignupResponse> {
+export async function submitLectureSignup(
+  email: string,
+): Promise<LectureSignupResponse> {
   const res = await fetch(`${API_BASE}/api/lecture-signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -193,7 +287,9 @@ export async function fetchPost(id: number): Promise<Post | null> {
 
 /** 관리자용: 단건 조회 (pending 포함, credentials 필요) */
 export async function fetchPostForAdmin(id: number): Promise<Post | null> {
-  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, { credentials: "include" });
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, {
+    credentials: "include",
+  });
   if (!res.ok) return null;
   return res.json();
 }
@@ -214,7 +310,12 @@ export async function createPost(body: Partial<Post>): Promise<Post> {
 
 export async function updatePost(
   id: number,
-  body: Partial<Post> & { thumbnail_url?: string | null; status?: ReviewStatus; review_type?: ReviewType }): Promise<Post> {
+  body: Partial<Post> & {
+    thumbnail_url?: string | null;
+    status?: ReviewStatus;
+    review_type?: ReviewType;
+  },
+): Promise<Post> {
   const res = await fetch(`${ADMIN_API_BASE}/api/admin/posts/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

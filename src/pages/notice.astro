@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="공지사항 - 올라포토" headerOpaque hideLectureBar>
+  <div class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20">
+    <div class="mx-auto max-w-2xl">
+      <!-- 목록 뷰 -->
+      <div id="notice-list-view">
+        <h1 class="text-2xl font-bold text-[#111827] sm:text-3xl">공지사항</h1>
+        <p class="mt-2 text-slate-600 sm:text-lg">올라포토 소식과 강의·이벤트 안내를 전해 드립니다.</p>
+
+        <section class="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm sm:overflow-hidden">
+          <h2 class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-base font-semibold text-[#111827] sm:px-6">공지 게시판</h2>
+          <div id="notice-list" class="divide-y divide-slate-100">
+            <p class="px-4 py-8 text-center text-slate-500 sm:px-6">로딩 중...</p>
+          </div>
+          <nav id="notice-pagination" class="hidden border-t border-slate-200 px-4 py-3 sm:px-6" aria-label="페이지 네비게이션"></nav>
+        </section>
+      </div>
+
+      <!-- 상세 뷰 (글 클릭 시 이 영역만 표시) -->
+      <div id="notice-detail-view" class="hidden">
+        <a href="/notice" id="notice-back-link" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#111827]">
+          <span aria-hidden="true">←</span> 목록으로
+        </a>
+        <article class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <h1 id="notice-detail-title" class="text-xl font-bold text-[#111827] sm:text-2xl"></h1>
+          <p id="notice-detail-date" class="mt-2 text-sm text-slate-500"></p>
+          <div id="notice-detail-body" class="notice-detail-body mt-6 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg"></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { fetchNotices, fetchNotice, type Notice } from '../lib/api';
+
+  const PAGE_SIZE = 10;
+
+  const listView = document.getElementById('notice-list-view')!;
+  const detailView = document.getElementById('notice-detail-view')!;
+  const listEl = document.getElementById('notice-list')!;
+  const paginationEl = document.getElementById('notice-pagination')!;
+  const detailTitle = document.getElementById('notice-detail-title')!;
+  const detailDate = document.getElementById('notice-detail-date')!;
+  const detailBody = document.getElementById('notice-detail-body')!;
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function getNoticeIdFromUrl(): number | null {
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) return null;
+    const n = parseInt(id, 10);
+    return Number.isNaN(n) ? null : n;
+  }
+
+  function getPageFromUrl(): number {
+    const page = new URLSearchParams(window.location.search).get('page');
+    if (!page) return 1;
+    const n = parseInt(page, 10);
+    return Number.isNaN(n) || n < 1 ? 1 : n;
+  }
+
+  function showListView() {
+    listView.classList.remove('hidden');
+    detailView.classList.add('hidden');
+  }
+
+  function showDetailView() {
+    listView.classList.add('hidden');
+    detailView.classList.remove('hidden');
+  }
+
+  async function loadDetail(id: number) {
+    showDetailView();
+    detailTitle.textContent = '';
+    detailDate.textContent = '';
+    detailBody.innerHTML = '<p class="text-slate-500">로딩 중...</p>';
+    try {
+      const notice = await fetchNotice(id);
+      if (!notice) {
+        detailBody.innerHTML = '<p class="text-red-500">공지를 찾을 수 없습니다.</p>';
+        return;
+      }
+      document.title = `${notice.title} - 공지사항 | 올라포토`;
+      detailTitle.textContent = notice.title;
+      detailDate.textContent = new Date(notice.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+      detailBody.innerHTML = notice.content;
+    } catch (_) {
+      detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
+    }
+  }
+
+  function renderListPage(notices: Notice[], page: number) {
+    const totalPages = Math.max(1, Math.ceil(notices.length / PAGE_SIZE));
+    const safePage = Math.min(Math.max(1, page), totalPages);
+    const start = (safePage - 1) * PAGE_SIZE;
+    const slice = notices.slice(start, start + PAGE_SIZE);
+
+    listEl.innerHTML = slice
+      .map(
+        (n: Notice) => `
+        <a href="/notice?id=${n.id}" class="notice-item flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left hover:bg-slate-50 sm:px-6" aria-label="공지 보기: ${escapeHtml(n.title)}">
+          <span class="font-medium text-[#111827]">${escapeHtml(n.title)}</span>
+          <span class="text-xs text-slate-500">${new Date(n.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        </a>
+      `
+      )
+      .join('');
+
+    paginationEl.classList.remove('hidden');
+
+    const prevPage = safePage > 1 ? safePage - 1 : null;
+    const nextPage = safePage < totalPages ? safePage + 1 : null;
+
+    const pageNumbers: number[] = [];
+    const showPages = 5;
+    let from = Math.max(1, safePage - Math.floor(showPages / 2));
+    let to = Math.min(totalPages, from + showPages - 1);
+    if (to - from + 1 < showPages) from = Math.max(1, to - showPages + 1);
+    for (let i = from; i <= to; i++) pageNumbers.push(i);
+
+    const link = (p: number, label: string, disabled?: boolean) =>
+      disabled
+        ? `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-2 text-sm text-slate-400" aria-disabled="true">${escapeHtml(label)}</span>`
+        : `<a href="/notice?page=${p}" class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300" aria-label="${escapeHtml(label)}">${escapeHtml(label)}</a>`;
+
+    const currentLink = (p: number) =>
+      `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-[#E11D48] bg-[#E11D48] px-2 text-sm font-medium text-white" aria-current="page">${p}</span>`;
+
+    let html = '<div class="flex flex-wrap items-center justify-center gap-1 sm:gap-2">';
+    html += prevPage ? link(prevPage, '이전') : link(1, '이전', true);
+    for (const p of pageNumbers) {
+      html += p === safePage ? currentLink(p) : link(p, String(p));
+    }
+    html += nextPage ? link(nextPage, '다음') : link(totalPages, '다음', true);
+    html += '</div>';
+    paginationEl.innerHTML = html;
+  }
+
+  async function loadNotices() {
+    try {
+      const notices = await fetchNotices();
+      if (notices.length === 0) {
+        listEl.innerHTML = '<p class="px-4 py-8 text-center text-slate-500 sm:px-6">등록된 공지가 없습니다.</p>';
+        paginationEl.classList.add('hidden');
+        paginationEl.innerHTML = '';
+        return;
+      }
+      const page = getPageFromUrl();
+      renderListPage(notices, page);
+    } catch (_) {
+      listEl.innerHTML = '<p class="px-4 py-8 text-center text-red-500 sm:px-6">공지를 불러오지 못했습니다.</p>';
+      paginationEl.classList.add('hidden');
+    }
+  }
+
+  function init() {
+    const id = getNoticeIdFromUrl();
+    if (id) {
+      loadDetail(id);
+    } else {
+      showListView();
+      loadNotices();
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    const id = getNoticeIdFromUrl();
+    if (id) loadDetail(id);
+    else {
+      showListView();
+      document.title = '공지사항 - 올라포토';
+      loadNotices();
+    }
+  });
+
+  init();
+</script>
+
+<style is:global>
+  #notice-detail-view .notice-detail-body img { min-height: 4rem; background: #f1f5f9; }
+</style>

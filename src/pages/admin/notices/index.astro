@@ -1,0 +1,74 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="관리자 - 공지사항" headerOpaque hideFooter adminFrame>
+  <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">공지사항 관리</h1>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="/admin" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50">← 고객 후기 관리</a>
+        <a href="/admin/notices/new" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700">공지 등록</a>
+      </div>
+    </div>
+
+    <div id="notice-list" class="space-y-4">
+      <p class="text-gray-500">로딩 중...</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { fetchNoticesForAdmin, deleteNotice, type Notice } from '../../../lib/api';
+
+  const listEl = document.getElementById('notice-list')!;
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function loadNotices() {
+    try {
+      const notices = await fetchNoticesForAdmin();
+      if (notices.length === 0) {
+        listEl.innerHTML = '<p class="text-gray-500">등록된 공지가 없습니다.</p>';
+        return;
+      }
+      listEl.innerHTML = notices
+        .map(
+          (n: Notice) => `
+        <article class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" data-id="${n.id}">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-semibold text-gray-900">${escapeHtml(n.title)}</h3>
+            <p class="mt-1 text-xs text-gray-500">${new Date(n.created_at).toLocaleDateString('ko-KR')} 수정: ${new Date(n.updated_at).toLocaleDateString('ko-KR')}</p>
+          </div>
+          <div class="flex shrink-0 gap-2">
+            <a href="/admin/notices/edit?id=${n.id}" class="cursor-pointer rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200">수정</a>
+            <button type="button" data-id="${n.id}" class="delete-btn cursor-pointer rounded bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200">삭제</button>
+          </div>
+        </article>
+      `
+        )
+        .join('');
+
+      listEl.querySelectorAll('.delete-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = Number((btn as HTMLElement).dataset.id);
+          if (!confirm('이 공지를 삭제할까요?')) return;
+          try {
+            await deleteNotice(id);
+            loadNotices();
+          } catch (err) {
+            alert((err as Error).message);
+          }
+        });
+      });
+    } catch (err) {
+      listEl.innerHTML = '<p class="text-red-500">공지 목록을 불러오지 못했습니다.</p>';
+    }
+  }
+
+  loadNotices();
+</script>

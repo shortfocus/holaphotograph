@@ -9,7 +9,8 @@
     "db:migrate": "wrangler d1 migrations apply holaphotograph-db",
     "db:migrate:remote": "wrangler d1 migrations apply holaphotograph-db --remote",
     "db:local": "wrangler d1 execute holaphotograph-db --local --file=./migrations/0001_init.sql",
-    "db:seed:lecture-signups": "wrangler d1 execute holaphotograph-db --local --file=./scripts/seed-lecture-signups-local.sql"
+    "db:seed:lecture-signups": "wrangler d1 execute holaphotograph-db --local --file=./scripts/seed-lecture-signups-local.sql",
+    "db:seed:notices:remote": "wrangler d1 execute holaphotograph-db --remote --file=./scripts/seed-notices-remote.sql"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250210.0",
