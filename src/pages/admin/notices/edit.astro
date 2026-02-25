@@ -52,6 +52,12 @@ import Layout from '../../../layouts/Layout.astro';
   const contentEl = document.getElementById('content') as HTMLInputElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
+  /** api 도메인에서는 정적 이미지가 없으므로, 본문 이미지를 메인 사이트 URL로 치환 */
+  const MAIN_SITE_ORIGIN = 'https://holaphoto.com';
+  function rewriteContentImageUrls(html: string): string {
+    return (html || '').replace(/src="\/images\//g, `src="${MAIN_SITE_ORIGIN}/images/`);
+  }
+
   const params = new URLSearchParams(window.location.search);
   const id = parseInt(params.get('id') || '0', 10);
 
@@ -93,7 +99,7 @@ import Layout from '../../../layouts/Layout.astro';
         }
         idEl.value = String(notice.id);
         titleEl.value = notice.title;
-        setTrixContent(notice.content ?? '');
+        setTrixContent(rewriteContentImageUrls(notice.content ?? ''));
       } catch (_) {
         alert('공지를 불러오지 못했습니다.');
         window.location.href = '/admin/notices';

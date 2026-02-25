@@ -91,7 +91,10 @@ import Layout from '../layouts/Layout.astro';
       document.title = `${notice.title} - 공지사항 | 올라포토`;
       detailTitle.textContent = notice.title;
       detailDate.textContent = new Date(notice.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-      const content = (notice.content ?? '').trim();
+      let content = (notice.content ?? '').trim();
+      // 배포 환경에서 이미지 로드 보장: 상대 경로 /images/ → 절대 URL (사이트 도메인 기준)
+      const base = typeof window !== 'undefined' ? window.location.origin : 'https://holaphoto.com';
+      content = content.replace(/src="\/images\//g, `src="${base}/images/`);
       detailBody.innerHTML = content || '<p class="text-slate-500">내용이 없습니다.</p>';
     } catch (_) {
       detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';

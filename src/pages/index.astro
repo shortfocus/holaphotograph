@@ -24,21 +24,21 @@ import Layout from "../layouts/Layout.astro";
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
-      <!-- 슬라이드 영역: 이미지 기준 상하좌우 동일 여백(p-4) -->
-      <div id="class-promo-slider" class="relative flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div class="relative min-h-0 flex-1 overflow-hidden">
-          <div class="class-promo-track flex h-full transition-transform duration-300 ease-out" style="transform: translateX(0);">
-            <div class="class-promo-slide flex min-h-0 min-w-full shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
-                <a href="/notice?id=2" class="class-promo-image-link block w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
-                  <img src="/images/class-exposure.png" alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원" class="max-h-[60vh] w-full rounded-lg object-contain object-center" />
+      <!-- 슬라이드 영역: 모바일에서 이미지 잘림 방지(트랙/슬라이드 너비 명시, min-w-0) -->
+      <div id="class-promo-slider" class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+          <div class="class-promo-track flex h-full transition-transform duration-300 ease-out" style="width: 200%; transform: translateX(0);">
+            <div class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4">
+              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
+                <a href="/notice?id=2" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                  <img src="/images/class-exposure.png" alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
                 </a>
               </div>
             </div>
-            <div class="class-promo-slide flex min-h-0 min-w-full shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden">
-                <a href="/notice?id=2" class="class-promo-image-link block w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
-                  <img src="/images/class-xe5.png" alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원" class="max-h-[60vh] w-full rounded-lg object-contain object-center" />
+            <div class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4">
+              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
+                <a href="/notice?id=2" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                  <img src="/images/class-xe5.png" alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
                 </a>
               </div>
             </div>
@@ -925,7 +925,7 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // 강의 팝업 내부 슬라이드 (자동 재생, 반복)
+  // 강의 팝업 내부 슬라이드 (트랙 width 200%, 슬라이드당 50% 이동)
   (function initClassPromoSlider() {
     const track = document.querySelector('.class-promo-track') as HTMLElement | null;
     const total = 2;
@@ -934,7 +934,7 @@ import Layout from "../layouts/Layout.astro";
 
     function goTo(i: number) {
       current = ((i % total) + total) % total;
-      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+      if (track) track.style.transform = `translateX(-${current * 50}%)`;
     }
 
     const slider = document.getElementById('class-promo-slider');
