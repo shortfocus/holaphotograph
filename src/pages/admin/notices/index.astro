@@ -39,13 +39,12 @@ import Layout from '../../../layouts/Layout.astro';
       listEl.innerHTML = notices
         .map(
           (n: Notice) => `
-        <article class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between" data-id="${n.id}">
-          <div class="min-w-0 flex-1">
-            <h3 class="font-semibold text-gray-900">${escapeHtml(n.title)}</h3>
+        <article class="group flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-gray-300 hover:bg-gray-50/50 sm:flex-row sm:items-center sm:justify-between" data-id="${n.id}">
+          <a href="/admin/notices/edit?id=${n.id}" class="min-w-0 flex-1 cursor-pointer">
+            <h3 class="font-semibold text-gray-900 group-hover:text-red-600">${escapeHtml(n.title)}</h3>
             <p class="mt-1 text-xs text-gray-500">${new Date(n.created_at).toLocaleDateString('ko-KR')} 수정: ${new Date(n.updated_at).toLocaleDateString('ko-KR')}</p>
-          </div>
-          <div class="flex shrink-0 gap-2">
-            <a href="/admin/notices/edit?id=${n.id}" class="cursor-pointer rounded bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200">수정</a>
+          </a>
+          <div class="flex shrink-0 gap-2 pl-0 sm:pl-4">
             <button type="button" data-id="${n.id}" class="delete-btn cursor-pointer rounded bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200">삭제</button>
           </div>
         </article>
@@ -54,7 +53,9 @@ import Layout from '../../../layouts/Layout.astro';
         .join('');
 
       listEl.querySelectorAll('.delete-btn').forEach((btn) => {
-        btn.addEventListener('click', async () => {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           const id = Number((btn as HTMLElement).dataset.id);
           if (!confirm('이 공지를 삭제할까요?')) return;
           try {

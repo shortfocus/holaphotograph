@@ -27,7 +27,7 @@ import Layout from '../layouts/Layout.astro';
         <article class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h1 id="notice-detail-title" class="text-xl font-bold text-[#111827] sm:text-2xl"></h1>
           <p id="notice-detail-date" class="mt-2 text-sm text-slate-500"></p>
-          <div id="notice-detail-body" class="notice-detail-body mt-6 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg"></div>
+          <div id="notice-detail-body" class="notice-detail-body mt-6 min-h-[4rem] text-slate-700 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg prose-p:text-slate-700 prose-li:text-slate-700 prose-a:text-[#E11D48] prose-strong:text-[#111827]"></div>
         </article>
       </div>
     </div>
@@ -91,7 +91,8 @@ import Layout from '../layouts/Layout.astro';
       document.title = `${notice.title} - 공지사항 | 올라포토`;
       detailTitle.textContent = notice.title;
       detailDate.textContent = new Date(notice.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-      detailBody.innerHTML = notice.content;
+      const content = (notice.content ?? '').trim();
+      detailBody.innerHTML = content || '<p class="text-slate-500">내용이 없습니다.</p>';
     } catch (_) {
       detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
     }
@@ -185,5 +186,17 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style is:global>
-  #notice-detail-view .notice-detail-body img { min-height: 4rem; background: #f1f5f9; }
+  #notice-detail-view .notice-detail-body {
+    line-height: 1.7;
+    color: #334155;
+  }
+  #notice-detail-view .notice-detail-body p { margin-bottom: 0.75rem; }
+  #notice-detail-view .notice-detail-body p:last-child { margin-bottom: 0; }
+  #notice-detail-view .notice-detail-body ul { margin: 0.5rem 0 1rem 1.25rem; padding-left: 0; list-style: none; }
+  #notice-detail-view .notice-detail-body ul li { margin-bottom: 0.25rem; padding-left: 1rem; position: relative; }
+  #notice-detail-view .notice-detail-body ul li::before { content: "•"; position: absolute; left: 0; color: #64748b; }
+  #notice-detail-view .notice-detail-body strong { color: #111827; font-weight: 600; }
+  #notice-detail-view .notice-detail-body a { color: #E11D48; text-decoration: underline; }
+  #notice-detail-view .notice-detail-body a:hover { color: #be123c; }
+  #notice-detail-view .notice-detail-body img { min-height: 4rem; max-width: 100%; height: auto; border-radius: 0.5rem; background: #f1f5f9; display: block; margin: 0.75rem 0; }
 </style>

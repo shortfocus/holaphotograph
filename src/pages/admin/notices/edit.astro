@@ -68,6 +68,18 @@ import Layout from '../../../layouts/Layout.astro';
     }
   });
 
+  function setTrixContent(html: string) {
+    contentEl.value = html;
+    const applyToEditor = () => {
+      const trixEditor = document.querySelector('trix-editor');
+      const editor = trixEditor && (trixEditor as { editor?: { loadHTML: (html: string) => void } }).editor;
+      if (editor) editor.loadHTML(html);
+      else setTimeout(applyToEditor, 50);
+    };
+    if (document.readyState === 'complete') applyToEditor();
+    else window.addEventListener('load', applyToEditor);
+  }
+
   if (!id) {
     window.location.href = '/admin/notices';
   } else {
@@ -81,7 +93,7 @@ import Layout from '../../../layouts/Layout.astro';
         }
         idEl.value = String(notice.id);
         titleEl.value = notice.title;
-        contentEl.value = notice.content;
+        setTrixContent(notice.content ?? '');
       } catch (_) {
         alert('공지를 불러오지 못했습니다.');
         window.location.href = '/admin/notices';
