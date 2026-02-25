@@ -34,9 +34,9 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
     {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <a href="/" class="flex items-center gap-2">
-          <img src="/logo.png" alt="올라포토" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
-          <span class="text-xl font-bold text-white sm:text-2xl header-logo-text" aria-label="올라포토">올라포토</span>
+        <a href="/" id="header-logo-link" class="flex items-center gap-2" aria-label="올라포토 홈">
+          <img src="/logo.png" alt="" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
+          <span class="text-xl font-bold text-white sm:text-2xl header-logo-text">올라포토</span>
         </a>
         <button
           type="button"
@@ -109,6 +109,31 @@ const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', hea
       document.querySelectorAll('#nav-menu a').forEach((a) => {
         a.addEventListener('click', () => { if (window.innerWidth < 768) setMenuOpen(false); });
       });
+
+      // 이스터에그: 로고 3회 연속 클릭(1.2초 안에) 시 관리자 페이지 새 창으로. 1회 클릭은 400ms 후 홈 이동.
+      (function () {
+        const logo = document.getElementById('header-logo-link');
+        if (!logo) return;
+        let count = 0;
+        let shortTimer: ReturnType<typeof setTimeout> | null = null;
+        let longTimer: ReturnType<typeof setTimeout> | null = null;
+        logo.addEventListener('click', function (e) {
+          e.preventDefault();
+          count += 1;
+          if (shortTimer) clearTimeout(shortTimer);
+          if (longTimer) clearTimeout(longTimer);
+          if (count >= 3) {
+            count = 0;
+            window.open('/admin', '_blank', 'noopener,noreferrer');
+            return;
+          }
+          shortTimer = setTimeout(function () {
+            if (count === 1) window.location.href = '/';
+            count = 0;
+          }, 400);
+          longTimer = setTimeout(function () { count = 0; }, 1200);
+        });
+      })();
     </script>
     )}
     <main class="flex-1 w-full min-w-0">
