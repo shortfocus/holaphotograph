@@ -66,7 +66,9 @@ import Layout from '../../layouts/Layout.astro';
                 ${p.status ? statusBadge(p.status) : ''}
               </div>
               <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(p.content?.slice(0, 50) || '-')}${(p.content?.length || 0) > 50 ? '...' : ''}</p>
-              <p class="text-xs text-gray-400">${new Date(p.created_at).toLocaleDateString('ko-KR')}</p>
+              <p class="mt-1 text-xs text-gray-400">
+                ${p.author_name ? `${escapeHtml(p.author_name)} · ` : ''}${new Date(p.created_at).toLocaleDateString('ko-KR')}
+              </p>
             </div>
           </div>
           <div class="flex shrink-0 flex-wrap gap-2 pl-7 sm:pl-0">
