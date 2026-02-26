@@ -7,6 +7,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://holaphoto.com',
   output: 'static',
+  devToolbar: { enabled: false },
   integrations: [
     sitemap({
       filter: (page) => !new URL(page).pathname.startsWith('/admin'),

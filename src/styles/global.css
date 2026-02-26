@@ -57,6 +57,8 @@ html {
   overflow-x: hidden;
 }
 body {
+  margin: 0;
+  padding: 0;
   overflow-wrap: break-word;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
@@ -121,13 +123,33 @@ body.nav-open {
   }
 }
 
-/* 히어로 섹션: 플로팅 바 상단에 맞춤 (모바일/PC 동일) */
+/* 히어로 섹션: 플로팅 바 상단에 맞춤, 좌우 여백 없이 풀폭 (모바일/PC 동일) */
 .hero-section {
   width: 100%;
   min-width: 100%;
   min-height: unset;
   height: calc(100vh - var(--lecture-bar-height));
   height: calc(100dvh - var(--lecture-bar-height));
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* 히어로 캐러셀: 슬라이드 너비를 뷰포트 기준으로 고정해 1번 오버플로우가 2·3번에 영향 주지 않도록 */
+#hero-carousel {
+  width: 100%;
+  min-width: 0;
+}
+.hero-carousel-track {
+  width: 300%;
+  flex-shrink: 0;
+}
+.hero-slide {
+  flex: 0 0 33.333333%;
+  width: 33.333333%;
+  min-width: 0;
+  max-width: 33.333333%;
 }
 /* 플로팅 바 접힌 상태: 히어로가 뷰포트 전체 사용 */
 body.lecture-bar-collapsed .hero-section {

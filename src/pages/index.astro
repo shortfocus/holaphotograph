@@ -83,10 +83,10 @@ import Layout from "../layouts/Layout.astro";
       >
         <!-- Slide 1: Camera Review Archive -->
         <div
-          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
         >
           <div
-            class="relative mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
+            class="relative mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
           >
             <div class="flex-1 text-center lg:text-left">
               <span
@@ -170,55 +170,85 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </div>
         </div>
-        <!-- Slide 2: 프로모션 -->
+        <!-- Slide 2: 강의 안내 (팝업과 동일 콘텐츠) -->
         <div
-          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-4 sm:py-4 lg:py-6"
         >
-          <div class="mx-auto max-w-2xl px-3 text-center sm:px-4">
+          <div class="hero-slide-2-inner mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center justify-center px-4 text-center sm:px-4">
             <span
               class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
-              >한정 프로모션</span
+              >강의 안내</span
             >
-            <h2
+            <h1
               class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
             >
-              <span class="text-[#F43F5E]">올라포토</span> 프로모션
-            </h2>
-            <p
-              class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
-            >
-              카메라 리뷰 · 촬영 가이드 · 위클리 포커스까지<br />
-              지금 구독하고 다양한 콘텐츠를 만나보세요
+              <span class="text-[#F43F5E]">올라포토</span> 강의 안내
+            </h1>
+            <p class="hero-slide-2-desc mx-auto mt-2 min-w-0 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
+              X-E5 매뉴얼 · 노출 3요소 강의를<br class="sm:hidden" /> 오프라인에서 만나보세요
             </p>
+            <!-- 모바일 전용: 팝업 첫 번째 이미지 1장 -->
             <a
-              href="https://www.youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
+              href="/notice?id=2"
+              class="mx-auto mt-5 flex max-w-[280px] justify-center sm:mt-0 sm:hidden"
+              aria-label="노출3요소 class 공지 상세"
             >
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"
-                ><path
-                  d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
-                ></path></svg
+              <img
+                src="/images/class-exposure.png"
+                alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원"
+                class="max-h-[40vh] w-full rounded-xl object-contain object-center ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
+              />
+            </a>
+            <!-- 데스크톱: 강의 이미지 2장 나란히 -->
+            <div
+              class="hero-class-images mx-auto mt-5 hidden w-full max-w-lg sm:mt-6 sm:flex sm:flex-row sm:justify-center sm:gap-4 sm:overflow-visible"
+              style="-webkit-overflow-scrolling: touch; scrollbar-width: none;"
+            >
+              <a
+                href="/notice?id=2"
+                class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
+                aria-label="노출3요소 class 공지 상세"
               >
-              유튜브에서 보기
+                <img
+                  src="/images/class-exposure.png"
+                  alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원"
+                  class="max-h-[36vh] w-full max-w-[260px] object-contain object-center sm:max-h-[45vh]"
+                />
+              </a>
+              <a
+                href="/notice?id=2"
+                class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
+                aria-label="X-E5 class 공지 상세"
+              >
+                <img
+                  src="/images/class-xe5.png"
+                  alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원"
+                  class="max-h-[36vh] w-full max-w-[260px] object-contain object-center sm:max-h-[45vh]"
+                />
+              </a>
+            </div>
+            <a
+              href="/notice?id=2"
+              class="hero-cta mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
+            >
+              자세히 보기
             </a>
           </div>
         </div>
         <!-- Slide 3: 고객 리뷰 -->
         <div
-          class="hero-slide flex h-full min-h-0 min-w-full shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-4 sm:py-4 lg:py-6"
         >
-          <div class="mx-auto max-w-2xl px-3 text-center sm:px-4">
+          <div class="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4 text-center sm:px-4">
             <span
               class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
               >실제 이용 후기</span
             >
-            <h2
+            <h1
               class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
             >
               <span class="text-[#F43F5E]">고객 리뷰</span> 확인하기
-            </h2>
+            </h1>
             <p
               class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
             >
@@ -533,7 +563,7 @@ import Layout from "../layouts/Layout.astro";
 
     function goTo(i: number) {
       current = ((i % total) + total) % total;
-      if (track) track.style.transform = `translateX(-${current * 100}%)`;
+      if (track) track.style.transform = `translateX(-${current * (100 / 3)}%)`;
       dots.forEach((d, idx) => {
         if (idx === current) {
           d.setAttribute("aria-current", "page");
@@ -948,3 +978,17 @@ import Layout from "../layouts/Layout.astro";
     setInterval(() => goTo(current + 1), AUTOPLAY_MS);
   })();
 </script>
+
+<style is:global>
+  .hero-slide-2-inner { overflow: visible; }
+  .hero-slide-2-desc { overflow-wrap: break-word; word-break: keep-all; }
+  /* 모바일: 강의 이미지 영역 완전 숨김 */
+  @media (max-width: 767px) {
+    .hero-class-images {
+      display: none !important;
+    }
+  }
+  @media (min-width: 768px) {
+    .hero-class-slide { width: auto; min-width: 0; }
+  }
+</style>

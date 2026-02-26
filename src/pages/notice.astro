@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="공지사항 - 올라포토" headerOpaque hideLectureBar>
-  <div class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20">
+  <div class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:pt-28 sm:pb-20">
     <div class="mx-auto max-w-2xl">
       <!-- 목록 뷰 -->
       <div id="notice-list-view">
@@ -81,6 +81,27 @@ import Layout from '../layouts/Layout.astro';
     detailView.classList.remove('hidden');
   }
 
+  /** 모바일에서 본문 이미지들을 상단 가로 스크롤 캐러셀로 표시 */
+  function initMobileImageCarousel(body: HTMLElement) {
+    const imgs = body.querySelectorAll<HTMLImageElement>('img');
+    if (!imgs.length) return;
+    const carousel = document.createElement('div');
+    carousel.className = 'notice-mobile-carousel';
+    carousel.setAttribute('role', 'region');
+    carousel.setAttribute('aria-label', '공지 이미지');
+    imgs.forEach((img) => {
+      const slide = document.createElement('div');
+      slide.className = 'notice-mobile-carousel-slide';
+      const clone = img.cloneNode(true) as HTMLImageElement;
+      clone.removeAttribute('class');
+      clone.className = 'notice-mobile-carousel-img';
+      slide.appendChild(clone);
+      carousel.appendChild(slide);
+      img.classList.add('notice-original-img');
+    });
+    body.insertBefore(carousel, body.firstChild);
+  }
+
   async function loadDetail(id: number) {
     showDetailView();
     detailTitle.textContent = '';
@@ -117,6 +138,7 @@ import Layout from '../layouts/Layout.astro';
       const base = typeof window !== 'undefined' ? window.location.origin : 'https://holaphoto.com';
       content = content.replace(/src="\/images\//g, `src="${base}/images/`);
       detailBody.innerHTML = content || '<p class="text-slate-500">내용이 없습니다.</p>';
+      requestAnimationFrame(() => initMobileImageCarousel(detailBody));
     } catch (_) {
       detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
     }
@@ -213,6 +235,7 @@ import Layout from '../layouts/Layout.astro';
   #notice-detail-view .notice-detail-body {
     line-height: 1.7;
     color: #334155;
+    overflow-wrap: break-word;
   }
   #notice-detail-view .notice-detail-body p { margin-bottom: 0.75rem; }
   #notice-detail-view .notice-detail-body p:last-child { margin-bottom: 0; }
@@ -223,4 +246,81 @@ import Layout from '../layouts/Layout.astro';
   #notice-detail-view .notice-detail-body a { color: #E11D48; text-decoration: underline; }
   #notice-detail-view .notice-detail-body a:hover { color: #be123c; }
   #notice-detail-view .notice-detail-body img { min-height: 4rem; max-width: 100%; height: auto; border-radius: 0.5rem; background: #f1f5f9; display: block; margin: 0.75rem 0; }
+  #notice-detail-view article { overflow-x: visible; }
+  #notice-detail-view .notice-detail-body { overflow-x: visible; min-width: 0; }
+  /* 모바일 전용: 본문 이미지 캐러셀 (가로 스크롤) */
+  #notice-detail-view .notice-mobile-carousel {
+    display: none;
+    margin: 0 -1.5rem 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-height: 12rem;
+  }
+  #notice-detail-view .notice-mobile-carousel::-webkit-scrollbar { display: none; }
+  #notice-detail-view .notice-mobile-carousel-slide {
+    flex: 0 0 85%;
+    min-width: 75%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    padding: 0 0.25rem;
+    box-sizing: border-box;
+  }
+  #notice-detail-view .notice-mobile-carousel-img {
+    width: 100%;
+    height: auto;
+    min-height: 4rem;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    background: #f1f5f9;
+    display: block;
+  }
+  @media (max-width: 767px) {
+    #notice-detail-view .notice-mobile-carousel {
+      display: flex !important;
+      gap: 0;
+      flex-wrap: nowrap;
+    }
+    #notice-detail-view .notice-detail-body .notice-original-img {
+      display: none !important;
+    }
+  }
+  @media (min-width: 768px) {
+    #notice-detail-view .notice-mobile-carousel {
+      display: none !important;
+    }
+    #notice-detail-view .notice-detail-body .notice-original-img {
+      display: block !important;
+    }
+  }
+  /* 모바일: 테이블·가로 배치가 있어도 넘치지 않게, 본문 하단 여유, 장소 등 텍스트 잘림 방지 */
+  @media (max-width: 640px) {
+    #notice-detail-view .notice-detail-body table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0.75rem 0;
+      min-width: 0;
+    }
+    #notice-detail-view .notice-detail-body table td,
+    #notice-detail-view .notice-detail-body table th {
+      white-space: normal;
+      word-break: break-word;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      vertical-align: top;
+    }
+    #notice-detail-view .notice-detail-body > * + * { margin-top: 1rem; }
+    #notice-detail-view article { padding-bottom: 1.5rem; }
+    /* 본문 내 블록이 화면 밖으로 잘리지 않게 */
+    #notice-detail-view .notice-detail-body div,
+    #notice-detail-view .notice-detail-body section {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+    #notice-detail-view .notice-detail-body p { padding-left: 0; padding-right: 0; }
+  }
 </style>
