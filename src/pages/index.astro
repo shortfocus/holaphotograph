@@ -187,18 +187,38 @@ import Layout from "../layouts/Layout.astro";
             <p class="hero-slide-2-desc mx-auto mt-2 min-w-0 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose">
               X-E5 매뉴얼 · 노출 3요소 강의를<br class="sm:hidden" /> 오프라인에서 만나보세요
             </p>
-            <!-- 모바일 전용: 팝업 첫 번째 이미지 1장 -->
-            <a
-              href="/notice?id=2"
-              class="mx-auto mt-5 flex max-w-[280px] justify-center sm:mt-0 sm:hidden"
-              aria-label="노출3요소 class 공지 상세"
+            <!-- 모바일 전용: 강의 이미지 2장 슬라이드 (class-exposure, class-xe5) -->
+            <div
+              class="hero-slide-2-mobile-images mx-auto mt-5 w-full max-w-[320px] sm:mt-0 sm:hidden"
+              style="-webkit-overflow-scrolling: touch; scrollbar-width: none;"
             >
-              <img
-                src="/images/class-exposure.png"
-                alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원"
-                class="max-h-[40vh] w-full rounded-xl object-contain object-center ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
-              />
-            </a>
+              <div class="hero-slide-2-mobile-slide">
+                <a
+                  href="/notice?id=2"
+                  class="inline-flex overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
+                  aria-label="노출3요소 class 공지 상세"
+                >
+                  <img
+                    src="/images/class-exposure.png"
+                    alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원"
+                    class="max-h-[40vh] block rounded-xl object-contain object-center"
+                  />
+                </a>
+              </div>
+              <div class="hero-slide-2-mobile-slide">
+                <a
+                  href="/notice?id=2"
+                  class="inline-flex overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
+                  aria-label="X-E5 class 공지 상세"
+                >
+                  <img
+                    src="/images/class-xe5.png"
+                    alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원"
+                    class="max-h-[40vh] block rounded-xl object-contain object-center"
+                  />
+                </a>
+              </div>
+            </div>
             <!-- 데스크톱: 강의 이미지 2장 나란히 -->
             <div
               class="hero-class-images mx-auto mt-5 hidden w-full max-w-lg sm:mt-6 sm:flex sm:flex-row sm:justify-center sm:gap-4 sm:overflow-visible"
@@ -982,13 +1002,36 @@ import Layout from "../layouts/Layout.astro";
 <style is:global>
   .hero-slide-2-inner { overflow: visible; }
   .hero-slide-2-desc { overflow-wrap: break-word; word-break: keep-all; }
-  /* 모바일: 강의 이미지 영역 완전 숨김 */
-  @media (max-width: 767px) {
-    .hero-class-images {
-      display: none !important;
-    }
+  /* 모바일: 히어로 2번 슬라이드 내 이미지 2장 가로 스크롤, 보더는 이미지 크기에 맞춤 */
+  .hero-slide-2-mobile-images {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    /* 좌우 7.5% 패딩으로 첫·두 번째 이미지가 스냅 시 정중앙에 오도록 */
+    padding: 0.25rem 7.5% 0.5rem 7.5%;
   }
+  .hero-slide-2-mobile-images::-webkit-scrollbar { display: none; }
+  .hero-slide-2-mobile-slide {
+    width: 85%;
+    min-width: 85%;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .hero-slide-2-mobile-slide a { display: inline-flex; line-height: 0; max-width: 100%; }
+  .hero-slide-2-mobile-slide img { max-width: 100%; }
+  /* 모바일 전용: 768px 이상에서는 모바일 이미지 영역 숨김 (PC에서 중복 방지) */
   @media (min-width: 768px) {
+    .hero-slide-2-mobile-images { display: none !important; }
     .hero-class-slide { width: auto; min-width: 0; }
+  }
+  /* 데스크톱용 2장 영역은 모바일에서만 숨김 */
+  @media (max-width: 767px) {
+    .hero-class-images { display: none !important; }
   }
 </style>
