@@ -13,11 +13,11 @@ interface Props {
   hideLectureBar?: boolean;
 }
 
-const { title = '올라포토 | 실전 카메라 리뷰 & 촬영 가이드', headerOpaque = false, hideFooter = false, adminFrame = false, hideLectureBar = false } = Astro.props;
+const { title = '올라포토 | 카메라 클래스 & 리뷰', headerOpaque = false, hideFooter = false, adminFrame = false, hideLectureBar = false } = Astro.props;
 
 const SITE = 'https://holaphoto.com';
 const canonicalUrl = new URL(Astro.url.pathname, SITE).href;
-const ogDescription = '카메라 선택부터 촬영 노하우까지 실전 기반 리뷰 플랫폼';
+const ogDescription = '후지필름 카메라 클래스 누적 수강생 1위! 카메라 선택부터 촬영 노하우까지';
 const ogImage = `${SITE}/og-image.png`;
 ---
 <!doctype html>
