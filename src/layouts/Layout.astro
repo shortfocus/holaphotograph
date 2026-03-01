@@ -11,14 +11,18 @@ interface Props {
   adminFrame?: boolean;
   /** true면 하단 강의 소식 플로팅 바 숨김 (/notice 공지사항 페이지 등) */
   hideLectureBar?: boolean;
+  /** 페이지별 OG 이미지 URL (미지정 시 기본 og-image.png) */
+  ogImage?: string;
+  /** 페이지별 OG 설명 (미지정 시 기본 문구) */
+  ogDescription?: string;
 }
 
-const { title = '올라포토 | 카메라 클래스 & 리뷰', headerOpaque = false, hideFooter = false, adminFrame = false, hideLectureBar = false } = Astro.props;
+const { title = '올라포토 | 카메라 클래스 & 리뷰', headerOpaque = false, hideFooter = false, adminFrame = false, hideLectureBar = false, ogImage: propOgImage, ogDescription: propOgDescription } = Astro.props;
 
 const SITE = 'https://holaphoto.com';
 const canonicalUrl = new URL(Astro.url.pathname, SITE).href;
-const ogDescription = '후지필름 카메라 클래스 누적 수강생 1위! 카메라 선택부터 촬영 노하우까지';
-const ogImage = `${SITE}/og-image.png`;
+const ogDescription = propOgDescription ?? '후지필름 카메라 클래스 누적 수강생 1위! 카메라 선택부터 촬영 노하우까지';
+const ogImage = propOgImage ?? `${SITE}/og-image.png`;
 ---
 <!doctype html>
 <html lang="ko">
