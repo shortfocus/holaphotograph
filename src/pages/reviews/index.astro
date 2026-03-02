@@ -91,13 +91,13 @@ import Layout from '../../layouts/Layout.astro';
   <div class="padlet-board px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20 reviews-board">
     <div class="relative mx-auto max-w-6xl">
       <!-- 탭: 스냅 촬영 후기 | 강의 수강 후기 -->
-      <div id="reviews-tablist" class="reviews-tablist reviews-tablist--snap flex overflow-hidden rounded-t-lg bg-stone-200 shadow sm:mb-0" role="tablist">
-        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기</button>
-        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
+      <div id="reviews-tablist" class="reviews-tablist reviews-tablist--lecture flex overflow-hidden rounded-t-lg bg-stone-200 shadow sm:mb-0" role="tablist">
+        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기</button>
+        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
       </div>
 
       <!-- 탭 1: 스냅 촬영 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
-      <div id="panel-snap" class="reviews-panel-snap rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
+      <div id="panel-snap" class="reviews-panel-snap hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-snap" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
@@ -112,7 +112,7 @@ import Layout from '../../layouts/Layout.astro';
       </div>
 
       <!-- 탭 2: 강의 수강 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
-      <div id="panel-lecture" class="reviews-panel-lecture hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
+      <div id="panel-lecture" class="reviews-panel-lecture rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-lecture" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
