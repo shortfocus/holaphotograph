@@ -30,14 +30,14 @@ import Layout from "../layouts/Layout.astro";
           <div class="class-promo-track flex h-full transition-transform duration-300 ease-out" style="width: 200%; transform: translateX(0);">
             <div class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4">
               <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                <a href="/notice?id=2" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
                   <img src="/images/class-exposure.png" alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
                 </a>
               </div>
             </div>
             <div class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4">
               <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
+                <a href="/notice?id=2" class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="후지필름 카메라 클래스 공지 상세로 이동">
                   <img src="/images/class-xe5.png" alt="X-E5 class · 2026.03.14(토) 오전 10시~12시 · 즐카 · 2만원" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
                 </a>
               </div>
@@ -52,72 +52,6 @@ import Layout from "../layouts/Layout.astro";
           오늘 하루 안 보기
         </label>
         <button type="button" id="class-promo-close-btn" class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]">
-          닫기
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 모집 정보 팝업 (gr_1~gr_4) - 강의 팝업 닫은 뒤 1회 노출 가능 -->
-  <div
-    id="gr-promo-popup"
-    class="fixed inset-0 z-[59] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="gr-promo-title"
-  >
-    <div class="relative mt-8 flex max-h-[85vh] w-full max-w-sm flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12">
-      <div class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#0F172A] p-4">
-        <h2 id="gr-promo-title" class="text-lg font-bold text-white sm:text-xl">모집 정보</h2>
-        <button
-          type="button"
-          id="gr-promo-close"
-          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
-          aria-label="팝업 닫기"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-      </div>
-      <div id="gr-promo-slider" class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-          <div class="gr-promo-track flex h-full transition-transform duration-300 ease-out" style="width: 400%; transform: translateX(0);">
-            <div class="gr-promo-slide flex min-h-0 w-1/4 shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="GR 모집 공지 상세로 이동">
-                  <img src="/images/gr_1.png" alt="Vision · 지속 가능한 창작 그룹 및 커뮤니티 형성" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
-                </a>
-              </div>
-            </div>
-            <div class="gr-promo-slide flex min-h-0 w-1/4 shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="GR 모집 공지 상세로 이동">
-                  <img src="/images/gr_2.png" alt="멘토 소개 · 흑백의 올라포토 VS 컬러의 정민" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
-                </a>
-              </div>
-            </div>
-            <div class="gr-promo-slide flex min-h-0 w-1/4 shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="GR 모집 공지 상세로 이동">
-                  <img src="/images/gr_3.png" alt="모집 정보" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
-                </a>
-              </div>
-            </div>
-            <div class="gr-promo-slide flex min-h-0 w-1/4 shrink-0 flex-col px-2 py-4">
-              <div class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
-                <a href="/notice?id=3" class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer" aria-label="GR 모집 공지 상세로 이동">
-                  <img src="/images/gr_4.png" alt="GR Collective : in Yongsan · GR로 연결된 창작집단" class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <label class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400">
-          <input type="checkbox" id="gr-promo-dont-show" class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]" />
-          오늘 하루 안 보기
-        </label>
-        <button type="button" id="gr-promo-close-btn" class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]">
           닫기
         </button>
       </div>
@@ -256,7 +190,7 @@ import Layout from "../layouts/Layout.astro";
             <!-- 모바일 전용: 강의 이미지 1장 (class-exposure) -->
             <div class="hero-slide-2-mobile-images mx-auto mt-5 w-full max-w-[320px] sm:mt-0 sm:hidden">
               <a
-                href="/notice?id=3"
+                href="/notice?id=2"
                 class="hero-slide-2-mobile-single inline-flex overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
                 aria-label="노출3요소 class 공지 상세"
               >
@@ -273,7 +207,7 @@ import Layout from "../layouts/Layout.astro";
               style="-webkit-overflow-scrolling: touch; scrollbar-width: none;"
             >
               <a
-                href="/notice?id=3"
+                href="/notice?id=2"
                 class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
                 aria-label="노출3요소 class 공지 상세"
               >
@@ -284,7 +218,7 @@ import Layout from "../layouts/Layout.astro";
                 />
               </a>
               <a
-                href="/notice?id=3"
+                href="/notice?id=2"
                 class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
                 aria-label="X-E5 class 공지 상세"
               >
@@ -296,7 +230,7 @@ import Layout from "../layouts/Layout.astro";
               </a>
             </div>
             <a
-              href="/notice?id=3"
+              href="/notice?id=2"
               class="hero-cta mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
             >
               자세히 보기
@@ -1014,87 +948,16 @@ import Layout from "../layouts/Layout.astro";
       hidePopup();
     }
 
-    function tryShowGrPopup() {
-      try {
-        const key = 'holaphoto-gr-popup-seen';
-        const raw = sessionStorage.getItem(key);
-        if (raw) {
-          const data = JSON.parse(raw) as { date?: string };
-          if (data.date === new Date().toDateString()) return;
-        }
-        const grPopup = document.getElementById('gr-promo-popup');
-        if (grPopup) {
-          grPopup.classList.remove('hidden');
-          grPopup.classList.add('flex');
-        }
-      } catch (_) {}
-    }
-
-    closeBtn?.addEventListener('click', () => { close(); tryShowGrPopup(); });
-    closeBtn2?.addEventListener('click', () => { close(); tryShowGrPopup(); });
-    popup?.addEventListener('click', (e) => {
-      if (e.target === popup) { close(); tryShowGrPopup(); return; }
-      const link = (e.target as Element).closest('.class-promo-image-link');
-      if (link) { hidePopup(); tryShowGrPopup(); }
-    });
-  })();
-
-  // GR Collective 팝업: 강의 팝업 닫은 뒤 1회 (오늘 하루 안 보기 가능)
-  (function initGrPromoPopup() {
-    const STORAGE_KEY = 'holaphoto-gr-popup-seen';
-    const popup = document.getElementById('gr-promo-popup');
-    const closeBtn = document.getElementById('gr-promo-close');
-    const closeBtn2 = document.getElementById('gr-promo-close-btn');
-    const dontShow = document.getElementById('gr-promo-dont-show') as HTMLInputElement | null;
-
-    function hidePopup() {
-      popup?.classList.add('hidden');
-      popup?.classList.remove('flex');
-    }
-
-    function setDontShowToday() {
-      try {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ date: new Date().toDateString() }));
-      } catch (_) {}
-    }
-
-    function close() {
-      if (dontShow?.checked) setDontShowToday();
-      hidePopup();
-    }
-
     closeBtn?.addEventListener('click', close);
     closeBtn2?.addEventListener('click', close);
     popup?.addEventListener('click', (e) => {
       if (e.target === popup) close();
-      if ((e.target as Element).closest('.gr-promo-image-link')) hidePopup();
+      const link = (e.target as Element).closest('.class-promo-image-link');
+      if (link) hidePopup(); // 이미지 클릭 시 팝업만 닫고, 링크 기본 동작(/notice?id=2 상세 이동)은 그대로
     });
   })();
 
-  // GR 팝업 내부 슬라이드 (4장: gr_1~gr_4, 25% 이동)
-  (function initGrPromoSlider() {
-    const track = document.querySelector('.gr-promo-track') as HTMLElement | null;
-    const total = 4;
-    let current = 0;
-    const AUTOPLAY_MS = 3000;
-
-    function goTo(i: number) {
-      current = ((i % total) + total) % total;
-      if (track) track.style.transform = `translateX(-${current * 25}%)`;
-    }
-
-    const slider = document.getElementById('gr-promo-slider');
-    let touchStartX = 0;
-    slider?.addEventListener('touchstart', (e) => { touchStartX = (e as TouchEvent).touches[0].clientX; }, { passive: true });
-    slider?.addEventListener('touchend', (e) => {
-      const dx = (e as TouchEvent).changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 40) dx < 0 ? goTo(current + 1) : goTo(current - 1);
-    }, { passive: true });
-
-    setInterval(() => goTo(current + 1), AUTOPLAY_MS);
-  })();
-
-  // 강의 팝업 내부 슬라이드 (트랙 width 200%, 슬라이드 2장, 슬라이드당 50% 이동)
+  // 강의 팝업 내부 슬라이드 (트랙 width 200%, 슬라이드당 50% 이동)
   (function initClassPromoSlider() {
     const track = document.querySelector('.class-promo-track') as HTMLElement | null;
     const total = 2;
