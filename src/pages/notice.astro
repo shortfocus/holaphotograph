@@ -83,6 +83,22 @@ const SITE = 'https://holaphoto.com';
     detailView.classList.remove('hidden');
   }
 
+  /** 본문 이미지를 클릭 시 원본 크기로 보기 위한 링크로 감쌈 */
+  function wrapNoticeImagesInLinks(body: HTMLElement) {
+    body.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+      const src = img.getAttribute('src') || (img as HTMLImageElement).src;
+      if (!src) return;
+      const a = document.createElement('a');
+      a.href = src;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'notice-img-link';
+      a.setAttribute('aria-label', '이미지 원본 크기로 보기');
+      img.parentNode?.insertBefore(a, img);
+      a.appendChild(img);
+    });
+  }
+
   /** 모바일에서 본문 이미지들을 상단 가로 스크롤 캐러셀로 표시 */
   function initMobileImageCarousel(body: HTMLElement) {
     const imgs = body.querySelectorAll<HTMLImageElement>('img');
@@ -94,10 +110,17 @@ const SITE = 'https://holaphoto.com';
     imgs.forEach((img) => {
       const slide = document.createElement('div');
       slide.className = 'notice-mobile-carousel-slide';
+      const link = document.createElement('a');
+      link.href = img.getAttribute('src') || (img as HTMLImageElement).src;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'notice-img-link';
+      link.setAttribute('aria-label', '이미지 원본 크기로 보기');
       const clone = img.cloneNode(true) as HTMLImageElement;
       clone.removeAttribute('class');
       clone.className = 'notice-mobile-carousel-img';
-      slide.appendChild(clone);
+      link.appendChild(clone);
+      slide.appendChild(link);
       carousel.appendChild(slide);
       img.classList.add('notice-original-img');
     });
@@ -140,7 +163,10 @@ const SITE = 'https://holaphoto.com';
       const base = typeof window !== 'undefined' ? window.location.origin : 'https://holaphoto.com';
       content = content.replace(/src="\/images\//g, `src="${base}/images/`);
       detailBody.innerHTML = content || '<p class="text-slate-500">내용이 없습니다.</p>';
-      requestAnimationFrame(() => initMobileImageCarousel(detailBody));
+      requestAnimationFrame(() => {
+        wrapNoticeImagesInLinks(detailBody);
+        initMobileImageCarousel(detailBody);
+      });
     } catch (_) {
       detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
     }
@@ -247,7 +273,26 @@ const SITE = 'https://holaphoto.com';
   #notice-detail-view .notice-detail-body strong { color: #111827; font-weight: 600; }
   #notice-detail-view .notice-detail-body a { color: #E11D48; text-decoration: underline; }
   #notice-detail-view .notice-detail-body a:hover { color: #be123c; }
-  #notice-detail-view .notice-detail-body img { min-height: 4rem; max-width: 100%; height: auto; border-radius: 0.5rem; background: #f1f5f9; display: block; margin: 0.75rem 0; }
+  #notice-detail-view .notice-detail-body img {
+    min-height: 4rem;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    border-radius: 0.5rem;
+    background: #f1f5f9;
+    display: block;
+    margin: 0.75rem 0;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    object-fit: contain;
+  }
+  #notice-detail-view .notice-detail-body a.notice-img-link {
+    display: block;
+    margin: 0.75rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  #notice-detail-view .notice-detail-body a.notice-img-link img { margin: 0; }
   #notice-detail-view article { overflow-x: visible; }
   #notice-detail-view .notice-detail-body { overflow-x: visible; min-width: 0; }
   /* 모바일 전용: 본문 이미지 캐러셀 (가로 스크롤) */
@@ -274,11 +319,18 @@ const SITE = 'https://holaphoto.com';
     width: 100%;
     height: auto;
     min-height: 4rem;
-    max-height: 50vh;
+    max-height: 60vh;
     object-fit: contain;
     border-radius: 0.5rem;
     background: #f1f5f9;
     display: block;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  #notice-detail-view .notice-mobile-carousel a.notice-img-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
   }
   @media (max-width: 767px) {
     #notice-detail-view .notice-mobile-carousel {
