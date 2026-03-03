@@ -19,6 +19,10 @@ export interface Env {
   VOC_TO_EMAIL?: string;
   /** Resend API 키 (이메일 발송). wrangler secret put RESEND_API_KEY */
   RESEND_API_KEY?: string;
+  /** 메인 사이트 호스트 (동적 OG용). 설정 시 해당 호스트 요청을 정적 사이트로 프록시, 봇이면 OG HTML 반환. 예: holaphoto.com */
+  SITE_HOST?: string;
+  /** 메인 사이트 정적 오리진 (프록시 대상). 예: https://holaphotograph.pages.dev */
+  SITE_ORIGIN?: string;
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
@@ -225,6 +229,88 @@ function isAllowedAdmin(request: Request, env: Env): boolean {
   return list.includes(email);
 }
 
+const OG_BOT_UA_PATTERN = /facebookexternalhit|Twitterbot|Slack|Slackbot|DiscordBot|KakaoTalk|TelegramBot|LinkedInBot|WhatsApp|Pinterest|Applebot|Googlebot|bingbot|Yeti/i;
+
+function isOgBot(request: Request): boolean {
+  return OG_BOT_UA_PATTERN.test(request.headers.get("User-Agent") ?? "");
+}
+
+function htmlToPlainText(html: string, maxLen: number): string {
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen).trim() + "…";
+}
+
+const SITE_CANONICAL = "https://holaphoto.com";
+const DEFAULT_OG_IMAGE = `${SITE_CANONICAL}/og-image.png`;
+
+function buildOgHtml(opts: { title: string; description: string; image: string; url: string }): string {
+  const { title, description, image, url } = opts;
+  const escaped = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  return `<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${escaped(url)}">
+<meta property="og:title" content="${escaped(title)}">
+<meta property="og:description" content="${escaped(description)}">
+<meta property="og:image" content="${escaped(image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="올라포토">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escaped(title)}">
+<meta name="twitter:description" content="${escaped(description)}">
+<meta name="twitter:image" content="${escaped(image)}">
+<title>${escaped(title)}</title>
+</head><body><p>${escaped(title)}</p></body></html>`;
+}
+
+async function handleOgRequest(
+  request: Request,
+  env: Env,
+  type: "post" | "notice",
+  id: number,
+  canonicalUrl: string
+): Promise<Response> {
+  const origin = new URL(request.url).origin;
+  if (type === "post") {
+    const post = await env.DB.prepare(
+      "SELECT id, title, content, thumbnail_url FROM customer_reviews WHERE id = ? AND status = ?"
+    )
+      .bind(id, "approved")
+      .first<Pick<Post, "id" | "title" | "content" | "thumbnail_url">>();
+    if (!post) return new Response("Not found", { status: 404 });
+    const image = normalizeImageUrl(post.thumbnail_url, origin) ?? DEFAULT_OG_IMAGE;
+    const description = htmlToPlainText(post.content ?? "", 200) || post.title;
+    const html = buildOgHtml({
+      title: post.title,
+      description: description,
+      image,
+      url: canonicalUrl,
+    });
+    return new Response(html, {
+      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" },
+    });
+  }
+  const notice = await env.DB.prepare("SELECT id, title, content FROM notices WHERE id = ?")
+    .bind(id)
+    .first<Pick<Notice, "id" | "title" | "content">>();
+  if (!notice) return new Response("Not found", { status: 404 });
+  const description = htmlToPlainText(notice.content ?? "", 200) || notice.title;
+  const firstImgMatch = (notice.content ?? "").match(/<img[^>]+src=["']([^"']+)["']/i);
+  const image = firstImgMatch ? (firstImgMatch[1].startsWith("http") ? firstImgMatch[1] : SITE_CANONICAL + (firstImgMatch[1].startsWith("/") ? "" : "/") + firstImgMatch[1]) : DEFAULT_OG_IMAGE;
+  const html = buildOgHtml({
+    title: notice.title,
+    description,
+    image,
+    url: canonicalUrl,
+  });
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" },
+  });
+}
+
 async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
   const cors = getCorsHeaders(request);
   if (request.method === "OPTIONS") {
@@ -232,6 +318,44 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
     }
 
     const url = new URL(request.url);
+    const siteHost = (env.SITE_HOST ?? "holaphoto.com").toLowerCase().replace(/^https?:\/\//, "").split("/")[0];
+    const isMainSite = url.hostname.toLowerCase() === siteHost;
+
+    // 메인 사이트(holaphoto.com) 요청: SITE_ORIGIN 없으면 503 (이 Worker를 메인 도메인에 붙였을 때만 사용)
+    if (isMainSite && request.method === "GET") {
+      if (!env.SITE_ORIGIN) {
+        return new Response("SITE_ORIGIN not configured for main site proxy.", { status: 503 });
+      }
+      const pathname = url.pathname.replace(/\/$/, "") || "/";
+      const idRaw = url.searchParams.get("id");
+      const id = idRaw ? parseInt(idRaw, 10) : 0;
+      if ((pathname === "/post" || pathname === "/notice") && id > 0 && isOgBot(request)) {
+        const canonicalUrl = `${SITE_CANONICAL}${pathname}?id=${id}`;
+        return handleOgRequest(request, env, pathname === "/post" ? "post" : "notice", id, canonicalUrl);
+      }
+      const proxyUrl = env.SITE_ORIGIN.replace(/\/$/, "") + pathname + (url.search || "");
+      const res = await fetch(proxyUrl, {
+        method: request.method,
+        headers: request.headers,
+        redirect: "follow",
+      });
+      return new Response(res.body, {
+        status: res.status,
+        statusText: res.statusText,
+        headers: res.headers,
+      });
+    }
+
+    // GET /api/og?type=post|notice&id= — 동적 OG HTML (공유 미리보기용, 캐노니컬 URL은 메인 사이트)
+    if (url.pathname === "/api/og" && request.method === "GET") {
+      const type = url.searchParams.get("type") === "notice" ? "notice" : "post";
+      const idRaw = url.searchParams.get("id");
+      const id = idRaw ? parseInt(idRaw, 10) : 0;
+      if (id <= 0) return errorResponse("id required", 400, request);
+      const path = type === "post" ? "/post" : "/notice";
+      const canonicalUrl = `${SITE_CANONICAL}${path}?id=${id}`;
+      return handleOgRequest(request, env, type, id, canonicalUrl);
+    }
 
     // 관리자 UI 정적 파일 (R2 admin-ui/ 프리픽스). GET만. /admin 진입 시 Access 한 번 로그인으로 화면+API 동시 사용.
     if (request.method === "GET") {
@@ -274,6 +398,7 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
             "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
             "GET /api/posts": "리뷰 목록 (approved만)",
             "GET /api/posts/:id": "리뷰 상세 (approved만)",
+            "GET /api/og?type=post|notice&id=:id": "동적 OG HTML (공유 미리보기, title/description/image)",
             "GET /api/notices": "공지사항 목록",
             "GET /api/notices/:id": "공지사항 상세",
             "POST /api/reviews": "고객 후기 제출 (pending 저장)",

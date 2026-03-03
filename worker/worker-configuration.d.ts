@@ -13,5 +13,9 @@ declare namespace Cloudflare {
     VOC_TO_EMAIL?: string;
     /** Resend API 키 (이메일 발송). wrangler secret put RESEND_API_KEY */
     RESEND_API_KEY?: string;
+    /** 메인 사이트 호스트 (동적 OG용). 예: holaphoto.com */
+    SITE_HOST?: string;
+    /** 메인 사이트 정적 오리진 (프록시). 예: https://holaphotograph.pages.dev */
+    SITE_ORIGIN?: string;
   }
 }
