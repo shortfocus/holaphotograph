@@ -36,20 +36,46 @@ if (all.length === 0) {
   process.exit(1);
 }
 
-console.log(`Uploading ${all.length} files to R2 ${bucket}/${prefix}/ ...`);
-for (const rel of all) {
-  const key = `${prefix}/${rel}`;
-  const filePath = path.join(dist, rel);
-  const workerDir = path.join(root, "worker");
-  const fileArg = path.relative(workerDir, filePath);
-  try {
-    execSync(
-      `npx wrangler r2 object put ${bucket}/${key} --file="${fileArg}" --remote`,
-      { cwd: workerDir, stdio: "inherit" }
-    );
-  } catch (err) {
-    console.error(`Failed: ${key}`);
-    process.exit(1);
-  }
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 5000;
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
 }
-console.log("Done.");
+
+function uploadOne(workerDir, bucket, key, fileArg) {
+  execSync(
+    `npx wrangler r2 object put ${bucket}/${key} --file="${fileArg}" --remote`,
+    { cwd: workerDir, stdio: "inherit" }
+  );
+}
+
+const workerDir = path.join(root, "worker");
+
+(async () => {
+  console.log(`Uploading ${all.length} files to R2 ${bucket}/${prefix}/ ...`);
+  for (const rel of all) {
+    const key = `${prefix}/${rel}`;
+    const filePath = path.join(dist, rel);
+    const fileArg = path.relative(workerDir, filePath);
+    let lastErr;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        uploadOne(workerDir, bucket, key, fileArg);
+        lastErr = null;
+        break;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < MAX_RETRIES) {
+          console.warn(`Retry ${attempt}/${MAX_RETRIES} in ${RETRY_DELAY_MS / 1000}s: ${key}`);
+          await sleep(RETRY_DELAY_MS);
+        }
+      }
+    }
+    if (lastErr) {
+      console.error(`Failed after ${MAX_RETRIES} attempts: ${key}`);
+      process.exit(1);
+    }
+  }
+  console.log("Done.");
+})();
