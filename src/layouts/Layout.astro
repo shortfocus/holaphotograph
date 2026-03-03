@@ -168,9 +168,59 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
       })();
     </script>
     )}
+    {adminFrame ? (
+      <>
+      <style is:global>
+        .admin-nav-link[aria-current="page"] {
+          background-color: rgb(254 226 226) !important;
+          color: rgb(190 18 60) !important;
+          font-weight: 600;
+        }
+        .admin-nav-link[aria-current="page"]:hover {
+          background-color: rgb(254 226 226) !important;
+          color: rgb(185 28 28) !important;
+        }
+      </style>
+      <div class="flex min-h-screen w-full min-w-0">
+        <aside class="admin-sidebar flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
+          <div class="flex min-h-screen flex-col py-4">
+            <div class="px-4 pb-3 border-b border-gray-100">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">관리자</span>
+            </div>
+            <nav class="mt-3 flex flex-col gap-0.5 px-2" aria-label="관리자 메뉴">
+              <a href="/admin" class="admin-nav-link rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900">고객 후기</a>
+              <a href="/admin/notices" class="admin-nav-link rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900">공지사항</a>
+              <a href="/admin/lecture-signups" class="admin-nav-link rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900">강의 신청 목록</a>
+            </nav>
+            <div class="mt-auto border-t border-gray-100 pt-3 px-2">
+              <a href="https://holaphoto.com" target="_blank" rel="noopener noreferrer" class="rounded-lg px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">사이트로 이동 →</a>
+            </div>
+          </div>
+        </aside>
+        <main class="flex-1 min-w-0 overflow-auto bg-[#F8FAFC]">
+          <slot />
+        </main>
+      </div>
+      <script is:inline>
+        (function adminSidebarActive() {
+          function run() {
+            var path = window.location.pathname.replace(/\/$/, '') || '/';
+            document.querySelectorAll('.admin-nav-link').forEach(function(a) {
+              var href = (a.getAttribute('href') || '').replace(/\/$/, '') || '/';
+              var isActive = path === href || (href !== '/admin' && path.indexOf(href) === 0);
+              if (isActive) a.setAttribute('aria-current', 'page');
+            });
+          }
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+          else run();
+        })();
+      </script>
+      </>
+    ) : (
     <main class="flex-1 w-full min-w-0">
       <slot />
     </main>
+    )}
     {!adminFrame && !hideLectureBar && (
     <!-- 강의 소식 플로팅 CTA (토글 가능) -->
     <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">

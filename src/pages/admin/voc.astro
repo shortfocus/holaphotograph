@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="VOC - 관리자" headerOpaque hideFooter adminFrame>
+  <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <h1 class="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">VOC</h1>
+    <p class="mb-6 text-sm text-gray-500">작성하시면 수신 이메일로 전달됩니다.</p>
+    <p class="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">VOC는 준비 중입니다. 곧 이용 가능합니다.</p>
+
+    <form id="voc-form" class="max-w-xl space-y-4" aria-disabled="true">
+      <div>
+        <label for="voc-subject" class="block text-sm font-medium text-gray-700">제목 <span class="text-gray-400">(선택)</span></label>
+        <input
+          type="text"
+          id="voc-subject"
+          name="subject"
+          disabled
+          class="mt-1 w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500"
+          placeholder="예: 문의 사항"
+        />
+      </div>
+      <div>
+        <label for="voc-message" class="block text-sm font-medium text-gray-700">내용 <span class="text-red-500">*</span></label>
+        <textarea
+          id="voc-message"
+          name="message"
+          required
+          disabled
+          rows="8"
+          class="mt-1 w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500"
+          placeholder="내용을 입력하세요."
+        ></textarea>
+      </div>
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          id="voc-submit"
+          disabled
+          class="cursor-not-allowed rounded-lg bg-gray-400 px-6 py-2.5 text-sm font-medium text-white"
+        >
+          전송
+        </button>
+        <button type="reset" disabled class="cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 px-6 py-2.5 text-sm font-medium text-gray-500">
+          초기화
+        </button>
+      </div>
+      <p id="voc-message-el" class="hidden text-sm"></p>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { submitVoc } from "../../lib/api";
+
+  const form = document.getElementById("voc-form") as HTMLFormElement;
+  const subjectEl = document.getElementById("voc-subject") as HTMLInputElement;
+  const messageEl = document.getElementById("voc-message") as HTMLTextAreaElement;
+  const submitBtn = document.getElementById("voc-submit") as HTMLButtonElement;
+  const messageElOut = document.getElementById("voc-message-el")!;
+
+  function showMessage(text: string, isError: boolean) {
+    messageElOut.textContent = text;
+    messageElOut.classList.remove("hidden", "text-green-600", "text-red-600");
+    messageElOut.classList.add(isError ? "text-red-600" : "text-green-600");
+  }
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (submitBtn?.disabled) return;
+    const message = messageEl?.value?.trim() ?? "";
+    if (!message) {
+      showMessage("내용을 입력해주세요.", true);
+      return;
+    }
+    submitBtn.disabled = true;
+    messageElOut.classList.add("hidden");
+    try {
+      await submitVoc({
+        subject: subjectEl?.value?.trim() || undefined,
+        message,
+      });
+      showMessage("전송되었습니다. 수신 이메일을 확인해주세요.", false);
+      form.reset();
+    } catch (err) {
+      showMessage((err as Error).message, true);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
