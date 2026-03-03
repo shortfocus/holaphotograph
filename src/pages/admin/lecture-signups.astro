@@ -4,18 +4,9 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout title="관리자 - 강의 신청 목록" headerOpaque hideFooter adminFrame>
   <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
-    <h1 class="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">관리자</h1>
-    <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-xl font-bold sm:text-2xl">강의 신청 목록</h2>
-      <a
-        href="/admin"
-        class="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
-      >
-        ← 고객 후기 관리로
-      </a>
-    </div>
+    <h1 class="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">강의 신청 목록</h1>
 
-    <div id="sort-buttons" class="mb-3 hidden flex-wrap items-center justify-end gap-2">
+    <div id="sort-buttons" class="mb-3 hidden flex-wrap items-center justify-start gap-2">
       <span class="text-sm text-gray-500">정렬:</span>
       <button type="button" id="sort-btn-email" data-sort="email" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
         이메일

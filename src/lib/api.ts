@@ -157,6 +157,21 @@ export async function deleteNotice(id: number): Promise<void> {
   }
 }
 
+/** 관리자용: VOC 제출 (수신 이메일로 발송) */
+export async function submitVoc(body: { subject?: string; message: string }): Promise<{ success: boolean; id?: string }> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/voc`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "VOC 전송에 실패했습니다.");
+  }
+  return res.json();
+}
+
 export interface SubmitReviewBody {
   title: string;
   content: string;

@@ -15,6 +15,10 @@ export interface Env {
   NAVER_BLOG_VISITORS?: string;
   /** 로그 포맷: json(기본) | readable(이쁜 한 줄). wrangler tail 보기 좋게 하려면 readable */
   LOG_FORMAT?: string;
+  /** VOC 수신 이메일 (관리자 VOC 제출 시 이 주소로 발송). wrangler secret put VOC_TO_EMAIL */
+  VOC_TO_EMAIL?: string;
+  /** Resend API 키 (이메일 발송). wrangler secret put RESEND_API_KEY */
+  RESEND_API_KEY?: string;
 }
 
 /** pending: 대기(고객 제출), approved: 승인 후 노출 */
@@ -289,6 +293,7 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
             "DELETE /api/admin/posts/:id": "리뷰 삭제",
             "POST /api/admin/upload": "이미지 업로드",
             "DELETE /api/admin/images/:path": "이미지 삭제 (롤백용)",
+            "POST /api/admin/voc": "VOC 제출 (관리자 → 수신 이메일 발송)",
           },
         },
       }, 200, request);
@@ -400,6 +405,12 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
       const key = url.pathname.replace("/api/admin/images/", "");
       await env.BUCKET.delete(key);
       return jsonResponse({ success: true }, 200, request);
+    }
+
+    // POST /api/admin/voc - VOC 제출 (관리자 → 수신 이메일 발송)
+    if (url.pathname === "/api/admin/voc" && request.method === "POST") {
+      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+      return handleVocSubmit(request, env);
     }
 
     // /api/admin/posts, /api/admin/posts/:id - 관리자 전용 CRUD
@@ -1215,4 +1226,63 @@ async function handleDeleteNotice(request: Request, env: Env, id: number): Promi
   const result = await env.DB.prepare("DELETE FROM notices WHERE id = ?").bind(id).run();
   if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
+}
+
+/** VOC 제출: Resend API로 수신 이메일 발송 */
+async function handleVocSubmit(request: Request, env: Env): Promise<Response> {
+  const to = env.VOC_TO_EMAIL?.trim();
+  const apiKey = env.RESEND_API_KEY?.trim();
+  if (!to || !apiKey) {
+    return errorResponse(
+      "VOC 이메일 발송이 설정되지 않았습니다. VOC_TO_EMAIL, RESEND_API_KEY를 설정해주세요.",
+      503,
+      request
+    );
+  }
+  let body: { subject?: string; message?: string };
+  try {
+    body = (await request.json()) as { subject?: string; message?: string };
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+  const subject = String(body.subject ?? "VOC").trim() || "VOC";
+  const message = String(body.message ?? "").trim();
+  if (!message) return errorResponse("message required", 400, request);
+
+  const adminEmail = request.headers.get("Cf-Access-Authenticated-User-Email")?.trim() || "관리자";
+  const text = `[관리자 VOC]\n보낸 사람: ${adminEmail}\n제목: ${subject}\n\n${message}`;
+  const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;white-space:pre-wrap;">${escapeHtmlForEmail(text)}</body></html>`;
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: "VOC <onboarding@resend.dev>",
+        to: [to],
+        subject: `[올라포토 관리자 VOC] ${subject}`,
+        html,
+      }),
+    });
+    const data = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
+    if (!res.ok) {
+      logger.error("vocResend", { status: res.status, data });
+      return errorResponse(data.message || "이메일 발송에 실패했습니다.", res.status >= 500 ? 502 : 400, request);
+    }
+    return jsonResponse({ success: true, id: data.id }, 200, request);
+  } catch (err) {
+    logger.error("vocResend", { err: String(err) });
+    return errorResponse("이메일 발송 중 오류가 발생했습니다.", 500, request);
+  }
+}
+
+function escapeHtmlForEmail(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
