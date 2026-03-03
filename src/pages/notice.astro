@@ -99,10 +99,14 @@ const SITE = 'https://holaphoto.com';
     });
   }
 
-  /** 모바일에서 본문 이미지들을 상단 가로 스크롤 캐러셀로 표시 */
+  /** 모바일에서 본문 이미지들을 상단 가로 스크롤 캐러셀로 표시 (이미지 2장 이상일 때만). 1장일 때는 본문에 그대로 두어 세로 스크롤로 읽기 좋게 함 */
   function initMobileImageCarousel(body: HTMLElement) {
     const imgs = body.querySelectorAll<HTMLImageElement>('img');
     if (!imgs.length) return;
+    if (imgs.length === 1) {
+      // 이미지 1장이면 캐러셀 없이 본문에만 표시 → 모바일에서도 전체 너비·자연 높이로 보여 읽기 좋음
+      return;
+    }
     const carousel = document.createElement('div');
     carousel.className = 'notice-mobile-carousel';
     carousel.setAttribute('role', 'region');
