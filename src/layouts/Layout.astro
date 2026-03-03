@@ -182,7 +182,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
         }
       </style>
       <div class="flex min-h-screen w-full min-w-0">
-        <aside class="admin-sidebar flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
+        <aside class="admin-sidebar relative flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
           <div class="flex min-h-screen flex-col py-4">
             <div class="px-4 pb-3 border-b border-gray-100">
               <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">관리자</span>
@@ -192,10 +192,8 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
               <a href="/admin/notices" class="admin-nav-link rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900">공지사항</a>
               <a href="/admin/lecture-signups" class="admin-nav-link rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900">강의 신청 목록</a>
             </nav>
-            <div class="mt-auto border-t border-gray-100 pt-3 px-2">
-              <a href="https://holaphoto.com" target="_blank" rel="noopener noreferrer" class="rounded-lg px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">사이트로 이동 →</a>
-            </div>
           </div>
+          <a href="https://holaphoto.com" target="_blank" rel="noopener noreferrer" class="admin-site-link fixed left-0 bottom-0 z-10 w-56 border-t border-r border-gray-200 bg-white py-3 pl-4 pr-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">사이트로 이동 →</a>
         </aside>
         <main class="flex-1 min-w-0 overflow-auto bg-[#F8FAFC]">
           <slot />
