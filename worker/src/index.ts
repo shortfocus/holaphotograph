@@ -36,6 +36,7 @@ interface Notice {
   id: number;
   title: string;
   content: string;
+  form_link: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -1085,7 +1086,7 @@ async function handleDeletePost(request: Request, env: Env, id: number): Promise
 async function handleListNotices(request: Request, env: Env): Promise<Response> {
   try {
     const { results } = await env.DB.prepare(
-      "SELECT id, title, content, created_at, updated_at FROM notices ORDER BY created_at DESC"
+      "SELECT id, title, content, form_link, created_at, updated_at FROM notices ORDER BY created_at DESC"
     ).all<Notice>();
     const origin = new URL(request.url).origin;
     const notices = results.map((n) => ({
@@ -1108,7 +1109,7 @@ async function handleListNotices(request: Request, env: Env): Promise<Response> 
 
 async function handleGetNotice(request: Request, env: Env, id: number): Promise<Response> {
   const row = await env.DB.prepare(
-    "SELECT id, title, content, created_at, updated_at FROM notices WHERE id = ?"
+    "SELECT id, title, content, form_link, created_at, updated_at FROM notices WHERE id = ?"
   )
     .bind(id)
     .first<Notice>();
@@ -1130,6 +1131,7 @@ async function handleCreateNotice(request: Request, env: Env): Promise<Response>
   }
   const title = String(body.title ?? "").trim();
   const content = sanitizeReviewContent(String(body.content ?? ""));
+  const formLink = body.form_link != null ? String(body.form_link).trim() || null : null;
 
   if (!title) return errorResponse("title required", 400, request);
   if (!content) return errorResponse("content required", 400, request);
@@ -1137,9 +1139,9 @@ async function handleCreateNotice(request: Request, env: Env): Promise<Response>
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO notices (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)"
+      "INSERT INTO notices (title, content, form_link, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
     )
-      .bind(title, content, now, now)
+      .bind(title, content, formLink, now, now)
       .run();
 
     const id = result.meta.last_row_id;
@@ -1165,16 +1167,18 @@ async function handleUpdateNotice(request: Request, env: Env, id: number): Promi
   const title = body.title != null ? String(body.title).trim() : null;
   const contentRaw = body.content != null ? String(body.content) : null;
   const content = contentRaw !== null ? sanitizeReviewContent(contentRaw) : null;
+  const formLink = body.form_link !== undefined ? (String(body.form_link).trim() || null) : null;
 
   const existing = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
   if (!existing) return errorResponse("Not found", 404, request);
 
   const finalTitle = title ?? existing.title;
   const finalContent = content ?? existing.content;
+  const finalFormLink = formLink !== null ? formLink : (existing.form_link ?? null);
   const now = new Date().toISOString();
 
-  await env.DB.prepare("UPDATE notices SET title = ?, content = ?, updated_at = ? WHERE id = ?")
-    .bind(finalTitle, finalContent, now, id)
+  await env.DB.prepare("UPDATE notices SET title = ?, content = ?, form_link = ?, updated_at = ? WHERE id = ?")
+    .bind(finalTitle, finalContent, finalFormLink, now, id)
     .run();
 
   const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();

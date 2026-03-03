@@ -24,6 +24,17 @@ import Layout from '../../../layouts/Layout.astro';
           placeholder="공지 제목"
         />
       </div>
+      <div class="rounded-lg border border-amber-200 bg-amber-50/50 p-3">
+        <label for="form_link" class="block text-sm font-medium text-gray-700">신청 폼 링크 <span class="text-amber-600 font-normal">(선택)</span></label>
+        <input
+          type="url"
+          id="form_link"
+          name="form_link"
+          class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2"
+          placeholder="https://docs.google.com/forms/... 또는 https://forms.gle/..."
+        />
+        <p class="mt-1 text-xs text-gray-500">값이 있으면 공지 상세에서 등록일시 우측에 링크가 표시됩니다.</p>
+      </div>
       <div>
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
         <input id="content" name="content" type="hidden" required />
@@ -78,6 +89,7 @@ import Layout from '../../../layouts/Layout.astro';
     e.preventDefault();
     const title = (document.getElementById('title') as HTMLInputElement)?.value?.trim();
     const content = (document.getElementById('content') as HTMLInputElement)?.value?.trim() ?? '';
+    const formLink = (document.getElementById('form_link') as HTMLInputElement)?.value?.trim() || undefined;
     if (!title) {
       alert('제목을 입력해주세요.');
       return;
@@ -88,7 +100,7 @@ import Layout from '../../../layouts/Layout.astro';
     }
     setLoading(true);
     try {
-      await createNotice({ title, content });
+      await createNotice({ title, content, form_link: formLink });
       window.location.href = '/admin/notices';
     } catch (err) {
       setLoading(false);

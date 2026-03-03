@@ -82,6 +82,7 @@ export interface Notice {
   id: number;
   title: string;
   content: string;
+  form_link: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -112,7 +113,7 @@ export async function fetchNoticesForAdmin(): Promise<Notice[]> {
 }
 
 /** 관리자용: 공지사항 등록 */
-export async function createNotice(body: { title: string; content: string }): Promise<Notice> {
+export async function createNotice(body: { title: string; content: string; form_link?: string | null }): Promise<Notice> {
   const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -129,7 +130,7 @@ export async function createNotice(body: { title: string; content: string }): Pr
 /** 관리자용: 공지사항 수정 */
 export async function updateNotice(
   id: number,
-  body: { title?: string; content?: string }
+  body: { title?: string; content?: string; form_link?: string | null }
 ): Promise<Notice> {
   const res = await fetch(`${ADMIN_API_BASE}/api/admin/notices/${id}`, {
     method: "PUT",

@@ -24,6 +24,17 @@ import Layout from '../../../layouts/Layout.astro';
           class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
         />
       </div>
+      <div class="rounded-lg border border-amber-200 bg-amber-50/50 p-3">
+        <label for="form_link" class="block text-sm font-medium text-gray-700">신청 폼 링크 <span class="text-amber-600 font-normal">(선택)</span></label>
+        <input
+          type="url"
+          id="form_link"
+          name="form_link"
+          class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2"
+          placeholder="https://docs.google.com/forms/... 또는 https://forms.gle/..."
+        />
+        <p class="mt-1 text-xs text-gray-500">값이 있으면 공지 상세에서 등록일시 우측에 링크가 표시됩니다.</p>
+      </div>
       <div>
         <label for="content" class="block text-sm font-medium text-gray-700">내용</label>
         <input id="content" name="content" type="hidden" />
@@ -99,6 +110,7 @@ import Layout from '../../../layouts/Layout.astro';
         }
         idEl.value = String(notice.id);
         titleEl.value = notice.title;
+        (document.getElementById('form_link') as HTMLInputElement).value = notice.form_link ?? '';
         setTrixContent(rewriteContentImageUrls(notice.content ?? ''));
       } catch (_) {
         alert('공지를 불러오지 못했습니다.');
@@ -119,9 +131,10 @@ import Layout from '../../../layouts/Layout.astro';
       alert('내용을 입력해주세요.');
       return;
     }
+    const formLink = (document.getElementById('form_link') as HTMLInputElement)?.value?.trim() || null;
     submitBtn.disabled = true;
     try {
-      await updateNotice(id, { title, content });
+      await updateNotice(id, { title, content, form_link: formLink });
       window.location.href = '/admin/notices';
     } catch (err) {
       submitBtn.disabled = false;
