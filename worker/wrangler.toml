@@ -37,8 +37,8 @@ preview_id = "f7f176a5728142329e3e568d2b0a1fde"
 # VOC: 관리자 VOC 제출 시 이메일 발송. Resend 사용.
 #   wrangler secret put VOC_TO_EMAIL   → 수신 이메일 주소
 #   wrangler secret put RESEND_API_KEY → https://resend.com API 키
-# 동적 OG (공유 미리보기): 메인 도메인(holaphoto.com)에 이 Worker를 붙일 때
-#   SITE_HOST = "holaphoto.com"
-#   SITE_ORIGIN = "https://holaphotograph.pages.dev"  (Pages 배포 URL)
+# 동적 OG (공유 미리보기): 메인 도메인(holaphoto.com) 라우트 시 프록시 대상. 로컬에 두면 배포마다 적용됨.
 [vars]
 NAVER_BLOG_VISITORS = "657550"
+SITE_HOST = "holaphoto.com"
+SITE_ORIGIN = "https://camera-review.pages.dev"
