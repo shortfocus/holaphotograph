@@ -388,9 +388,18 @@ async function handleRequest(
     .toLowerCase()
     .replace(/^https?:\/\//, "")
     .split("/")[0];
-  const isMainSite = url.hostname.toLowerCase() === siteHost;
+  const host = url.hostname.toLowerCase();
+  const isMainSite =
+    host === siteHost || host === "www." + siteHost;
+  const isNonWww = host === "holaphoto.com";
 
-  // 메인 사이트(holaphoto.com) 요청: SITE_ORIGIN 없으면 503 (이 Worker를 메인 도메인에 붙였을 때만 사용)
+  // 비-www(holaphoto.com) → www(www.holaphoto.com)로 301 리다이렉트 (모바일 등에서 www에서만 정상 동작하는 경우 대응)
+  if (isNonWww && request.method === "GET") {
+    const toUrl = `https://www.holaphoto.com${url.pathname}${url.search || ""}`;
+    return Response.redirect(toUrl, 301);
+  }
+
+  // 메인 사이트(www 등) 요청: SITE_ORIGIN 없으면 503 (이 Worker를 메인 도메인에 붙였을 때만 사용)
   if (isMainSite && request.method === "GET") {
     if (!env.SITE_ORIGIN) {
       return new Response("SITE_ORIGIN not configured for main site proxy.", {
