@@ -53,14 +53,35 @@ interface Notice {
 function sanitizeReviewContent(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: [
-      "p", "br", "div", "span", "strong", "b", "em", "i", "u", "s",
-      "a", "ul", "ol", "li", "blockquote", "h1", "h2", "h3",
-      "figure", "figcaption", "img",
+      "p",
+      "br",
+      "div",
+      "span",
+      "strong",
+      "b",
+      "em",
+      "i",
+      "u",
+      "s",
+      "a",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "h1",
+      "h2",
+      "h3",
+      "figure",
+      "figcaption",
+      "img",
     ],
     allowedAttributes: {
       a: ["href", "title", "target", "rel"],
       img: ["src", "alt", "width", "height", "title"],
-      div: ["class"], span: ["class"], figure: ["class"], figcaption: ["class"],
+      div: ["class"],
+      span: ["class"],
+      figure: ["class"],
+      figcaption: ["class"],
     },
     allowedSchemes: ["http", "https"],
     allowedSchemesByTag: { img: ["http", "https"] },
@@ -87,15 +108,17 @@ function getCorsHeaders(request: Request) {
     }
   }
   const allowOrigin =
-    origin && ALLOWED_ORIGINS.some((allowed) => origin!.toLowerCase().includes(allowed))
+    origin &&
+    ALLOWED_ORIGINS.some((allowed) => origin!.toLowerCase().includes(allowed))
       ? origin
       : "*";
   const headers: Record<string, string> = {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Accept-Language",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, Accept, Accept-Language",
     "Access-Control-Allow-Credentials": allowOrigin !== "*" ? "true" : "false",
-    "Vary": "Origin",
+    Vary: "Origin",
   };
   return headers;
 }
@@ -120,7 +143,9 @@ function contentTypeForKey(key: string): string {
 }
 
 function jsonResponse(data: unknown, status = 200, request?: Request) {
-  const cors = request ? getCorsHeaders(request) : { "Access-Control-Allow-Origin": "*" };
+  const cors = request
+    ? getCorsHeaders(request)
+    : { "Access-Control-Allow-Origin": "*" };
   return Response.json(data, { status, headers: cors });
 }
 
@@ -144,7 +169,7 @@ async function checkRateLimit(
   request: Request,
   keyPrefix: string,
   maxRequests: number,
-  windowSeconds: number
+  windowSeconds: number,
 ): Promise<Response | null> {
   const kv = env.APP_KV;
   if (!kv) return null;
@@ -161,7 +186,7 @@ async function checkRateLimit(
     return jsonResponse(
       { error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
       429,
-      request
+      request,
     );
   }
 
@@ -182,12 +207,15 @@ function rewriteImageUrlsInHtml(html: string, origin: string): string {
   if (!html) return "";
   return html.replace(
     /(https?:\/\/[^/"'\s]+)(\/api\/images\/[^"'\s]*)/gi,
-    (_full, _host, path) => origin + path
+    (_full, _host, path) => origin + path,
   );
 }
 
 /** thumbnail_url 및 content(HTML)에서 우리 R2에 저장된 이미지 키만 추출 (삭제 시 R2 정리용) */
-function extractR2KeysFromPost(post: { thumbnail_url: string | null; content: string | null }): string[] {
+function extractR2KeysFromPost(post: {
+  thumbnail_url: string | null;
+  content: string | null;
+}): string[] {
   const keys: string[] = [];
   const addKey = (urlOrPath: string) => {
     const m = urlOrPath.match(/\/api\/images\/([^"'\s?#]+)/i);
@@ -223,20 +251,27 @@ function isAllowedAdmin(request: Request, env: Env): boolean {
     if (isLocal) return true; // 로컬 개발: 검증 생략
     return false; // 프로덕션에서 미설정 시 관리자 API 차단
   }
-  const email = request.headers.get("Cf-Access-Authenticated-User-Email")?.trim().toLowerCase();
+  const email = request.headers
+    .get("Cf-Access-Authenticated-User-Email")
+    ?.trim()
+    .toLowerCase();
   if (!email) return false;
   const list = allowed.split(",").map((e) => e.trim().toLowerCase());
   return list.includes(email);
 }
 
-const OG_BOT_UA_PATTERN = /facebookexternalhit|Twitterbot|Slack|Slackbot|DiscordBot|KakaoTalk|TelegramBot|LinkedInBot|WhatsApp|Pinterest|Applebot|Googlebot|bingbot|Yeti/i;
+const OG_BOT_UA_PATTERN =
+  /facebookexternalhit|Twitterbot|Slack|Slackbot|DiscordBot|KakaoTalk|TelegramBot|LinkedInBot|WhatsApp|Pinterest|Applebot|Googlebot|bingbot|Yeti/i;
 
 function isOgBot(request: Request): boolean {
   return OG_BOT_UA_PATTERN.test(request.headers.get("User-Agent") ?? "");
 }
 
 function htmlToPlainText(html: string, maxLen: number): string {
-  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (text.length <= maxLen) return text;
   return text.slice(0, maxLen).trim() + "…";
 }
@@ -244,9 +279,15 @@ function htmlToPlainText(html: string, maxLen: number): string {
 const SITE_CANONICAL = "https://holaphoto.com";
 const DEFAULT_OG_IMAGE = `${SITE_CANONICAL}/og-image.png`;
 
-function buildOgHtml(opts: { title: string; description: string; image: string; url: string }): string {
+function buildOgHtml(opts: {
+  title: string;
+  description: string;
+  image: string;
+  url: string;
+}): string {
   const { title, description, image, url } = opts;
-  const escaped = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const escaped = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   return `<!DOCTYPE html><html><head>
 <meta charset="utf-8">
 <meta property="og:type" content="website">
@@ -271,17 +312,18 @@ async function handleOgRequest(
   env: Env,
   type: "post" | "notice",
   id: number,
-  canonicalUrl: string
+  canonicalUrl: string,
 ): Promise<Response> {
   const origin = new URL(request.url).origin;
   if (type === "post") {
     const post = await env.DB.prepare(
-      "SELECT id, title, content, thumbnail_url FROM customer_reviews WHERE id = ? AND status = ?"
+      "SELECT id, title, content, thumbnail_url FROM customer_reviews WHERE id = ? AND status = ?",
     )
       .bind(id, "approved")
       .first<Pick<Post, "id" | "title" | "content" | "thumbnail_url">>();
     if (!post) return new Response("Not found", { status: 404 });
-    const image = normalizeImageUrl(post.thumbnail_url, origin) ?? DEFAULT_OG_IMAGE;
+    const image =
+      normalizeImageUrl(post.thumbnail_url, origin) ?? DEFAULT_OG_IMAGE;
     const description = htmlToPlainText(post.content ?? "", 200) || post.title;
     const html = buildOgHtml({
       title: post.title,
@@ -290,16 +332,30 @@ async function handleOgRequest(
       url: canonicalUrl,
     });
     return new Response(html, {
-      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" },
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=300",
+      },
     });
   }
-  const notice = await env.DB.prepare("SELECT id, title, content FROM notices WHERE id = ?")
+  const notice = await env.DB.prepare(
+    "SELECT id, title, content FROM notices WHERE id = ?",
+  )
     .bind(id)
     .first<Pick<Notice, "id" | "title" | "content">>();
   if (!notice) return new Response("Not found", { status: 404 });
-  const description = htmlToPlainText(notice.content ?? "", 200) || notice.title;
-  const firstImgMatch = (notice.content ?? "").match(/<img[^>]+src=["']([^"']+)["']/i);
-  const image = firstImgMatch ? (firstImgMatch[1].startsWith("http") ? firstImgMatch[1] : SITE_CANONICAL + (firstImgMatch[1].startsWith("/") ? "" : "/") + firstImgMatch[1]) : DEFAULT_OG_IMAGE;
+  const description =
+    htmlToPlainText(notice.content ?? "", 200) || notice.title;
+  const firstImgMatch = (notice.content ?? "").match(
+    /<img[^>]+src=["']([^"']+)["']/i,
+  );
+  const image = firstImgMatch
+    ? firstImgMatch[1].startsWith("http")
+      ? firstImgMatch[1]
+      : SITE_CANONICAL +
+        (firstImgMatch[1].startsWith("/") ? "" : "/") +
+        firstImgMatch[1]
+    : DEFAULT_OG_IMAGE;
   const html = buildOgHtml({
     title: notice.title,
     description,
@@ -307,98 +363,139 @@ async function handleOgRequest(
     url: canonicalUrl,
   });
   return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" },
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "public, max-age=300",
+    },
   });
 }
 
-async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+async function handleRequest(
+  request: Request,
+  env: Env,
+  _ctx: ExecutionContext,
+): Promise<Response> {
   const cors = getCorsHeaders(request);
   if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: { ...cors, "Access-Control-Max-Age": "86400" } });
-    }
+    return new Response(null, {
+      status: 204,
+      headers: { ...cors, "Access-Control-Max-Age": "86400" },
+    });
+  }
 
-    const url = new URL(request.url);
-    const siteHost = (env.SITE_HOST ?? "holaphoto.com").toLowerCase().replace(/^https?:\/\//, "").split("/")[0];
-    const isMainSite = url.hostname.toLowerCase() === siteHost;
+  const url = new URL(request.url);
+  const siteHost = (env.SITE_HOST ?? "holaphoto.com")
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .split("/")[0];
+  const isMainSite = url.hostname.toLowerCase() === siteHost;
 
-    // 메인 사이트(holaphoto.com) 요청: SITE_ORIGIN 없으면 503 (이 Worker를 메인 도메인에 붙였을 때만 사용)
-    if (isMainSite && request.method === "GET") {
-      if (!env.SITE_ORIGIN) {
-        return new Response("SITE_ORIGIN not configured for main site proxy.", { status: 503 });
-      }
-      const pathname = url.pathname.replace(/\/$/, "") || "/";
-      const idRaw = url.searchParams.get("id");
-      const id = idRaw ? parseInt(idRaw, 10) : 0;
-      if ((pathname === "/post" || pathname === "/notice") && id > 0 && isOgBot(request)) {
-        const canonicalUrl = `${SITE_CANONICAL}${pathname}?id=${id}`;
-        return handleOgRequest(request, env, pathname === "/post" ? "post" : "notice", id, canonicalUrl);
-      }
-      const proxyUrl = env.SITE_ORIGIN.replace(/\/$/, "") + pathname + (url.search || "");
-      const res = await fetch(proxyUrl, {
-        method: request.method,
-        headers: request.headers,
-        redirect: "follow",
-      });
-      return new Response(res.body, {
-        status: res.status,
-        statusText: res.statusText,
-        headers: res.headers,
+  // 메인 사이트(holaphoto.com) 요청: SITE_ORIGIN 없으면 503 (이 Worker를 메인 도메인에 붙였을 때만 사용)
+  if (isMainSite && request.method === "GET") {
+    if (!env.SITE_ORIGIN) {
+      return new Response("SITE_ORIGIN not configured for main site proxy.", {
+        status: 503,
       });
     }
-
-    // GET /api/og?type=post|notice&id= — 동적 OG HTML (공유 미리보기용, 캐노니컬 URL은 메인 사이트)
-    if (url.pathname === "/api/og" && request.method === "GET") {
-      const type = url.searchParams.get("type") === "notice" ? "notice" : "post";
-      const idRaw = url.searchParams.get("id");
-      const id = idRaw ? parseInt(idRaw, 10) : 0;
-      if (id <= 0) return errorResponse("id required", 400, request);
-      const path = type === "post" ? "/post" : "/notice";
-      const canonicalUrl = `${SITE_CANONICAL}${path}?id=${id}`;
-      return handleOgRequest(request, env, type, id, canonicalUrl);
+    const pathname = url.pathname.replace(/\/$/, "") || "/";
+    const idRaw = url.searchParams.get("id");
+    const id = idRaw ? parseInt(idRaw, 10) : 0;
+    if (
+      (pathname === "/post" || pathname === "/notice") &&
+      id > 0 &&
+      isOgBot(request)
+    ) {
+      const canonicalUrl = `${SITE_CANONICAL}${pathname}?id=${id}`;
+      return handleOgRequest(
+        request,
+        env,
+        pathname === "/post" ? "post" : "notice",
+        id,
+        canonicalUrl,
+      );
     }
+    const proxyUrl =
+      env.SITE_ORIGIN.replace(/\/$/, "") + pathname + (url.search || "");
+    const res = await fetch(proxyUrl, {
+      method: request.method,
+      headers: request.headers,
+      redirect: "follow",
+    });
+    return new Response(res.body, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers,
+    });
+  }
 
-    // 관리자 UI 정적 파일 (R2 admin-ui/ 프리픽스). GET만. /admin 진입 시 Access 한 번 로그인으로 화면+API 동시 사용.
-    if (request.method === "GET") {
-      const path = url.pathname;
-      if (path === "/admin" || path === "/admin/") {
-        const obj = await env.BUCKET.get("admin-ui/admin/index.html");
-        if (obj) return new Response(obj.body, { headers: { "Content-Type": "text/html; charset=utf-8", ...cors } });
-      }
-      if (path.startsWith("/admin/") && !path.startsWith("/api/")) {
-        const sub = path.slice("/admin".length).replace(/^\/+/, "") || "index";
-        const tryKeys = [`admin-ui/admin/${sub}/index.html`, `admin-ui/admin/${sub}.html`, `admin-ui/admin/${sub}`];
-        for (const key of tryKeys) {
-          const obj = await env.BUCKET.get(key);
-          if (obj) {
-            const ct = contentTypeForKey(key);
-            return new Response(obj.body, { headers: { "Content-Type": ct, ...cors } });
-          }
-        }
-      }
-      if (path.startsWith("/_astro/")) {
-        const key = "admin-ui" + path;
+  // GET /api/og?type=post|notice&id= — 동적 OG HTML (공유 미리보기용, 캐노니컬 URL은 메인 사이트)
+  if (url.pathname === "/api/og" && request.method === "GET") {
+    const type = url.searchParams.get("type") === "notice" ? "notice" : "post";
+    const idRaw = url.searchParams.get("id");
+    const id = idRaw ? parseInt(idRaw, 10) : 0;
+    if (id <= 0) return errorResponse("id required", 400, request);
+    const path = type === "post" ? "/post" : "/notice";
+    const canonicalUrl = `${SITE_CANONICAL}${path}?id=${id}`;
+    return handleOgRequest(request, env, type, id, canonicalUrl);
+  }
+
+  // 관리자 UI 정적 파일 (R2 admin-ui/ 프리픽스). GET만. /admin 진입 시 Access 한 번 로그인으로 화면+API 동시 사용.
+  if (request.method === "GET") {
+    const path = url.pathname;
+    if (path === "/admin" || path === "/admin/") {
+      const obj = await env.BUCKET.get("admin-ui/admin/index.html");
+      if (obj)
+        return new Response(obj.body, {
+          headers: { "Content-Type": "text/html; charset=utf-8", ...cors },
+        });
+    }
+    if (path.startsWith("/admin/") && !path.startsWith("/api/")) {
+      const sub = path.slice("/admin".length).replace(/^\/+/, "") || "index";
+      const tryKeys = [
+        `admin-ui/admin/${sub}/index.html`,
+        `admin-ui/admin/${sub}.html`,
+        `admin-ui/admin/${sub}`,
+      ];
+      for (const key of tryKeys) {
         const obj = await env.BUCKET.get(key);
         if (obj) {
           const ct = contentTypeForKey(key);
-          return new Response(obj.body, { headers: { "Content-Type": ct, ...cors } });
+          return new Response(obj.body, {
+            headers: { "Content-Type": ct, ...cors },
+          });
         }
       }
     }
+    if (path.startsWith("/_astro/")) {
+      const key = "admin-ui" + path;
+      const obj = await env.BUCKET.get(key);
+      if (obj) {
+        const ct = contentTypeForKey(key);
+        return new Response(obj.body, {
+          headers: { "Content-Type": ct, ...cors },
+        });
+      }
+    }
+  }
 
-    // 루트 - API 정보
-    if (url.pathname === "/" || url.pathname === "/api") {
-      return jsonResponse({
+  // 루트 - API 정보
+  if (url.pathname === "/" || url.pathname === "/api") {
+    return jsonResponse(
+      {
         name: "holaphotograph-api",
         endpoints: {
           public: {
             "GET /api/naver-rss": "네이버 블로그 RSS (섹션별 분류)",
             "GET /api/image-proxy?url=...": "네이버 썸네일 이미지 프록시",
-            "GET /api/youtube-latest": "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
-            "GET /api/channel-stats": "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
+            "GET /api/youtube-latest":
+              "유튜브 채널 최신 영상 (롱폼 + Shorts 분리)",
+            "GET /api/channel-stats":
+              "채널 통계 (유튜브 구독자/조회수, 네이버 방문자)",
             "POST /api/lecture-signup": "강의 소식 수신 신청 (이메일 수집)",
             "GET /api/posts": "리뷰 목록 (approved만)",
             "GET /api/posts/:id": "리뷰 상세 (approved만)",
-            "GET /api/og?type=post|notice&id=:id": "동적 OG HTML (공유 미리보기, title/description/image)",
+            "GET /api/og?type=post|notice&id=:id":
+              "동적 OG HTML (공유 미리보기, title/description/image)",
             "GET /api/notices": "공지사항 목록",
             "GET /api/notices/:id": "공지사항 상세",
             "POST /api/reviews": "고객 후기 제출 (pending 저장)",
@@ -421,183 +518,212 @@ async function handleRequest(request: Request, env: Env, _ctx: ExecutionContext)
             "POST /api/admin/voc": "VOC 제출 (관리자 → 수신 이메일 발송)",
           },
         },
-      }, 200, request);
+      },
+      200,
+      request,
+    );
+  }
+
+  // GET /api/naver-rss - 네이버 블로그 RSS 프록시 (CORS 회피)
+  if (url.pathname === "/api/naver-rss" && request.method === "GET") {
+    return handleNaverRss(request);
+  }
+
+  // GET /api/image-proxy?url=... - 네이버 썸네일 이미지 프록시 (핫링크 차단 회피)
+  if (url.pathname === "/api/image-proxy" && request.method === "GET") {
+    return handleImageProxy(request);
+  }
+
+  // GET /api/youtube-latest - 유튜브 채널 최신 영상
+  if (url.pathname === "/api/youtube-latest" && request.method === "GET") {
+    return handleYoutubeLatest(request, env);
+  }
+
+  // GET /api/channel-stats - 채널 통계 (협업/광고 섹션용)
+  if (url.pathname === "/api/channel-stats" && request.method === "GET") {
+    return handleChannelStats(request, env);
+  }
+
+  // POST /api/lecture-signup - 강의 소식 수신 신청 (이메일 수집)
+  if (url.pathname === "/api/lecture-signup" && request.method === "POST") {
+    return handleLectureSignup(request, env);
+  }
+
+  // GET /api/admin/lecture-signups - 강의 신청 목록 (관리자 전용)
+  if (
+    url.pathname === "/api/admin/lecture-signups" &&
+    request.method === "GET"
+  ) {
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    return handleListLectureSignups(request, env);
+  }
+
+  // GET /api/reviews - 고객 후기 목록 (승인된 것만, 공개용)
+  if (url.pathname === "/api/reviews" && request.method === "GET") {
+    return handleListApprovedReviews(request, env);
+  }
+
+  // POST /api/reviews - 고객 후기 제출 (로그인 없음, pending 저장)
+  if (url.pathname === "/api/reviews" && request.method === "POST") {
+    return handleSubmitReview(request, env);
+  }
+
+  // POST /api/reviews/upload - 고객 후기 본문 이미지 업로드 (로그인 없음)
+  if (url.pathname === "/api/reviews/upload" && request.method === "POST") {
+    return handleReviewImageUpload(request, env);
+  }
+
+  // GET /api/notices, GET /api/notices/:id - 공지사항 목록/상세 (공개)
+  const noticesMatch = url.pathname.match(/^\/api\/notices(?:\/(\d+))?$/);
+  if (noticesMatch && request.method === "GET") {
+    const id = noticesMatch[1] ? parseInt(noticesMatch[1], 10) : null;
+    if (id) return handleGetNotice(request, env, id);
+    return handleListNotices(request, env);
+  }
+
+  // /api/admin/notices - 공지사항 CRUD (관리자 전용)
+  const adminNoticesMatch = url.pathname.match(
+    /^\/api\/admin\/notices(?:\/(\d+))?$/,
+  );
+  if (adminNoticesMatch) {
+    const id = adminNoticesMatch[1] ? parseInt(adminNoticesMatch[1], 10) : null;
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    switch (request.method) {
+      case "GET":
+        if (id) return handleGetNotice(request, env, id);
+        return handleListNotices(request, env);
+      case "POST":
+        if (id) return errorResponse("Method not allowed", 405, request);
+        return handleCreateNotice(request, env);
+      case "PUT":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleUpdateNotice(request, env, id);
+      case "DELETE":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleDeleteNotice(request, env, id);
+      default:
+        return errorResponse("Method not allowed", 405, request);
     }
+  }
 
-    // GET /api/naver-rss - 네이버 블로그 RSS 프록시 (CORS 회피)
-    if (url.pathname === "/api/naver-rss" && request.method === "GET") {
-      return handleNaverRss(request);
+  const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
+  const adminPostsMatch = url.pathname.match(
+    /^\/api\/admin\/posts(?:\/(\d+))?$/,
+  );
+
+  // --- /api/admin/* (관리자 전용, Access에서 /api/admin/* 만 보호하면 됨) ---
+
+  // POST /api/admin/upload - 이미지 업로드 (관리자 전용)
+  if (url.pathname === "/api/admin/upload" && request.method === "POST") {
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    const contentType = request.headers.get("Content-Type") || "";
+    if (!contentType.startsWith("multipart/form-data")) {
+      return errorResponse("Expected multipart/form-data", 400, request);
     }
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    if (!file) return errorResponse("No file provided", 400, request);
+    const ext = file.name.split(".").pop() || "jpg";
+    const key = `uploads/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    await env.BUCKET.put(key, file.stream(), {
+      httpMetadata: { contentType: file.type },
+    });
+    const baseUrl = url.origin.replace(/^https?:\/\//, "");
+    const imageUrl = `https://${baseUrl}/api/images/${key}`;
+    return jsonResponse({ url: imageUrl, key }, 200, request);
+  }
 
-    // GET /api/image-proxy?url=... - 네이버 썸네일 이미지 프록시 (핫링크 차단 회피)
-    if (url.pathname === "/api/image-proxy" && request.method === "GET") {
-      return handleImageProxy(request);
+  // DELETE /api/admin/images/:path - 이미지 삭제 (관리자 전용)
+  if (
+    url.pathname.startsWith("/api/admin/images/") &&
+    request.method === "DELETE"
+  ) {
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    const key = url.pathname.replace("/api/admin/images/", "");
+    await env.BUCKET.delete(key);
+    return jsonResponse({ success: true }, 200, request);
+  }
+
+  // POST /api/admin/voc - VOC 제출 (관리자 → 수신 이메일 발송)
+  if (url.pathname === "/api/admin/voc" && request.method === "POST") {
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    return handleVocSubmit(request, env);
+  }
+
+  // /api/admin/posts, /api/admin/posts/:id - 관리자 전용 CRUD
+  if (adminPostsMatch) {
+    const id = adminPostsMatch[1] ? parseInt(adminPostsMatch[1], 10) : null;
+    switch (request.method) {
+      case "GET":
+        if (id) return handleGetPost(request, env, id);
+        return handleListPosts(request, env);
+      case "POST":
+        if (id) return errorResponse("Method not allowed", 405, request);
+        return handleCreatePost(request, env);
+      case "PUT":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleUpdatePost(request, env, id);
+      case "DELETE":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleDeletePost(request, env, id);
+      default:
+        return errorResponse("Method not allowed", 405, request);
     }
+  }
 
-    // GET /api/youtube-latest - 유튜브 채널 최신 영상
-    if (url.pathname === "/api/youtube-latest" && request.method === "GET") {
-      return handleYoutubeLatest(request, env);
-    }
+  // GET /api/images/:path - R2 이미지 조회 (공개, DELETE는 /api/admin/images/:path)
+  if (url.pathname.startsWith("/api/images/")) {
+    const key = url.pathname.replace("/api/images/", "");
+    if (request.method !== "GET")
+      return errorResponse("Method not allowed", 405, request);
+    const object = await env.BUCKET.get(key);
+    if (!object) return errorResponse("Not found", 404, request);
+    return new Response(object.body, {
+      headers: {
+        "Content-Type": object.httpMetadata?.contentType || "image/jpeg",
+        ...getCorsHeaders(request),
+      },
+    });
+  }
 
-    // GET /api/channel-stats - 채널 통계 (협업/광고 섹션용)
-    if (url.pathname === "/api/channel-stats" && request.method === "GET") {
-      return handleChannelStats(request, env);
-    }
-
-    // POST /api/lecture-signup - 강의 소식 수신 신청 (이메일 수집)
-    if (url.pathname === "/api/lecture-signup" && request.method === "POST") {
-      return handleLectureSignup(request, env);
-    }
-
-    // GET /api/admin/lecture-signups - 강의 신청 목록 (관리자 전용)
-    if (url.pathname === "/api/admin/lecture-signups" && request.method === "GET") {
-      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-      return handleListLectureSignups(request, env);
-    }
-
-    // GET /api/reviews - 고객 후기 목록 (승인된 것만, 공개용)
-    if (url.pathname === "/api/reviews" && request.method === "GET") {
-      return handleListApprovedReviews(request, env);
-    }
-
-    // POST /api/reviews - 고객 후기 제출 (로그인 없음, pending 저장)
-    if (url.pathname === "/api/reviews" && request.method === "POST") {
-      return handleSubmitReview(request, env);
-    }
-
-    // POST /api/reviews/upload - 고객 후기 본문 이미지 업로드 (로그인 없음)
-    if (url.pathname === "/api/reviews/upload" && request.method === "POST") {
-      return handleReviewImageUpload(request, env);
-    }
-
-    // GET /api/notices, GET /api/notices/:id - 공지사항 목록/상세 (공개)
-    const noticesMatch = url.pathname.match(/^\/api\/notices(?:\/(\d+))?$/);
-    if (noticesMatch && request.method === "GET") {
-      const id = noticesMatch[1] ? parseInt(noticesMatch[1], 10) : null;
-      if (id) return handleGetNotice(request, env, id);
-      return handleListNotices(request, env);
-    }
-
-    // /api/admin/notices - 공지사항 CRUD (관리자 전용)
-    const adminNoticesMatch = url.pathname.match(/^\/api\/admin\/notices(?:\/(\d+))?$/);
-    if (adminNoticesMatch) {
-      const id = adminNoticesMatch[1] ? parseInt(adminNoticesMatch[1], 10) : null;
-      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-      switch (request.method) {
-        case "GET":
-          if (id) return handleGetNotice(request, env, id);
-          return handleListNotices(request, env);
-        case "POST":
-          if (id) return errorResponse("Method not allowed", 405, request);
-          return handleCreateNotice(request, env);
-        case "PUT":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleUpdateNotice(request, env, id);
-        case "DELETE":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleDeleteNotice(request, env, id);
-        default:
-          return errorResponse("Method not allowed", 405, request);
-      }
-    }
-
-    const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
-    const adminPostsMatch = url.pathname.match(/^\/api\/admin\/posts(?:\/(\d+))?$/);
-
-    // --- /api/admin/* (관리자 전용, Access에서 /api/admin/* 만 보호하면 됨) ---
-
-    // POST /api/admin/upload - 이미지 업로드 (관리자 전용)
-    if (url.pathname === "/api/admin/upload" && request.method === "POST") {
-      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-      const contentType = request.headers.get("Content-Type") || "";
-      if (!contentType.startsWith("multipart/form-data")) {
-        return errorResponse("Expected multipart/form-data", 400, request);
-      }
-      const formData = await request.formData();
-      const file = formData.get("file") as File | null;
-      if (!file) return errorResponse("No file provided", 400, request);
-      const ext = file.name.split(".").pop() || "jpg";
-      const key = `uploads/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
-      await env.BUCKET.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
-      const baseUrl = url.origin.replace(/^https?:\/\//, "");
-      const imageUrl = `https://${baseUrl}/api/images/${key}`;
-      return jsonResponse({ url: imageUrl, key }, 200, request);
-    }
-
-    // DELETE /api/admin/images/:path - 이미지 삭제 (관리자 전용)
-    if (url.pathname.startsWith("/api/admin/images/") && request.method === "DELETE") {
-      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-      const key = url.pathname.replace("/api/admin/images/", "");
-      await env.BUCKET.delete(key);
-      return jsonResponse({ success: true }, 200, request);
-    }
-
-    // POST /api/admin/voc - VOC 제출 (관리자 → 수신 이메일 발송)
-    if (url.pathname === "/api/admin/voc" && request.method === "POST") {
-      if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-      return handleVocSubmit(request, env);
-    }
-
-    // /api/admin/posts, /api/admin/posts/:id - 관리자 전용 CRUD
-    if (adminPostsMatch) {
-      const id = adminPostsMatch[1] ? parseInt(adminPostsMatch[1], 10) : null;
-      switch (request.method) {
-        case "GET":
-          if (id) return handleGetPost(request, env, id);
-          return handleListPosts(request, env);
-        case "POST":
-          if (id) return errorResponse("Method not allowed", 405, request);
-          return handleCreatePost(request, env);
-        case "PUT":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleUpdatePost(request, env, id);
-        case "DELETE":
-          if (!id) return errorResponse("ID required", 400, request);
-          return handleDeletePost(request, env, id);
-        default:
-          return errorResponse("Method not allowed", 405, request);
-      }
-    }
-
-    // GET /api/images/:path - R2 이미지 조회 (공개, DELETE는 /api/admin/images/:path)
-    if (url.pathname.startsWith("/api/images/")) {
-      const key = url.pathname.replace("/api/images/", "");
-      if (request.method !== "GET") return errorResponse("Method not allowed", 405, request);
-      const object = await env.BUCKET.get(key);
-      if (!object) return errorResponse("Not found", 404, request);
-      return new Response(object.body, {
-        headers: {
-          "Content-Type": object.httpMetadata?.contentType || "image/jpeg",
-          ...getCorsHeaders(request),
-        },
-      });
-    }
-
-    // /api/posts, /api/posts/:id - 공개용 GET만 허용
-    if (pathMatch) {
-      const id = pathMatch[1] ? parseInt(pathMatch[1], 10) : null;
-      if (request.method !== "GET") return errorResponse("Method not allowed", 405, request);
-      if (id) return handleGetPost(request, env, id);
-      return handleListPosts(request, env);
-    }
+  // /api/posts, /api/posts/:id - 공개용 GET만 허용
+  if (pathMatch) {
+    const id = pathMatch[1] ? parseInt(pathMatch[1], 10) : null;
+    if (request.method !== "GET")
+      return errorResponse("Method not allowed", 405, request);
+    if (id) return handleGetPost(request, env, id);
+    return handleListPosts(request, env);
+  }
 
   return errorResponse("Not found", 404, request);
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<Response> {
     setLogFormat(env.LOG_FORMAT === "readable" ? "readable" : "json");
     const start = Date.now();
     let res: Response;
     try {
       res = await handleRequest(request, env, ctx);
     } catch (err) {
-      logger.error("unhandled exception", { err: err instanceof Error ? err.message : String(err) });
+      logger.error("unhandled exception", {
+        err: err instanceof Error ? err.message : String(err),
+      });
       res = errorResponse("Internal Server Error", 500, request);
     }
     logger.request(request, res, Date.now() - start, {
       ip: getClientIp(request),
-      user: request.headers.get("Cf-Access-Authenticated-User-Email") ?? undefined,
+      user:
+        request.headers.get("Cf-Access-Authenticated-User-Email") ?? undefined,
     });
     return res;
   },
@@ -610,20 +736,38 @@ const YOUTUBE_CHANNEL_ID = "UCsD5VP6TvRMt-sq0q25HlIA";
 function isCompareLike(title: string, category: string): boolean {
   const t = title.toLowerCase();
   const c = category.toLowerCase();
-  return t.includes("렌즈 리뷰") || t.includes("카메라 리뷰") || c.includes("렌즈 리뷰") || c.includes("카메라 리뷰");
+  return (
+    t.includes("렌즈 리뷰") ||
+    t.includes("카메라 리뷰") ||
+    c.includes("렌즈 리뷰") ||
+    c.includes("카메라 리뷰")
+  );
 }
 
 /** RSS item → section 매핑 (guides, models, reviews) */
 function getRssSection(category: string): "reviews" | "guides" | "models" {
   const c = category.toLowerCase();
-  if (/강의|예약|세미나|클래스|교육|weekly focus|카메라 소식/.test(c)) return "guides";
-  if (/시그마|렌즈|삼양|빌트록스|accessory|피지테크|viltrox|sigm/.test(c)) return "models";
+  if (/강의|예약|세미나|클래스|교육|weekly focus|카메라 소식/.test(c))
+    return "guides";
+  if (/시그마|렌즈|삼양|빌트록스|accessory|피지테크|viltrox|sigm/.test(c))
+    return "models";
   return "reviews";
 }
 
-function parseRssItem(itemXml: string): { title: string; link: string; description: string; pubDate: string; category: string; thumbnail_url: string | null } | null {
+function parseRssItem(
+  itemXml: string,
+): {
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+  category: string;
+  thumbnail_url: string | null;
+} | null {
   const getTag = (tag: string): string => {
-    const m = itemXml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i"));
+    const m = itemXml.match(
+      new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i"),
+    );
     if (!m) return "";
     let val = m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
     return val;
@@ -645,7 +789,9 @@ function needsImageProxy(url: string | null): boolean {
   if (!url) return false;
   try {
     const u = new URL(url);
-    return u.hostname.includes("pstatic.net") || u.hostname.includes("blogthumb");
+    return (
+      u.hostname.includes("pstatic.net") || u.hostname.includes("blogthumb")
+    );
   } catch {
     return false;
   }
@@ -655,13 +801,19 @@ async function handleImageProxy(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const targetUrl = url.searchParams.get("url");
   if (!targetUrl) return errorResponse("url parameter required", 400, request);
-  if (!needsImageProxy(targetUrl)) return errorResponse("Only pstatic.net/blogthumb URLs allowed", 400, request);
+  if (!needsImageProxy(targetUrl))
+    return errorResponse(
+      "Only pstatic.net/blogthumb URLs allowed",
+      400,
+      request,
+    );
   try {
     const res = await fetch(targetUrl, {
       referrerPolicy: "no-referrer",
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Referer": "https://blog.naver.com/",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Referer: "https://blog.naver.com/",
       },
     });
     if (!res.ok) return errorResponse("Image fetch failed", 502, request);
@@ -674,7 +826,9 @@ async function handleImageProxy(request: Request): Promise<Response> {
       },
     });
   } catch (err) {
-    logger.error("image-proxy", { err: err instanceof Error ? err.message : String(err) });
+    logger.error("image-proxy", {
+      err: err instanceof Error ? err.message : String(err),
+    });
     return errorResponse("Image fetch failed", 502, request);
   }
 }
@@ -688,27 +842,43 @@ async function handleNaverRss(request: Request): Promise<Response> {
     const xml = await res.text();
     const itemMatches = xml.matchAll(/<item>([\s\S]*?)<\/item>/gi);
     const baseUrl = new URL(request.url).origin;
-    const items: Array<{ title: string; link: string; description: string; pubDate: string; category: string; thumbnail_url: string | null; thumbnail_proxy_url: string | null; section: string }> = [];
+    const items: Array<{
+      title: string;
+      link: string;
+      description: string;
+      pubDate: string;
+      category: string;
+      thumbnail_url: string | null;
+      thumbnail_proxy_url: string | null;
+      section: string;
+    }> = [];
     for (const m of itemMatches) {
       const parsed = parseRssItem(m[1]);
       if (parsed) {
         const section = getRssSection(parsed.category);
-        const thumbnail_proxy_url = parsed.thumbnail_url && needsImageProxy(parsed.thumbnail_url)
-          ? `${baseUrl}/api/image-proxy?url=${encodeURIComponent(parsed.thumbnail_url)}`
-          : null;
+        const thumbnail_proxy_url =
+          parsed.thumbnail_url && needsImageProxy(parsed.thumbnail_url)
+            ? `${baseUrl}/api/image-proxy?url=${encodeURIComponent(parsed.thumbnail_url)}`
+            : null;
         items.push({ ...parsed, thumbnail_proxy_url, section });
       }
     }
     const bySection = (s: string) => items.filter((i) => i.section === s);
     const compare = items.filter((i) => isCompareLike(i.title, i.category));
-    return jsonResponse({
-      reviews: bySection("reviews"),
-      guides: bySection("guides"),
-      models: bySection("models"),
-      compare,
-    }, 200, request);
+    return jsonResponse(
+      {
+        reviews: bySection("reviews"),
+        guides: bySection("guides"),
+        models: bySection("models"),
+        compare,
+      },
+      200,
+      request,
+    );
   } catch (err) {
-    logger.error("naver-rss", { err: err instanceof Error ? err.message : String(err) });
+    logger.error("naver-rss", {
+      err: err instanceof Error ? err.message : String(err),
+    });
     return errorResponse("RSS fetch failed", 502, request);
   }
 }
@@ -743,7 +913,8 @@ const LONG_FORM_TITLE_KEYWORD = /따.라.해/;
 const SHORTS_TITLE_KEYWORD = /후지필름/;
 
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
-const REVIEW_KEYWORDS = /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
+const REVIEW_KEYWORDS =
+  /리뷰|언박싱|unboxing|비교|사용기|후기|테스트|소개|가이드/i;
 
 /** 빠르게 보는 장비 팁: 제목에 팁/꿀팁 등 포함 시 우선 배치 */
 const TIP_KEYWORDS = /팁|꿀팁|tip|핵심|정리/i;
@@ -766,21 +937,39 @@ type YoutubeVideoItem = {
   commentCount?: string;
 };
 
-type YoutubeApiStatistics = { viewCount?: string; likeCount?: string; commentCount?: string };
+type YoutubeApiStatistics = {
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
+};
 
-function buildVideoItem(it: { id?: string; snippet?: { title?: string; publishedAt?: string; thumbnails?: { high?: { url?: string }; default?: { url?: string } } }; contentDetails?: { duration?: string }; statistics?: YoutubeApiStatistics }): YoutubeVideoItem | null {
+function buildVideoItem(it: {
+  id?: string;
+  snippet?: {
+    title?: string;
+    publishedAt?: string;
+    thumbnails?: { high?: { url?: string }; default?: { url?: string } };
+  };
+  contentDetails?: { duration?: string };
+  statistics?: YoutubeApiStatistics;
+}): YoutubeVideoItem | null {
   const vid = it.id;
   const sn = it.snippet;
   const title = sn?.title || "";
   const durationSec = parseDurationSeconds(it.contentDetails?.duration);
   const isShort = durationSec > 0 && durationSec <= SHORTS_MAX_SECONDS;
-  const link = vid ? (isShort ? `https://www.youtube.com/shorts/${vid}` : `https://www.youtube.com/watch?v=${vid}`) : "";
+  const link = vid
+    ? isShort
+      ? `https://www.youtube.com/shorts/${vid}`
+      : `https://www.youtube.com/watch?v=${vid}`
+    : "";
   if (!link) return null;
   const stats = it.statistics;
   return {
     title,
     link,
-    thumbnail_url: sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
+    thumbnail_url:
+      sn?.thumbnails?.high?.url || sn?.thumbnails?.default?.url || null,
     publishedAt: sn?.publishedAt || "",
     viewCount: stats?.viewCount,
     likeCount: stats?.likeCount,
@@ -791,19 +980,40 @@ function buildVideoItem(it: { id?: string; snippet?: { title?: string; published
 const YOUTUBE_CACHE_KV_KEY = "ytcache:latest";
 const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
 
-async function handleYoutubeLatest(request: Request, env: Env): Promise<Response> {
+async function handleYoutubeLatest(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const kv = env.APP_KV;
   if (kv) {
     const raw = await kv.get(YOUTUBE_CACHE_KV_KEY);
     if (raw) {
-      const body = JSON.parse(raw) as { videos?: unknown[]; shorts?: unknown[]; error?: string; cacheExpiresAt?: string | null };
+      const body = JSON.parse(raw) as {
+        videos?: unknown[];
+        shorts?: unknown[];
+        error?: string;
+        cacheExpiresAt?: string | null;
+      };
       const cors = getCorsHeaders(request);
-      return new Response(JSON.stringify(body), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
     }
   }
 
   const key = env.YOUTUBE_API_KEY;
-  if (!key) return jsonResponse({ videos: [], shorts: [], error: "YOUTUBE_API_KEY not configured", cacheExpiresAt: null }, 200, request);
+  if (!key)
+    return jsonResponse(
+      {
+        videos: [],
+        shorts: [],
+        error: "YOUTUBE_API_KEY not configured",
+        cacheExpiresAt: null,
+      },
+      200,
+      request,
+    );
   try {
     // 1회: 검색 (q에 OR 사용. 공식 문서엔 없으나 실사용에서 동작)
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=50&order=date&type=video&q=${encodeURIComponent("따라해 OR 후지필름")}&key=${key}`;
@@ -811,17 +1021,30 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     if (!searchRes.ok) {
       return errorResponse("YouTube search failed", searchRes.status, request);
     }
-    const searchData = (await searchRes.json()) as { items?: Array<{ id?: { videoId?: string } }> };
-    const searchIds = (searchData.items || []).map((it) => it.id?.videoId).filter(Boolean) as string[];
+    const searchData = (await searchRes.json()) as {
+      items?: Array<{ id?: { videoId?: string } }>;
+    };
+    const searchIds = (searchData.items || [])
+      .map((it) => it.id?.videoId)
+      .filter(Boolean) as string[];
 
     // 2회: 상세 한 번에 (preferred + 검색 ID, 최대 50)
-    const detailsIds = [...new Set([...YOUTUBE_LONG_ORDER, ...searchIds])].slice(0, 50);
+    const detailsIds = [
+      ...new Set([...YOUTUBE_LONG_ORDER, ...searchIds]),
+    ].slice(0, 50);
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${detailsIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
     if (!detailsRes.ok) {
       return errorResponse("YouTube API error", detailsRes.status, request);
     }
-    const detailsData = (await detailsRes.json()) as { items?: Array<{ id?: string; snippet?: unknown; contentDetails?: { duration?: string }; statistics?: { viewCount?: string } }> };
+    const detailsData = (await detailsRes.json()) as {
+      items?: Array<{
+        id?: string;
+        snippet?: unknown;
+        contentDetails?: { duration?: string };
+        statistics?: { viewCount?: string };
+      }>;
+    };
     const items = detailsData.items || [];
     const preferredSet = new Set(YOUTUBE_LONG_ORDER);
     const preferredVideos: YoutubeVideoItem[] = [];
@@ -837,10 +1060,19 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (!item) continue;
       if (item.link.includes("/shorts/")) {
-        if (SHORTS_TITLE_KEYWORD.test(item.title) && !item.title.includes("[대여]")) shortsList.push(item);
+        if (
+          SHORTS_TITLE_KEYWORD.test(item.title) &&
+          !item.title.includes("[대여]")
+        )
+          shortsList.push(item);
       } else {
         const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
-        if (vid && !preferredSet.has(vid) && LONG_FORM_TITLE_KEYWORD.test(item.title)) restLong.push(item);
+        if (
+          vid &&
+          !preferredSet.has(vid) &&
+          LONG_FORM_TITLE_KEYWORD.test(item.title)
+        )
+          restLong.push(item);
       }
     }
     restLong.sort((a, b) => {
@@ -856,19 +1088,32 @@ async function handleYoutubeLatest(request: Request, env: Env): Promise<Response
     const videos = [...preferredVideos, ...restLong].slice(0, 5);
     const shortsApiSucceeded = true;
 
-    const expiresAt = shortsApiSucceeded ? new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString() : null;
-    const body = { videos, shorts: shortsList.slice(0, 5), cacheExpiresAt: expiresAt };
+    const expiresAt = shortsApiSucceeded
+      ? new Date(Date.now() + YOUTUBE_CACHE_TTL_SECONDS * 1000).toISOString()
+      : null;
+    const body = {
+      videos,
+      shorts: shortsList.slice(0, 5),
+      cacheExpiresAt: expiresAt,
+    };
     if (kv && shortsApiSucceeded && expiresAt) {
-      await kv.put(YOUTUBE_CACHE_KV_KEY, JSON.stringify(body), { expirationTtl: YOUTUBE_CACHE_TTL_SECONDS });
+      await kv.put(YOUTUBE_CACHE_KV_KEY, JSON.stringify(body), {
+        expirationTtl: YOUTUBE_CACHE_TTL_SECONDS,
+      });
     }
     return jsonResponse(body, 200, request);
   } catch (err) {
-    logger.error("youtube-latest", { err: err instanceof Error ? err.message : String(err) });
+    logger.error("youtube-latest", {
+      err: err instanceof Error ? err.message : String(err),
+    });
     return errorResponse("YouTube fetch failed", 502, request);
   }
 }
 
-async function handleChannelStats(request: Request, env: Env): Promise<Response> {
+async function handleChannelStats(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const key = env.YOUTUBE_API_KEY;
   let youtubeSubscribers: string | null = null;
   let youtubeViewCount: string | null = null;
@@ -878,7 +1123,11 @@ async function handleChannelStats(request: Request, env: Env): Promise<Response>
       const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${YOUTUBE_CHANNEL_ID}&key=${key}`;
       const res = await fetch(url);
       if (res.ok) {
-        const data = (await res.json()) as { items?: Array<{ statistics?: { subscriberCount?: string; viewCount?: string } }> };
+        const data = (await res.json()) as {
+          items?: Array<{
+            statistics?: { subscriberCount?: string; viewCount?: string };
+          }>;
+        };
         const stats = data.items?.[0]?.statistics;
         if (stats) {
           youtubeSubscribers = stats.subscriberCount ?? null;
@@ -886,22 +1135,31 @@ async function handleChannelStats(request: Request, env: Env): Promise<Response>
         }
       }
     } catch (err) {
-      logger.error("channel-stats youtube", { err: err instanceof Error ? err.message : String(err) });
+      logger.error("channel-stats youtube", {
+        err: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
   const naverBlogVisitors = env.NAVER_BLOG_VISITORS?.trim() || null;
 
-  return jsonResponse({
-    youtubeSubscribers,
-    youtubeViewCount,
-    naverBlogVisitors,
-  }, 200, request);
+  return jsonResponse(
+    {
+      youtubeSubscribers,
+      youtubeViewCount,
+      naverBlogVisitors,
+    },
+    200,
+    request,
+  );
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-async function handleLectureSignup(request: Request, env: Env): Promise<Response> {
+async function handleLectureSignup(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const contentType = request.headers.get("Content-Type") || "";
   if (!contentType.includes("application/json")) {
     return errorResponse("Content-Type must be application/json", 400, request);
@@ -912,36 +1170,56 @@ async function handleLectureSignup(request: Request, env: Env): Promise<Response
   } catch {
     return errorResponse("Invalid JSON body", 400, request);
   }
-  const email = String(body.email ?? "").trim().toLowerCase();
+  const email = String(body.email ?? "")
+    .trim()
+    .toLowerCase();
   if (!email) return errorResponse("email required", 400, request);
-  if (!EMAIL_REGEX.test(email)) return errorResponse("Invalid email format", 400, request);
+  if (!EMAIL_REGEX.test(email))
+    return errorResponse("Invalid email format", 400, request);
 
   try {
-    await env.DB.prepare(
-      "INSERT INTO lecture_signups (email) VALUES (?)"
-    ).bind(email).run();
-    return jsonResponse({ success: true, message: "등록되었습니다." }, 201, request);
+    await env.DB.prepare("INSERT INTO lecture_signups (email) VALUES (?)")
+      .bind(email)
+      .run();
+    return jsonResponse(
+      { success: true, message: "등록되었습니다." },
+      201,
+      request,
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes("UNIQUE constraint failed") || msg.includes("SQLITE_CONSTRAINT_UNIQUE")) {
-      return jsonResponse({ success: true, message: "이미 등록된 이메일입니다." }, 200, request);
+    if (
+      msg.includes("UNIQUE constraint failed") ||
+      msg.includes("SQLITE_CONSTRAINT_UNIQUE")
+    ) {
+      return jsonResponse(
+        { success: true, message: "이미 등록된 이메일입니다." },
+        200,
+        request,
+      );
     }
     if (msg.includes("no such table")) {
       return errorResponse(
         "Database error: lecture_signups table not found. Run: cd worker && npm run db:migrate:remote",
         500,
-        request
+        request,
       );
     }
-    logger.error("lecture-signup", { err: err instanceof Error ? err.message : String(err) });
+    logger.error("lecture-signup", {
+      err: err instanceof Error ? err.message : String(err),
+    });
     return errorResponse("Failed to save", 500, request);
   }
 }
 
 /** 고객 후기 제출 (로그인 없음). status = pending으로 저장, 관리자 승인 후 노출.
  *  보안: 입력 길이·sanitize·thumbnail_url 화이트리스트·IP별 rate limit 적용. */
-async function handleSubmitReview(request: Request, env: Env): Promise<Response> {
-  if (request.method !== "POST") return errorResponse("Method not allowed", 405, request);
+async function handleSubmitReview(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (request.method !== "POST")
+    return errorResponse("Method not allowed", 405, request);
 
   const rateLimitRes = await checkRateLimit(env, request, "reviews", 3, 60);
   if (rateLimitRes) return rateLimitRes;
@@ -958,25 +1236,37 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   }
   const title = String(body.title ?? "").trim();
   let content = String(body.content ?? "").trim();
-  let thumbnailUrl: string | null = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url).trim() : null;
-  const authorName = body.author_name != null ? String(body.author_name).trim() : "";
+  let thumbnailUrl: string | null =
+    body.thumbnail_url != null && body.thumbnail_url !== ""
+      ? String(body.thumbnail_url).trim()
+      : null;
+  const authorName =
+    body.author_name != null ? String(body.author_name).trim() : "";
   if (!authorName) return errorResponse("author_name required", 400, request);
-  if (authorName.length > 100) return errorResponse("author_name too long", 400, request);
+  if (authorName.length > 100)
+    return errorResponse("author_name too long", 400, request);
 
-  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : "lecture";
+  const rawReviewType =
+    body.review_type != null
+      ? String(body.review_type).trim().toLowerCase()
+      : "lecture";
   const reviewType = rawReviewType === "snap" ? "snap" : "lecture";
 
   if (!title) return errorResponse("title required", 400, request);
   if (!content) return errorResponse("content required", 400, request);
   if (title.length > 500) return errorResponse("title too long", 400, request);
   content = sanitizeReviewContent(content);
-  if (content.length > 50000) return errorResponse("content too long", 400, request);
+  if (content.length > 50000)
+    return errorResponse("content too long", 400, request);
 
   // thumbnail_url은 본인 업로드 이미지(/api/images/reviews/...)만 허용 (외부 URL·스킴 남용 방지)
   if (thumbnailUrl) {
     const origin = new URL(request.url).origin;
     const allowedPrefix = `${origin}/api/images/reviews/`;
-    if (!thumbnailUrl.startsWith("https://") && !thumbnailUrl.startsWith("http://")) {
+    if (
+      !thumbnailUrl.startsWith("https://") &&
+      !thumbnailUrl.startsWith("http://")
+    ) {
       thumbnailUrl = null;
     } else if (!thumbnailUrl.startsWith(allowedPrefix)) {
       thumbnailUrl = null;
@@ -986,11 +1276,24 @@ async function handleSubmitReview(request: Request, env: Env): Promise<Response>
   try {
     const now = new Date().toISOString();
     await env.DB.prepare(
-      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
-      .bind(title, content, thumbnailUrl, authorName, "pending", reviewType, now, now)
+      .bind(
+        title,
+        content,
+        thumbnailUrl,
+        authorName,
+        "pending",
+        reviewType,
+        now,
+        now,
+      )
       .run();
-    return jsonResponse({ success: true, message: "등록되었습니다. 승인 후 게시됩니다." }, 201, request);
+    return jsonResponse(
+      { success: true, message: "등록되었습니다. 승인 후 게시됩니다." },
+      201,
+      request,
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
@@ -1007,15 +1310,36 @@ async function isAllowedImageMagicBytes(file: File): Promise<boolean> {
   const eq = (a: Uint8Array, offset: number, b: number[]) =>
     b.every((v, i) => header[offset + i] === v);
   if (eq(header, 0, [0xff, 0xd8, 0xff])) return true; // JPEG
-  if (eq(header, 0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return true; // PNG
-  if (header.length >= 6 && eq(header, 0, [0x47, 0x49, 0x46, 0x38]) && (header[5] === 0x37 || header[5] === 0x39) && header[6] === 0x61) return true; // GIF87a / GIF89a
-  if (header.length >= 12 && eq(header, 0, [0x52, 0x49, 0x46, 0x46]) && eq(header, 8, [0x57, 0x45, 0x42, 0x50])) return true; // WebP (RIFF....WEBP)
+  if (eq(header, 0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+    return true; // PNG
+  if (
+    header.length >= 6 &&
+    eq(header, 0, [0x47, 0x49, 0x46, 0x38]) &&
+    (header[5] === 0x37 || header[5] === 0x39) &&
+    header[6] === 0x61
+  )
+    return true; // GIF87a / GIF89a
+  if (
+    header.length >= 12 &&
+    eq(header, 0, [0x52, 0x49, 0x46, 0x46]) &&
+    eq(header, 8, [0x57, 0x45, 0x42, 0x50])
+  )
+    return true; // WebP (RIFF....WEBP)
   return false;
 }
 
 /** 고객 후기 본문 이미지 업로드 (로그인 없음, R2에 저장 후 URL 반환) */
-async function handleReviewImageUpload(request: Request, env: Env): Promise<Response> {
-  const rateLimitRes = await checkRateLimit(env, request, "reviews_upload", 5, 60);
+async function handleReviewImageUpload(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  const rateLimitRes = await checkRateLimit(
+    env,
+    request,
+    "reviews_upload",
+    5,
+    60,
+  );
   if (rateLimitRes) return rateLimitRes;
 
   const contentType = request.headers.get("Content-Type") || "";
@@ -1026,15 +1350,30 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
   const file = formData.get("file") as File | null;
   if (!file) return errorResponse("No file provided", 400, request);
   const sizeLimit = 5 * 1024 * 1024; // 5MB
-  if (file.size > sizeLimit) return errorResponse("이미지 용량이 너무 큽니다. 5MB 이하로 올려주세요.", 400, request);
+  if (file.size > sizeLimit)
+    return errorResponse(
+      "이미지 용량이 너무 큽니다. 5MB 이하로 올려주세요.",
+      400,
+      request,
+    );
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
-    return errorResponse("Invalid file type (allowed: jpeg, png, gif, webp)", 400, request);
+    return errorResponse(
+      "Invalid file type (allowed: jpeg, png, gif, webp)",
+      400,
+      request,
+    );
   }
   if (!(await isAllowedImageMagicBytes(file))) {
-    return errorResponse("Invalid file: not a valid image (jpeg, png, gif, webp)", 400, request);
+    return errorResponse(
+      "Invalid file: not a valid image (jpeg, png, gif, webp)",
+      400,
+      request,
+    );
   }
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "jpg");
+  const ext = (file.name.split(".").pop() || "jpg")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "jpg");
   const key = `reviews/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
   await env.BUCKET.put(key, file.stream(), {
     httpMetadata: { contentType: file.type },
@@ -1045,9 +1384,12 @@ async function handleReviewImageUpload(request: Request, env: Env): Promise<Resp
 }
 
 /** 고객 후기 목록 (승인된 것만) - 공개 페이지 전용 */
-async function handleListApprovedReviews(request: Request, env: Env): Promise<Response> {
+async function handleListApprovedReviews(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const { results } = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE status = ? ORDER BY created_at DESC"
+    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE status = ? ORDER BY created_at DESC",
   )
     .bind("approved")
     .all<Post>();
@@ -1067,10 +1409,13 @@ interface LectureSignupRow {
 }
 
 /** 강의 신청 목록 (관리자 전용) */
-async function handleListLectureSignups(request: Request, env: Env): Promise<Response> {
+async function handleListLectureSignups(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   try {
     const { results } = await env.DB.prepare(
-      "SELECT id, email, created_at FROM lecture_signups ORDER BY created_at DESC"
+      "SELECT id, email, created_at FROM lecture_signups ORDER BY created_at DESC",
     ).all<LectureSignupRow>();
     return jsonResponse({ signups: results }, 200, request);
   } catch (err) {
@@ -1079,7 +1424,7 @@ async function handleListLectureSignups(request: Request, env: Env): Promise<Res
       return errorResponse(
         "Database error: lecture_signups table not found. Run: cd worker && npm run db:migrate:remote",
         500,
-        request
+        request,
       );
     }
     throw err;
@@ -1099,25 +1444,35 @@ async function handleListPosts(request: Request, env: Env): Promise<Response> {
   const posts = results.map((p) => ({
     ...p,
     // 비관리자 응답은 status를 SELECT하지 않으므로, 목록은 전부 approved이니 명시적으로 넣어 UI(승인 되돌리기 등)가 동작하도록 함
-    ...(p.status === undefined && !isAdmin ? { status: "approved" as const } : {}),
+    ...(p.status === undefined && !isAdmin
+      ? { status: "approved" as const }
+      : {}),
     thumbnail_url: normalizeImageUrl(p.thumbnail_url, origin),
     content: rewriteImageUrlsInHtml(p.content ?? "", origin),
   }));
   return jsonResponse({ posts }, 200, request);
 }
 
-async function handleGetPost(request: Request, env: Env, id: number): Promise<Response> {
+async function handleGetPost(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
   const isAdmin = isAllowedAdmin(request, env);
   const sql = isAdmin
     ? "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, status, review_type FROM customer_reviews WHERE id = ?"
     : "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE id = ? AND status = ?";
-  const stmt = isAdmin ? env.DB.prepare(sql).bind(id) : env.DB.prepare(sql).bind(id, "approved");
+  const stmt = isAdmin
+    ? env.DB.prepare(sql).bind(id)
+    : env.DB.prepare(sql).bind(id, "approved");
   const post = await stmt.first<Post & { status?: string }>();
   if (!post) return errorResponse("Not found", 404, request);
   const origin = new URL(request.url).origin;
   const normalized = {
     ...post,
-    ...(post.status === undefined && !isAdmin ? { status: "approved" as const } : {}),
+    ...(post.status === undefined && !isAdmin
+      ? { status: "approved" as const }
+      : {}),
     thumbnail_url: normalizeImageUrl(post.thumbnail_url, origin),
     content: rewriteImageUrlsInHtml(post.content ?? "", origin),
   };
@@ -1125,7 +1480,8 @@ async function handleGetPost(request: Request, env: Env, id: number): Promise<Re
 }
 
 async function handleCreatePost(request: Request, env: Env): Promise<Response> {
-  if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+  if (!isAllowedAdmin(request, env))
+    return errorResponse("Unauthorized", 401, request);
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -1134,8 +1490,14 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   }
   const title = String(body.title ?? "").trim();
   const content = String(body.content ?? "").trim();
-  const thumbnailUrl = body.thumbnail_url != null && body.thumbnail_url !== "" ? String(body.thumbnail_url) : null;
-  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : "lecture";
+  const thumbnailUrl =
+    body.thumbnail_url != null && body.thumbnail_url !== ""
+      ? String(body.thumbnail_url)
+      : null;
+  const rawReviewType =
+    body.review_type != null
+      ? String(body.review_type).trim().toLowerCase()
+      : "lecture";
   const reviewType = rawReviewType === "snap" ? "snap" : "lecture";
 
   if (!title) return errorResponse("title required", 400, request);
@@ -1144,14 +1506,28 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO customer_reviews (title, content, thumbnail_url, author_name, status, review_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
-      .bind(title, content, thumbnailUrl, null, "approved", reviewType, now, now)
+      .bind(
+        title,
+        content,
+        thumbnailUrl,
+        null,
+        "approved",
+        reviewType,
+        now,
+        now,
+      )
       .run();
 
     const id = result.meta.last_row_id;
-    const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
-    if (!post) return errorResponse("Failed to fetch created post", 500, request);
+    const post = await env.DB.prepare(
+      "SELECT * FROM customer_reviews WHERE id = ?",
+    )
+      .bind(id)
+      .first<Post>();
+    if (!post)
+      return errorResponse("Failed to fetch created post", 500, request);
     return jsonResponse(post, 201, request);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -1161,44 +1537,82 @@ async function handleCreatePost(request: Request, env: Env): Promise<Response> {
       return errorResponse(
         `Database error: ${msg}. Run: cd worker && npm run db:migrate:remote`,
         500,
-        request
+        request,
       );
     }
     return errorResponse("Failed to create post", 500, request);
   }
 }
 
-async function handleUpdatePost(request: Request, env: Env, id: number): Promise<Response> {
-  if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
-  const body = await request.json() as Record<string, unknown>;
+async function handleUpdatePost(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  if (!isAllowedAdmin(request, env))
+    return errorResponse("Unauthorized", 401, request);
+  const body = (await request.json()) as Record<string, unknown>;
   const title = body.title != null ? String(body.title).trim() : null;
   const content = body.content != null ? String(body.content).trim() : null;
 
-  const existing = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
+  const existing = await env.DB.prepare(
+    "SELECT * FROM customer_reviews WHERE id = ?",
+  )
+    .bind(id)
+    .first<Post>();
   if (!existing) return errorResponse("Not found", 404, request);
 
   const finalTitle = title ?? existing.title;
   const finalContent = content ?? existing.content;
-  const finalThumb = body.thumbnail_url !== undefined ? (body.thumbnail_url ? String(body.thumbnail_url) : null) : existing.thumbnail_url;
-  const finalStatus = body.status === "pending" || body.status === "approved" ? body.status : (existing as Post & { status?: string }).status ?? "pending";
-  const rawReviewType = body.review_type != null ? String(body.review_type).trim().toLowerCase() : (existing as Post & { review_type?: string }).review_type ?? "lecture";
+  const finalThumb =
+    body.thumbnail_url !== undefined
+      ? body.thumbnail_url
+        ? String(body.thumbnail_url)
+        : null
+      : existing.thumbnail_url;
+  const finalStatus =
+    body.status === "pending" || body.status === "approved"
+      ? body.status
+      : ((existing as Post & { status?: string }).status ?? "pending");
+  const rawReviewType =
+    body.review_type != null
+      ? String(body.review_type).trim().toLowerCase()
+      : ((existing as Post & { review_type?: string }).review_type ??
+        "lecture");
   const finalReviewType = rawReviewType === "snap" ? "snap" : "lecture";
   const now = new Date().toISOString();
 
   await env.DB.prepare(
-    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, status = ?, review_type = ?, updated_at = ? WHERE id = ?"
+    "UPDATE customer_reviews SET title = ?, content = ?, thumbnail_url = ?, status = ?, review_type = ?, updated_at = ? WHERE id = ?",
   )
-    .bind(finalTitle, finalContent, finalThumb, finalStatus, finalReviewType, now, id)
+    .bind(
+      finalTitle,
+      finalContent,
+      finalThumb,
+      finalStatus,
+      finalReviewType,
+      now,
+      id,
+    )
     .run();
 
-  const post = await env.DB.prepare("SELECT * FROM customer_reviews WHERE id = ?").bind(id).first<Post>();
+  const post = await env.DB.prepare(
+    "SELECT * FROM customer_reviews WHERE id = ?",
+  )
+    .bind(id)
+    .first<Post>();
   return jsonResponse(post, 200, request);
 }
 
-async function handleDeletePost(request: Request, env: Env, id: number): Promise<Response> {
-  if (!isAllowedAdmin(request, env)) return errorResponse("Unauthorized", 401, request);
+async function handleDeletePost(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  if (!isAllowedAdmin(request, env))
+    return errorResponse("Unauthorized", 401, request);
   const post = await env.DB.prepare(
-    "SELECT thumbnail_url, content FROM customer_reviews WHERE id = ?"
+    "SELECT thumbnail_url, content FROM customer_reviews WHERE id = ?",
   )
     .bind(id)
     .first<{ thumbnail_url: string | null; content: string | null }>();
@@ -1212,17 +1626,25 @@ async function handleDeletePost(request: Request, env: Env, id: number): Promise
       }
     }
   }
-  const result = await env.DB.prepare("DELETE FROM customer_reviews WHERE id = ?").bind(id).run();
-  if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
+  const result = await env.DB.prepare(
+    "DELETE FROM customer_reviews WHERE id = ?",
+  )
+    .bind(id)
+    .run();
+  if (result.meta.changes === 0)
+    return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
 }
 
 // --- 공지사항 (notices) ---
 
-async function handleListNotices(request: Request, env: Env): Promise<Response> {
+async function handleListNotices(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   try {
     const { results } = await env.DB.prepare(
-      "SELECT id, title, content, form_link, created_at, updated_at FROM notices ORDER BY created_at DESC"
+      "SELECT id, title, content, form_link, created_at, updated_at FROM notices ORDER BY created_at DESC",
     ).all<Notice>();
     const origin = new URL(request.url).origin;
     const notices = results.map((n) => ({
@@ -1236,16 +1658,20 @@ async function handleListNotices(request: Request, env: Env): Promise<Response> 
       return errorResponse(
         "Database error: notices table not found. Run: cd worker && npm run db:migrate:remote",
         500,
-        request
+        request,
       );
     }
     throw err;
   }
 }
 
-async function handleGetNotice(request: Request, env: Env, id: number): Promise<Response> {
+async function handleGetNotice(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
   const row = await env.DB.prepare(
-    "SELECT id, title, content, form_link, created_at, updated_at FROM notices WHERE id = ?"
+    "SELECT id, title, content, form_link, created_at, updated_at FROM notices WHERE id = ?",
   )
     .bind(id)
     .first<Notice>();
@@ -1258,7 +1684,10 @@ async function handleGetNotice(request: Request, env: Env, id: number): Promise<
   return jsonResponse(notice, 200, request);
 }
 
-async function handleCreateNotice(request: Request, env: Env): Promise<Response> {
+async function handleCreateNotice(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
@@ -1267,7 +1696,8 @@ async function handleCreateNotice(request: Request, env: Env): Promise<Response>
   }
   const title = String(body.title ?? "").trim();
   const content = sanitizeReviewContent(String(body.content ?? ""));
-  const formLink = body.form_link != null ? String(body.form_link).trim() || null : null;
+  const formLink =
+    body.form_link != null ? String(body.form_link).trim() || null : null;
 
   if (!title) return errorResponse("title required", 400, request);
   if (!content) return errorResponse("content required", 400, request);
@@ -1275,14 +1705,17 @@ async function handleCreateNotice(request: Request, env: Env): Promise<Response>
   try {
     const now = new Date().toISOString();
     const result = await env.DB.prepare(
-      "INSERT INTO notices (title, content, form_link, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+      "INSERT INTO notices (title, content, form_link, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
     )
       .bind(title, content, formLink, now, now)
       .run();
 
     const id = result.meta.last_row_id;
-    const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
-    if (!notice) return errorResponse("Failed to fetch created notice", 500, request);
+    const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?")
+      .bind(id)
+      .first<Notice>();
+    if (!notice)
+      return errorResponse("Failed to fetch created notice", 500, request);
     return jsonResponse(notice, 201, request);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -1291,33 +1724,46 @@ async function handleCreateNotice(request: Request, env: Env): Promise<Response>
       return errorResponse(
         "Database error: notices table not found. Run: cd worker && npm run db:migrate:remote",
         500,
-        request
+        request,
       );
     }
     return errorResponse("Failed to create notice", 500, request);
   }
 }
 
-async function handleUpdateNotice(request: Request, env: Env, id: number): Promise<Response> {
+async function handleUpdateNotice(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
   const body = (await request.json()) as Record<string, unknown>;
   const title = body.title != null ? String(body.title).trim() : null;
   const contentRaw = body.content != null ? String(body.content) : null;
-  const content = contentRaw !== null ? sanitizeReviewContent(contentRaw) : null;
-  const formLink = body.form_link !== undefined ? (String(body.form_link).trim() || null) : null;
+  const content =
+    contentRaw !== null ? sanitizeReviewContent(contentRaw) : null;
+  const formLink =
+    body.form_link !== undefined ? String(body.form_link).trim() || null : null;
 
-  const existing = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
+  const existing = await env.DB.prepare("SELECT * FROM notices WHERE id = ?")
+    .bind(id)
+    .first<Notice>();
   if (!existing) return errorResponse("Not found", 404, request);
 
   const finalTitle = title ?? existing.title;
   const finalContent = content ?? existing.content;
-  const finalFormLink = formLink !== null ? formLink : (existing.form_link ?? null);
+  const finalFormLink =
+    formLink !== null ? formLink : (existing.form_link ?? null);
   const now = new Date().toISOString();
 
-  await env.DB.prepare("UPDATE notices SET title = ?, content = ?, form_link = ?, updated_at = ? WHERE id = ?")
+  await env.DB.prepare(
+    "UPDATE notices SET title = ?, content = ?, form_link = ?, updated_at = ? WHERE id = ?",
+  )
     .bind(finalTitle, finalContent, finalFormLink, now, id)
     .run();
 
-  const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?").bind(id).first<Notice>();
+  const notice = await env.DB.prepare("SELECT * FROM notices WHERE id = ?")
+    .bind(id)
+    .first<Notice>();
   return jsonResponse(notice!, 200, request);
 }
 
@@ -1336,8 +1782,14 @@ function extractR2KeysFromContent(content: string | null): string[] {
   return [...new Set(keys)];
 }
 
-async function handleDeleteNotice(request: Request, env: Env, id: number): Promise<Response> {
-  const row = await env.DB.prepare("SELECT content FROM notices WHERE id = ?").bind(id).first<{ content: string | null }>();
+async function handleDeleteNotice(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  const row = await env.DB.prepare("SELECT content FROM notices WHERE id = ?")
+    .bind(id)
+    .first<{ content: string | null }>();
   if (row) {
     const keys = extractR2KeysFromContent(row.content);
     for (const key of keys) {
@@ -1348,8 +1800,11 @@ async function handleDeleteNotice(request: Request, env: Env, id: number): Promi
       }
     }
   }
-  const result = await env.DB.prepare("DELETE FROM notices WHERE id = ?").bind(id).run();
-  if (result.meta.changes === 0) return errorResponse("Not found", 404, request);
+  const result = await env.DB.prepare("DELETE FROM notices WHERE id = ?")
+    .bind(id)
+    .run();
+  if (result.meta.changes === 0)
+    return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);
 }
 
@@ -1361,7 +1816,7 @@ async function handleVocSubmit(request: Request, env: Env): Promise<Response> {
     return errorResponse(
       "VOC 이메일 발송이 설정되지 않았습니다. VOC_TO_EMAIL, RESEND_API_KEY를 설정해주세요.",
       503,
-      request
+      request,
     );
   }
   let body: { subject?: string; message?: string };
@@ -1374,7 +1829,9 @@ async function handleVocSubmit(request: Request, env: Env): Promise<Response> {
   const message = String(body.message ?? "").trim();
   if (!message) return errorResponse("message required", 400, request);
 
-  const adminEmail = request.headers.get("Cf-Access-Authenticated-User-Email")?.trim() || "관리자";
+  const adminEmail =
+    request.headers.get("Cf-Access-Authenticated-User-Email")?.trim() ||
+    "관리자";
   const text = `[관리자 VOC]\n보낸 사람: ${adminEmail}\n제목: ${subject}\n\n${message}`;
   const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;white-space:pre-wrap;">${escapeHtmlForEmail(text)}</body></html>`;
 
@@ -1392,10 +1849,17 @@ async function handleVocSubmit(request: Request, env: Env): Promise<Response> {
         html,
       }),
     });
-    const data = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
+    const data = (await res.json().catch(() => ({}))) as {
+      id?: string;
+      message?: string;
+    };
     if (!res.ok) {
       logger.error("vocResend", { status: res.status, data });
-      return errorResponse(data.message || "이메일 발송에 실패했습니다.", res.status >= 500 ? 502 : 400, request);
+      return errorResponse(
+        data.message || "이메일 발송에 실패했습니다.",
+        res.status >= 500 ? 502 : 400,
+        request,
+      );
     }
     return jsonResponse({ success: true, id: data.id }, 200, request);
   } catch (err) {

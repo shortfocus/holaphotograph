@@ -1,41 +1,85 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 
-const SITE = 'https://holaphoto.com';
+const SITE = "https://holaphoto.com";
 ---
 
-<Layout title="공지사항 - 올라포토" headerOpaque hideLectureBar ogImage={`${SITE}/images/class-exposure.png`} ogDescription="올라포토 강의 안내 · X-E5 class, 노출 3요소 class">
-  <div class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:pt-28 sm:pb-20">
+<Layout
+  title="공지사항 - 올라포토"
+  headerOpaque
+  hideLectureBar
+  ogImage={`${SITE}/images/class-exposure.png`}
+  ogDescription="올라포토 강의 안내 · X-E5 class, 노출 3요소 class"
+>
+  <div
+    class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:pt-28 sm:pb-20"
+  >
     <div class="mx-auto max-w-2xl">
       <!-- 목록 뷰 -->
       <div id="notice-list-view">
         <h1 class="text-2xl font-bold text-[#111827] sm:text-3xl">공지사항</h1>
-        <p class="mt-2 text-slate-600 sm:text-lg">올라포토 소식과 강의·이벤트 안내를 전해 드립니다.</p>
+        <p class="mt-2 text-slate-600 sm:text-lg">
+          올라포토 소식과 강의·이벤트 안내를 전해 드립니다.
+        </p>
 
-        <section class="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm sm:overflow-hidden">
-          <h2 class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-base font-semibold text-[#111827] sm:px-6">공지 게시판</h2>
+        <section
+          class="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm sm:overflow-hidden"
+        >
+          <h2
+            class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-base font-semibold text-[#111827] sm:px-6"
+          >
+            공지 게시판
+          </h2>
           <div id="notice-list" class="divide-y divide-slate-100">
-            <p class="px-4 py-8 text-center text-slate-500 sm:px-6">로딩 중...</p>
+            <p class="px-4 py-8 text-center text-slate-500 sm:px-6">
+              로딩 중...
+            </p>
           </div>
-          <nav id="notice-pagination" class="hidden border-t border-slate-200 px-4 py-3 sm:px-6" aria-label="페이지 네비게이션"></nav>
+          <nav
+            id="notice-pagination"
+            class="hidden border-t border-slate-200 px-4 py-3 sm:px-6"
+            aria-label="페이지 네비게이션"
+          >
+          </nav>
         </section>
       </div>
 
       <!-- 상세 뷰 (글 클릭 시 이 영역만 표시) -->
       <div id="notice-detail-view" class="hidden">
-        <a href="/notice" id="notice-back-link" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#111827]">
+        <a
+          href="/notice"
+          id="notice-back-link"
+          class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#111827]"
+        >
           <span aria-hidden="true">←</span> 목록으로
         </a>
-        <article class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h1 id="notice-detail-title" class="text-xl font-bold text-[#111827] sm:text-2xl"></h1>
+        <article
+          class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+        >
+          <h1
+            id="notice-detail-title"
+            class="text-xl font-bold text-[#111827] sm:text-2xl"
+          >
+          </h1>
           <p id="notice-detail-date" class="mt-2 text-sm text-slate-500"></p>
           <div id="notice-detail-form-cta" class="notice-form-cta hidden mt-4">
-            <a id="notice-detail-form-link" class="inline-flex items-center gap-2 rounded-lg bg-[#E11D48] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#be123c]" href="#" target="_blank" rel="noopener" aria-label="신청 폼 열기">
+            <a
+              id="notice-detail-form-link"
+              class="inline-flex items-center gap-2 rounded-lg bg-[#E11D48] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#be123c]"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              aria-label="신청 폼 열기"
+            >
               <span aria-hidden="true">📋</span> 신청 폼 링크
               <span aria-hidden="true" class="text-white/90">→</span>
             </a>
           </div>
-          <div id="notice-detail-body" class="notice-detail-body mt-6 min-h-[4rem] text-slate-700 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg prose-p:text-slate-700 prose-li:text-slate-700 prose-a:text-[#E11D48] prose-strong:text-[#111827]"></div>
+          <div
+            id="notice-detail-body"
+            class="notice-detail-body mt-6 min-h-[4rem] text-slate-700 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg prose-p:text-slate-700 prose-li:text-slate-700 prose-a:text-[#E11D48] prose-strong:text-[#111827]"
+          >
+          </div>
         </article>
       </div>
     </div>
@@ -43,61 +87,63 @@ const SITE = 'https://holaphoto.com';
 </Layout>
 
 <script>
-  import { fetchNotices, fetchNotice, type Notice } from '../lib/api';
+  import { fetchNotices, fetchNotice, type Notice } from "../lib/api";
 
   const PAGE_SIZE = 10;
 
-  const listView = document.getElementById('notice-list-view')!;
-  const detailView = document.getElementById('notice-detail-view')!;
-  const listEl = document.getElementById('notice-list')!;
-  const paginationEl = document.getElementById('notice-pagination')!;
-  const detailTitle = document.getElementById('notice-detail-title')!;
-  const detailDate = document.getElementById('notice-detail-date')!;
-  const detailFormLink = document.getElementById('notice-detail-form-link') as HTMLAnchorElement;
-  const detailFormCta = document.getElementById('notice-detail-form-cta');
-  const detailBody = document.getElementById('notice-detail-body')!;
+  const listView = document.getElementById("notice-list-view")!;
+  const detailView = document.getElementById("notice-detail-view")!;
+  const listEl = document.getElementById("notice-list")!;
+  const paginationEl = document.getElementById("notice-pagination")!;
+  const detailTitle = document.getElementById("notice-detail-title")!;
+  const detailDate = document.getElementById("notice-detail-date")!;
+  const detailFormLink = document.getElementById(
+    "notice-detail-form-link",
+  ) as HTMLAnchorElement;
+  const detailFormCta = document.getElementById("notice-detail-form-cta");
+  const detailBody = document.getElementById("notice-detail-body")!;
 
   function escapeHtml(text: string): string {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
 
   function getNoticeIdFromUrl(): number | null {
-    const id = new URLSearchParams(window.location.search).get('id');
+    const id = new URLSearchParams(window.location.search).get("id");
     if (!id) return null;
     const n = parseInt(id, 10);
     return Number.isNaN(n) ? null : n;
   }
 
   function getPageFromUrl(): number {
-    const page = new URLSearchParams(window.location.search).get('page');
+    const page = new URLSearchParams(window.location.search).get("page");
     if (!page) return 1;
     const n = parseInt(page, 10);
     return Number.isNaN(n) || n < 1 ? 1 : n;
   }
 
   function showListView() {
-    listView.classList.remove('hidden');
-    detailView.classList.add('hidden');
+    listView.classList.remove("hidden");
+    detailView.classList.add("hidden");
   }
 
   function showDetailView() {
-    listView.classList.add('hidden');
-    detailView.classList.remove('hidden');
+    listView.classList.add("hidden");
+    detailView.classList.remove("hidden");
   }
 
   /** 본문 이미지를 클릭 시 원본 크기로 보기 위한 링크로 감쌈 */
   function wrapNoticeImagesInLinks(body: HTMLElement) {
-    body.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
-      const src = img.getAttribute('src') || (img as HTMLImageElement).src;
+    body.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+      const src = img.getAttribute("src") || (img as HTMLImageElement).src;
       if (!src) return;
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = src;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.className = 'notice-img-link';
-      a.setAttribute('aria-label', '이미지 원본 크기로 보기');
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.className = "notice-img-link";
+      a.setAttribute("aria-label", "이미지 원본 크기로 보기");
       img.parentNode?.insertBefore(a, img);
       a.appendChild(img);
     });
@@ -105,89 +151,117 @@ const SITE = 'https://holaphoto.com';
 
   /** 모바일에서 본문 이미지들을 상단 가로 스크롤 캐러셀로 표시 (이미지 2장 이상일 때만). 1장일 때는 본문에 그대로 두어 세로 스크롤로 읽기 좋게 함 */
   function initMobileImageCarousel(body: HTMLElement) {
-    const imgs = body.querySelectorAll<HTMLImageElement>('img');
+    const imgs = body.querySelectorAll<HTMLImageElement>("img");
     if (!imgs.length) return;
     if (imgs.length === 1) {
       // 이미지 1장이면 캐러셀 없이 본문에만 표시 → 모바일에서도 전체 너비·자연 높이로 보여 읽기 좋음
       return;
     }
-    const carousel = document.createElement('div');
-    carousel.className = 'notice-mobile-carousel';
-    carousel.setAttribute('role', 'region');
-    carousel.setAttribute('aria-label', '공지 이미지');
+    const carousel = document.createElement("div");
+    carousel.className = "notice-mobile-carousel";
+    carousel.setAttribute("role", "region");
+    carousel.setAttribute("aria-label", "공지 이미지");
     imgs.forEach((img) => {
-      const slide = document.createElement('div');
-      slide.className = 'notice-mobile-carousel-slide';
-      const link = document.createElement('a');
-      link.href = img.getAttribute('src') || (img as HTMLImageElement).src;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.className = 'notice-img-link';
-      link.setAttribute('aria-label', '이미지 원본 크기로 보기');
+      const slide = document.createElement("div");
+      slide.className = "notice-mobile-carousel-slide";
+      const link = document.createElement("a");
+      link.href = img.getAttribute("src") || (img as HTMLImageElement).src;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.className = "notice-img-link";
+      link.setAttribute("aria-label", "이미지 원본 크기로 보기");
       const clone = img.cloneNode(true) as HTMLImageElement;
-      clone.removeAttribute('class');
-      clone.className = 'notice-mobile-carousel-img';
+      clone.removeAttribute("class");
+      clone.className = "notice-mobile-carousel-img";
       link.appendChild(clone);
       slide.appendChild(link);
       carousel.appendChild(slide);
-      img.classList.add('notice-original-img');
+      img.classList.add("notice-original-img");
     });
     body.insertBefore(carousel, body.firstChild);
   }
 
   async function loadDetail(id: number) {
     showDetailView();
-    detailTitle.textContent = '';
-    detailDate.textContent = '';
+    // 주소창에 ?id= 반영 (공유/복사 시 전체 URL 유지)
+    const wantUrl = `/notice?id=${id}`;
+    if (window.location.pathname + window.location.search !== wantUrl) {
+      history.replaceState(null, "", wantUrl);
+    }
+    detailTitle.textContent = "";
+    detailDate.textContent = "";
     detailBody.innerHTML = '<p class="text-slate-500">로딩 중...</p>';
     try {
       const notice = await fetchNotice(id);
       if (!notice) {
-        detailBody.innerHTML = '<p class="text-red-500">공지를 찾을 수 없습니다.</p>';
+        detailBody.innerHTML =
+          '<p class="text-red-500">공지를 찾을 수 없습니다.</p>';
         return;
       }
       document.title = `${notice.title} - 공지사항 | 올라포토`;
       detailTitle.textContent = notice.title;
-      detailDate.textContent = new Date(notice.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+      detailDate.textContent = new Date(notice.created_at).toLocaleDateString(
+        "ko-KR",
+        { year: "numeric", month: "long", day: "numeric" },
+      );
 
       // 신청 폼 링크: 컬럼 값이 있으면 사용, 없으면 본문에서 추출 후 본문에서는 제거
-      let content = (notice.content ?? '').trim();
-      const formUrlFromColumn = (notice.form_link ?? '').trim();
+      let content = (notice.content ?? "").trim();
+      const formUrlFromColumn = (notice.form_link ?? "").trim();
       let formUrl = formUrlFromColumn || null;
       if (!formUrl) {
-        const urlMatch = content.match(/href="(https:\/\/(?:forms\.gle\/[^"]+|docs\.google\.com\/forms\/d\/[^"]+))"/);
+        const urlMatch = content.match(
+          /href="(https:\/\/(?:forms\.gle\/[^"]+|docs\.google\.com\/forms\/d\/[^"]+))"/,
+        );
         const hasFormLinkText = /신청\s*폼\s*링크/.test(content);
         if (urlMatch && hasFormLinkText) formUrl = urlMatch[1];
       }
       if (formUrl) {
         detailFormLink.href = formUrl;
-        detailFormCta?.classList.remove('hidden');
+        detailFormCta?.classList.remove("hidden");
         // form_link 컬럼이 없을 때만 본문에서 링크 블록 제거 (하위 호환)
         if (!formUrlFromColumn) {
-          const escapedUrl = formUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const blockRegex = new RegExp(`<(p|div)[^>]*>\\s*<a[^>]*href="${escapedUrl}"[^>]*>[\\s\\S]*?<\\/a>\\s*<\\/\\1>`, 'gi');
-          let prev = '';
+          const escapedUrl = formUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const blockRegex = new RegExp(
+            `<(p|div)[^>]*>\\s*<a[^>]*href="${escapedUrl}"[^>]*>[\\s\\S]*?<\\/a>\\s*<\\/\\1>`,
+            "gi",
+          );
+          let prev = "";
           while (prev !== content) {
             prev = content;
-            content = content.replace(blockRegex, '').trim().replace(/<p>\s*<\/p>/g, '');
+            content = content
+              .replace(blockRegex, "")
+              .trim()
+              .replace(/<p>\s*<\/p>/g, "");
           }
-          content = content.replace(/<p[^>]*>\s*<a[^>]*(?:forms\.gle|docs\.google\.com\/forms)[^>]*>[^<]*신청[^<]*폼[^<]*링크[^<]*<\/a>\s*<\/p>/gi, '').trim().replace(/<p>\s*<\/p>/g, '');
+          content = content
+            .replace(
+              /<p[^>]*>\s*<a[^>]*(?:forms\.gle|docs\.google\.com\/forms)[^>]*>[^<]*신청[^<]*폼[^<]*링크[^<]*<\/a>\s*<\/p>/gi,
+              "",
+            )
+            .trim()
+            .replace(/<p>\s*<\/p>/g, "");
         }
       } else {
-        detailFormCta?.classList.add('hidden');
-        detailFormLink.removeAttribute('href');
+        detailFormCta?.classList.add("hidden");
+        detailFormLink.removeAttribute("href");
       }
 
       // 배포 환경에서 이미지 로드 보장: 상대 경로 /images/ → 절대 URL (사이트 도메인 기준)
-      const base = typeof window !== 'undefined' ? window.location.origin : 'https://holaphoto.com';
+      const base =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : "https://holaphoto.com";
       content = content.replace(/src="\/images\//g, `src="${base}/images/`);
-      detailBody.innerHTML = content || '<p class="text-slate-500">내용이 없습니다.</p>';
+      detailBody.innerHTML =
+        content || '<p class="text-slate-500">내용이 없습니다.</p>';
       requestAnimationFrame(() => {
         wrapNoticeImagesInLinks(detailBody);
         initMobileImageCarousel(detailBody);
       });
     } catch (_) {
-      detailBody.innerHTML = '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
+      detailBody.innerHTML =
+        '<p class="text-red-500">공지를 불러오지 못했습니다.</p>';
     }
   }
 
@@ -202,13 +276,13 @@ const SITE = 'https://holaphoto.com';
         (n: Notice) => `
         <a href="/notice?id=${n.id}" class="notice-item flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left hover:bg-slate-50 sm:px-6" aria-label="공지 보기: ${escapeHtml(n.title)}">
           <span class="font-medium text-[#111827]">${escapeHtml(n.title)}</span>
-          <span class="text-xs text-slate-500">${new Date(n.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <span class="text-xs text-slate-500">${new Date(n.created_at).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</span>
         </a>
-      `
+      `,
       )
-      .join('');
+      .join("");
 
-    paginationEl.classList.remove('hidden');
+    paginationEl.classList.remove("hidden");
 
     const prevPage = safePage > 1 ? safePage - 1 : null;
     const nextPage = safePage < totalPages ? safePage + 1 : null;
@@ -228,13 +302,14 @@ const SITE = 'https://holaphoto.com';
     const currentLink = (p: number) =>
       `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-[#E11D48] bg-[#E11D48] px-2 text-sm font-medium text-white" aria-current="page">${p}</span>`;
 
-    let html = '<div class="flex flex-wrap items-center justify-center gap-1 sm:gap-2">';
-    html += prevPage ? link(prevPage, '이전') : link(1, '이전', true);
+    let html =
+      '<div class="flex flex-wrap items-center justify-center gap-1 sm:gap-2">';
+    html += prevPage ? link(prevPage, "이전") : link(1, "이전", true);
     for (const p of pageNumbers) {
       html += p === safePage ? currentLink(p) : link(p, String(p));
     }
-    html += nextPage ? link(nextPage, '다음') : link(totalPages, '다음', true);
-    html += '</div>';
+    html += nextPage ? link(nextPage, "다음") : link(totalPages, "다음", true);
+    html += "</div>";
     paginationEl.innerHTML = html;
   }
 
@@ -242,16 +317,18 @@ const SITE = 'https://holaphoto.com';
     try {
       const notices = await fetchNotices();
       if (notices.length === 0) {
-        listEl.innerHTML = '<p class="px-4 py-8 text-center text-slate-500 sm:px-6">등록된 공지가 없습니다.</p>';
-        paginationEl.classList.add('hidden');
-        paginationEl.innerHTML = '';
+        listEl.innerHTML =
+          '<p class="px-4 py-8 text-center text-slate-500 sm:px-6">등록된 공지가 없습니다.</p>';
+        paginationEl.classList.add("hidden");
+        paginationEl.innerHTML = "";
         return;
       }
       const page = getPageFromUrl();
       renderListPage(notices, page);
     } catch (_) {
-      listEl.innerHTML = '<p class="px-4 py-8 text-center text-red-500 sm:px-6">공지를 불러오지 못했습니다.</p>';
-      paginationEl.classList.add('hidden');
+      listEl.innerHTML =
+        '<p class="px-4 py-8 text-center text-red-500 sm:px-6">공지를 불러오지 못했습니다.</p>';
+      paginationEl.classList.add("hidden");
     }
   }
 
@@ -265,12 +342,12 @@ const SITE = 'https://holaphoto.com';
     }
   }
 
-  window.addEventListener('popstate', () => {
+  window.addEventListener("popstate", () => {
     const id = getNoticeIdFromUrl();
     if (id) loadDetail(id);
     else {
       showListView();
-      document.title = '공지사항 - 올라포토';
+      document.title = "공지사항 - 올라포토";
       loadNotices();
     }
   });
@@ -287,14 +364,39 @@ const SITE = 'https://holaphoto.com';
     color: #334155;
     overflow-wrap: break-word;
   }
-  #notice-detail-view .notice-detail-body p { margin-bottom: 0.75rem; }
-  #notice-detail-view .notice-detail-body p:last-child { margin-bottom: 0; }
-  #notice-detail-view .notice-detail-body ul { margin: 0.5rem 0 1rem 1.25rem; padding-left: 0; list-style: none; }
-  #notice-detail-view .notice-detail-body ul li { margin-bottom: 0.25rem; padding-left: 1rem; position: relative; }
-  #notice-detail-view .notice-detail-body ul li::before { content: "•"; position: absolute; left: 0; color: #64748b; }
-  #notice-detail-view .notice-detail-body strong { color: #111827; font-weight: 600; }
-  #notice-detail-view .notice-detail-body a { color: #E11D48; text-decoration: underline; }
-  #notice-detail-view .notice-detail-body a:hover { color: #be123c; }
+  #notice-detail-view .notice-detail-body p {
+    margin-bottom: 0.75rem;
+  }
+  #notice-detail-view .notice-detail-body p:last-child {
+    margin-bottom: 0;
+  }
+  #notice-detail-view .notice-detail-body ul {
+    margin: 0.5rem 0 1rem 1.25rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  #notice-detail-view .notice-detail-body ul li {
+    margin-bottom: 0.25rem;
+    padding-left: 1rem;
+    position: relative;
+  }
+  #notice-detail-view .notice-detail-body ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #64748b;
+  }
+  #notice-detail-view .notice-detail-body strong {
+    color: #111827;
+    font-weight: 600;
+  }
+  #notice-detail-view .notice-detail-body a {
+    color: #e11d48;
+    text-decoration: underline;
+  }
+  #notice-detail-view .notice-detail-body a:hover {
+    color: #be123c;
+  }
   #notice-detail-view .notice-detail-body img {
     min-height: 4rem;
     max-width: 100%;
@@ -314,9 +416,16 @@ const SITE = 'https://holaphoto.com';
     text-decoration: none;
     color: inherit;
   }
-  #notice-detail-view .notice-detail-body a.notice-img-link img { margin: 0; }
-  #notice-detail-view article { overflow-x: visible; }
-  #notice-detail-view .notice-detail-body { overflow-x: visible; min-width: 0; }
+  #notice-detail-view .notice-detail-body a.notice-img-link img {
+    margin: 0;
+  }
+  #notice-detail-view article {
+    overflow-x: visible;
+  }
+  #notice-detail-view .notice-detail-body {
+    overflow-x: visible;
+    min-width: 0;
+  }
   /* 모바일 전용: 본문 이미지 캐러셀 (가로 스크롤) */
   #notice-detail-view .notice-mobile-carousel {
     display: none;
@@ -328,7 +437,9 @@ const SITE = 'https://holaphoto.com';
     scrollbar-width: none;
     min-height: 12rem;
   }
-  #notice-detail-view .notice-mobile-carousel::-webkit-scrollbar { display: none; }
+  #notice-detail-view .notice-mobile-carousel::-webkit-scrollbar {
+    display: none;
+  }
   #notice-detail-view .notice-mobile-carousel-slide {
     flex: 0 0 85%;
     min-width: 75%;
@@ -389,14 +500,21 @@ const SITE = 'https://holaphoto.com';
       padding-right: 0.5rem;
       vertical-align: top;
     }
-    #notice-detail-view .notice-detail-body > * + * { margin-top: 1rem; }
-    #notice-detail-view article { padding-bottom: 1.5rem; }
+    #notice-detail-view .notice-detail-body > * + * {
+      margin-top: 1rem;
+    }
+    #notice-detail-view article {
+      padding-bottom: 1.5rem;
+    }
     /* 본문 내 블록이 화면 밖으로 잘리지 않게 */
     #notice-detail-view .notice-detail-body div,
     #notice-detail-view .notice-detail-body section {
       min-width: 0;
       overflow-wrap: break-word;
     }
-    #notice-detail-view .notice-detail-body p { padding-left: 0; padding-right: 0; }
+    #notice-detail-view .notice-detail-body p {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
 </style>
