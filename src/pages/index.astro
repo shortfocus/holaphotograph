@@ -1233,9 +1233,8 @@ import Layout from "../layouts/Layout.astro";
       } catch (_) {}
     }
 
-    if (shouldShowPopup()) {
-      showPopup();
-    }
+    // 강의 홍보 팝업 비노출 (요청에 따라 비활성화)
+    // if (shouldShowPopup()) showPopup();
 
     function close() {
       if (dontShow?.checked) setDontShowToday();
