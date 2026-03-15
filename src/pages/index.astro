@@ -48,6 +48,22 @@ import Layout from "../layouts/Layout.astro";
         id="class-promo-slider"
         class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
+        <button
+          type="button"
+          id="class-promo-prev"
+          class="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="이전"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button
+          type="button"
+          id="class-promo-next"
+          class="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="다음"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
         <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div
             class="class-promo-track flex h-full transition-transform duration-300 ease-out"
@@ -159,6 +175,22 @@ import Layout from "../layouts/Layout.astro";
         id="gr-promo-slider"
         class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
+        <button
+          type="button"
+          id="gr-promo-prev"
+          class="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="이전"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button
+          type="button"
+          id="gr-promo-next"
+          class="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="다음"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
         <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div
             class="gr-promo-track flex h-full transition-transform duration-300 ease-out"
@@ -562,6 +594,28 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
 
+      <!-- 좌우 버튼 -->
+      <button
+        type="button"
+        id="hero-carousel-prev"
+        class="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/80 p-2.5 text-white shadow-lg backdrop-blur-sm transition hover:bg-slate-700/90 focus:outline-none focus:ring-2 focus:ring-[#E11D48] sm:left-4"
+        aria-label="이전 슬라이드"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        id="hero-carousel-next"
+        class="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/80 p-2.5 text-white shadow-lg backdrop-blur-sm transition hover:bg-slate-700/90 focus:outline-none focus:ring-2 focus:ring-[#E11D48] sm:right-4"
+        aria-label="다음 슬라이드"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
       <!-- 인디케이터 -->
       <div
         class="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-slate-600/40 bg-slate-800/80 px-4 py-2 shadow-lg backdrop-blur-sm"
@@ -600,10 +654,13 @@ import Layout from "../layouts/Layout.astro";
           >📺 올라포토 카메라 매뉴얼 클래스</span
         >
       </h2>
-      <div
-        id="youtube-long-grid"
-        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
-      >
+      <div class="scroll-section-wrapper relative">
+        <button type="button" id="youtube-long-prev" class="scroll-section-prev" aria-label="이전"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg> </button>
+        <button type="button" id="youtube-long-next" class="scroll-section-next" aria-label="다음"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg> </button>
+        <div
+          id="youtube-long-grid"
+          class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+        >
         <div
           class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video"
         >
@@ -615,6 +672,7 @@ import Layout from "../layouts/Layout.astro";
         <div
           class="animate-pulse shrink-0 w-[280px] sm:w-[340px] rounded-lg overflow-hidden bg-gray-200 aspect-video"
         >
+        </div>
         </div>
       </div>
     </div>
@@ -634,10 +692,13 @@ import Layout from "../layouts/Layout.astro";
           >✍ 고품격! 올라포토 카메라/렌즈 리뷰</span
         >
       </h2>
-      <div
-        id="blog-grid"
-        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
-      >
+      <div class="scroll-section-wrapper relative">
+        <button type="button" id="blog-grid-prev" class="scroll-section-prev" aria-label="이전"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg> </button>
+        <button type="button" id="blog-grid-next" class="scroll-section-next" aria-label="다음"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg> </button>
+        <div
+          id="blog-grid"
+          class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+        >
         <div
           class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
@@ -649,6 +710,7 @@ import Layout from "../layouts/Layout.astro";
         <div
           class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
+        </div>
         </div>
       </div>
     </div>
@@ -668,10 +730,13 @@ import Layout from "../layouts/Layout.astro";
           >🎬 빠르게 보는 장비 팁</span
         >
       </h2>
-      <div
-        id="youtube-shorts-grid"
-        class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
-      >
+      <div class="scroll-section-wrapper relative">
+        <button type="button" id="youtube-shorts-prev" class="scroll-section-prev" aria-label="이전"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg> </button>
+        <button type="button" id="youtube-shorts-next" class="scroll-section-next" aria-label="다음"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg> </button>
+        <div
+          id="youtube-shorts-grid"
+          class="scroll-row flex w-full min-w-0 gap-8 pb-2 pl-4 sm:pl-6 pr-4 sm:pr-6"
+        >
         <div
           class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
@@ -683,6 +748,7 @@ import Layout from "../layouts/Layout.astro";
         <div
           class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
+        </div>
         </div>
       </div>
     </div>
@@ -880,6 +946,16 @@ import Layout from "../layouts/Layout.astro";
         startAutoplay();
       }),
     );
+    const prevBtn = document.getElementById("hero-carousel-prev");
+    const nextBtn = document.getElementById("hero-carousel-next");
+    prevBtn?.addEventListener("click", () => {
+      prev();
+      startAutoplay();
+    });
+    nextBtn?.addEventListener("click", () => {
+      next();
+      startAutoplay();
+    });
     const carousel = track?.closest("#hero-carousel");
     carousel?.addEventListener("mouseenter", stopAutoplay);
     carousel?.addEventListener("mouseleave", startAutoplay);
@@ -912,6 +988,25 @@ import Layout from "../layouts/Layout.astro";
   const youtubeShortsGrid = document.getElementById("youtube-shorts-grid")!;
   const blogGrid = document.getElementById("blog-grid")!;
   const LIMIT = 6;
+
+  (function initScrollSectionButtons() {
+    const SCROLL_STEP = 320;
+    function bindScrollButtons(prevId: string, nextId: string, scrollElId: string) {
+      const el = document.getElementById(scrollElId) as HTMLElement | null;
+      const prev = document.getElementById(prevId);
+      const next = document.getElementById(nextId);
+      if (!el || !prev || !next) return;
+      prev.addEventListener("click", () => {
+        el.scrollBy({ left: -SCROLL_STEP, behavior: "smooth" });
+      });
+      next.addEventListener("click", () => {
+        el.scrollBy({ left: SCROLL_STEP, behavior: "smooth" });
+      });
+    }
+    bindScrollButtons("youtube-long-prev", "youtube-long-next", "youtube-long-grid");
+    bindScrollButtons("blog-grid-prev", "blog-grid-next", "blog-grid");
+    bindScrollButtons("youtube-shorts-prev", "youtube-shorts-next", "youtube-shorts-grid");
+  })();
 
   /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID) */
   const YOUTUBE_LONG_ORDER = [
@@ -1320,6 +1415,8 @@ import Layout from "../layouts/Layout.astro";
     }
 
     const slider = document.getElementById("gr-promo-slider");
+    document.getElementById("gr-promo-prev")?.addEventListener("click", () => goTo(current - 1));
+    document.getElementById("gr-promo-next")?.addEventListener("click", () => goTo(current + 1));
     let touchStartX = 0;
     slider?.addEventListener(
       "touchstart",
@@ -1355,6 +1452,8 @@ import Layout from "../layouts/Layout.astro";
     }
 
     const slider = document.getElementById("class-promo-slider");
+    document.getElementById("class-promo-prev")?.addEventListener("click", () => goTo(current - 1));
+    document.getElementById("class-promo-next")?.addEventListener("click", () => goTo(current + 1));
     let touchStartX = 0;
     slider?.addEventListener(
       "touchstart",

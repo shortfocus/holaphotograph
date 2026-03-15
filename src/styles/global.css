@@ -333,6 +333,41 @@ trix-editor.trix-content:empty:not(:focus)::before {
   scroll-snap-align: start;
 }
 
+/* 스크롤 섹션 좌우 버튼 (매뉴얼 클래스, 블로그, Shorts) */
+.scroll-section-wrapper {
+  position: relative;
+}
+.scroll-section-prev,
+.scroll-section-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.scroll-section-prev:hover,
+.scroll-section-next:hover {
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.scroll-section-prev {
+  left: 0.25rem;
+}
+.scroll-section-next {
+  right: 0.25rem;
+}
+
 /* 여백 시스템: 섹션 간격·타이틀을 fit하게 */
 .section-spacing {
   margin-top: 3rem; /* 48px, 기존 120px에서 축소 */
