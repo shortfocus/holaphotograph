@@ -76,13 +76,13 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=2"
+                  href="/notice?id=5"
                   class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer"
                   aria-label="후지필름 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    src="/images/class-exposure.png"
-                    alt="노출3요소 class · 2026.03.14(토) 오후 1시~3시 · 즐카 · 2만원"
+                    src="/images/class-museum.png"
+                    alt="국중박 출사 · 2026.04.18(토) 오후 1시~3시 · 국립중앙박물관 · 2만원"
                     class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                   />
                 </a>
@@ -95,7 +95,7 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=2"
+                  href="/notice?id=5"
                   class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer"
                   aria-label="후지필름 카메라 클래스 공지 상세로 이동"
                 >
@@ -499,7 +499,7 @@ import Layout from "../layouts/Layout.astro";
               class="hero-slide-2-mobile-images mx-auto mt-5 w-full max-w-[320px] sm:mt-0 sm:hidden"
             >
               <a
-                href="/notice?id=2"
+                href="/notice?id=5"
                 class="hero-slide-2-mobile-single inline-flex overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
                 aria-label="노출3요소 class 공지 상세"
               >
@@ -516,7 +516,7 @@ import Layout from "../layouts/Layout.astro";
               style="-webkit-overflow-scrolling: touch; scrollbar-width: none;"
             >
               <a
-                href="/notice?id=2"
+                href="/notice?id=5"
                 class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
                 aria-label="노출3요소 class 공지 상세"
               >
@@ -527,7 +527,7 @@ import Layout from "../layouts/Layout.astro";
                 />
               </a>
               <a
-                href="/notice?id=2"
+                href="/notice?id=5"
                 class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
                 aria-label="X-E5 class 공지 상세"
               >
@@ -539,7 +539,7 @@ import Layout from "../layouts/Layout.astro";
               </a>
             </div>
             <a
-              href="/notice?id=2"
+              href="/notice?id=5"
               class="hero-cta mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
             >
               자세히 보기
@@ -1328,8 +1328,7 @@ import Layout from "../layouts/Layout.astro";
       } catch (_) {}
     }
 
-    // 강의 홍보 팝업 비노출 (요청에 따라 비활성화)
-    // if (shouldShowPopup()) showPopup();
+        if (shouldShowPopup()) showPopup();
 
     function close() {
       if (dontShow?.checked) setDontShowToday();
