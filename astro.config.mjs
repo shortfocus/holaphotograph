@@ -8,6 +8,11 @@ export default defineConfig({
   site: 'https://holaphoto.com',
   output: 'static',
   devToolbar: { enabled: false },
+  server: {
+    host: '0.0.0.0',
+    port: 5000,
+    allowedHosts: true,
+  },
   integrations: [
     sitemap({
       filter: (page) => !new URL(page).pathname.startsWith('/admin'),
