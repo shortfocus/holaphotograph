@@ -919,7 +919,6 @@ const YOUTUBE_LONG_ORDER = [
 const LONG_FORM_TITLE_KEYWORD = /따.라.해/;
 
 /** 숏츠 검색 키워드: 제목에 '후지필름' 포함 시만 노출 */
-const SHORTS_TITLE_KEYWORD = /후지필름/;
 
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
 const REVIEW_KEYWORDS =
@@ -1024,8 +1023,8 @@ async function handleYoutubeLatest(
       request,
     );
   try {
-    // 1회: 검색 (q에 OR 사용. 공식 문서엔 없으나 실사용에서 동작)
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=50&order=date&type=video&q=${encodeURIComponent("따라해 OR 후지필름")}&key=${key}`;
+    // 1회: 채널 최신 영상(동영상+쇼츠) 조회
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YOUTUBE_CHANNEL_ID}&maxResults=50&order=date&type=video&key=${key}`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) {
       return errorResponse("YouTube search failed", searchRes.status, request);
@@ -1069,11 +1068,7 @@ async function handleYoutubeLatest(
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (!item) continue;
       if (item.link.includes("/shorts/")) {
-        if (
-          SHORTS_TITLE_KEYWORD.test(item.title) &&
-          !item.title.includes("[대여]")
-        )
-          shortsList.push(item);
+        if (!item.title.includes("[대여]")) shortsList.push(item);
       } else {
         const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
         if (
@@ -1089,10 +1084,11 @@ async function handleYoutubeLatest(
       const vb = parseInt(b.viewCount ?? "0", 10) || 0;
       return vb - va;
     });
+    // 쇼츠는 조회수 대신 최신 업로드 순으로 노출
     shortsList.sort((a, b) => {
-      const va = parseInt(a.viewCount ?? "0", 10) || 0;
-      const vb = parseInt(b.viewCount ?? "0", 10) || 0;
-      return vb - va;
+      const ta = Date.parse(a.publishedAt ?? "") || 0;
+      const tb = Date.parse(b.publishedAt ?? "") || 0;
+      return tb - ta;
     });
     const videos = [...preferredVideos, ...restLong].slice(0, 5);
     const shortsApiSucceeded = true;
