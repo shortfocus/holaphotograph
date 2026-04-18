@@ -1327,7 +1327,8 @@ import Layout from "../layouts/Layout.astro";
       } catch (_) {}
     }
 
-        if (shouldShowPopup()) showPopup();
+    // 팝업 비노출 요청: 메인 진입 시 강의 팝업 비활성화
+    // if (shouldShowPopup()) showPopup();
 
     function close() {
       if (dontShow?.checked) setDontShowToday();
