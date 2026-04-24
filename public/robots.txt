@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /post
+Disallow: /reviews/new
 
 # 다음 웹마스터 도구 소유 확인: PIN 발급 후 아래 주석 해제하고 PIN 입력
 #DaumWebMasterTool:403605850727450557d3026bffaf9be6ff2ad4f8d4a49506267e4389c2258bc0:6WhSISAXi6Ggc9zv6ioq6A==

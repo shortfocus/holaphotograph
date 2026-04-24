@@ -15,7 +15,11 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !new URL(page).pathname.startsWith('/admin'),
+      filter: (page) => {
+        const pathname = new URL(page).pathname;
+        const excludedPaths = new Set(['/post', '/reviews/new', '/feed.xml']);
+        return !pathname.startsWith('/admin') && !excludedPaths.has(pathname);
+      },
     }),
   ],
   vite: {

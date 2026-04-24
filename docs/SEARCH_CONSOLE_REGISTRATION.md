@@ -14,7 +14,7 @@
    - **HTML 태그**: `<meta name="google-site-verification" content="…" />` 를 사이트 `<head>`에 넣고 배포 후 Search Console에서 "확인" 클릭
    - **HTML 파일**: 안내된 파일을 사이트 루트에 업로드 (예: `https://holaphoto.com/google123.html`)
    - **DNS**: 도메인 소유 시 TXT 레코드 추가
-4. 확인 완료 후 **사이트맵 제출**: `https://holaphoto.com/sitemap-index.xml` 또는 `https://holaphoto.com/sitemap-0.xml` (사이트맵이 있는 경우)
+4. 확인 완료 후 **사이트맵 제출**: `https://holaphoto.com/sitemap-index.xml`
 
 ---
 
@@ -43,7 +43,7 @@
    - 사이트 루트의 `robots.txt`에 다음 한 줄을 추가합니다. (주석 형식이라 크롤링에는 영향 없음)
    - 형식: `#DaumWebMasterTool:발급받은PIN코드`
    - 예: `#DaumWebMasterTool:abc123xyz`
-   - 현재 프로젝트에는 robots.txt가 없으므로, `public/robots.txt` 파일을 만들고 위 줄 + 필요 시 `User-agent: *`·`Sitemap:` 도 넣어서 배포
+  - 현재 프로젝트의 `public/robots.txt`에 PIN 주석과 사이트맵 URL이 이미 있으므로, PIN 값만 최신으로 유지해서 배포
 5. **인증 확인**
    - 배포 후 웹마스터 도구에서 "로봇룰 테스트" 또는 "인증 확인" 실행
    - 다음이 robots.txt를 읽어 PIN이 일치하면 소유 확인 완료 (캐시 때문에 1일 정도 걸릴 수 있음)
@@ -70,8 +70,8 @@
 
 ## 5. 사이트맵 · RSS · robots.txt
 
-- **사이트맵**: 검색엔진이 페이지 목록을 수집하기 쉬움. Astro에 `@astrojs/sitemap` 사용 시 빌드 시점에 `/sitemap-index.xml` 등이 생성됨.
-- **RSS 피드**: `https://holaphoto.com/feed.xml` — 메인 페이지(홈, 고객 후기, 후기 작성)를 RSS 2.0 형식으로 제공. 네이버 서치어드바이저·RSS 리더 제출용.
-- **robots.txt**: `User-agent: *` 와 `Sitemap: https://holaphoto.com/sitemap-index.xml` 등을 넣어 두면 제출 URL로 활용 가능.
+- **사이트맵**: 검색엔진이 페이지 목록을 수집하기 쉬움. 현재 기준으로 공개 핵심 경로(예: `/`, `/notice`, `/reviews`) 중심이며, 관리자/유틸 경로(예: `/admin*`, `/post`, `/reviews/new`)는 제외됨.
+- **RSS 피드**: `https://holaphoto.com/feed.xml` — RSS 제출은 선택 사항이며, 사이트맵과 별도로 관리됨.
+- **robots.txt**: `User-agent: *`, `Sitemap: https://holaphoto.com/sitemap-index.xml`, `Disallow` 규칙(관리/유틸 경로)이 반영되어 있으면 제출 URL로 활용 가능.
 
 사이트맵·RSS·robots.txt가 없어도 등록·확인은 가능하고, 있으면 색인·제출에 유리합니다.
