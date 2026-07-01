@@ -253,15 +253,28 @@ import Layout from '../../layouts/Layout.astro';
   addCardLecture.addEventListener('click', () => openRegisterModal('lecture'));
   addCardLecture.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRegisterModal('lecture'); } });
 
-  registerModalClose.addEventListener('click', closeRegisterModal);
-  document.getElementById('review-register-cancel')?.addEventListener('click', closeRegisterModal);
-  registerModal.addEventListener('click', (e) => { if (e.target === registerModal) closeRegisterModal(); });
-
   function stripHtml(html: string): string {
     const div = document.createElement('div');
     div.innerHTML = html;
     return (div.textContent || div.innerText || '').trim();
   }
+
+  function registerFormHasContent(): boolean {
+    const author = (document.getElementById('review-author-modal') as HTMLInputElement)?.value.trim();
+    const title = (document.getElementById('review-title-modal') as HTMLInputElement)?.value.trim();
+    const rawContent = contentInputModal?.value || '';
+    const hasImages = /<img\b/i.test(rawContent);
+    const content = stripHtml(rawContent);
+    return !!(author || title || content || hasImages);
+  }
+
+  function requestCloseRegisterModal() {
+    if (registerFormHasContent() && !confirm('작성 중인 내용이 있습니다. 닫으시겠습니까?')) return;
+    closeRegisterModal();
+  }
+
+  registerModalClose.addEventListener('click', requestCloseRegisterModal);
+  document.getElementById('review-register-cancel')?.addEventListener('click', requestCloseRegisterModal);
 
   /** img·figure·figcaption(파일명) 제거 후 텍스트만 (카드 요약용, 파일명 노출 방지) */
   function getTextWithoutImages(html: string | null | undefined): string {
@@ -352,7 +365,7 @@ import Layout from '../../layouts/Layout.astro';
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (!alertModal.classList.contains('hidden')) closeAlertModal();
-    else if (!registerModal.classList.contains('hidden')) closeRegisterModal();
+    else if (!registerModal.classList.contains('hidden')) requestCloseRegisterModal();
     else closeReviewModal();
   });
 
