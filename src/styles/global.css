@@ -3,8 +3,8 @@
 /* 플로팅 바 높이 (히어로 섹션 높이 계산용) */
 :root {
   --lecture-bar-base: 95px;
-  /* 모바일: 세로 배치 + pt-4 여백 */
-  --lecture-bar-mobile: 181px;
+  /* 모바일: 이메일 + 브랜드 선택 + 버튼 세로 배치 */
+  --lecture-bar-mobile: 200px;
   --lecture-bar-height: calc(var(--lecture-bar-mobile) + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 640px) {

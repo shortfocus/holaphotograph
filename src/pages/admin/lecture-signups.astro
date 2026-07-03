@@ -11,6 +11,9 @@ import Layout from "../../layouts/Layout.astro";
       <button type="button" id="sort-btn-email" data-sort="email" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
         이메일
       </button>
+      <button type="button" id="sort-btn-brand" data-sort="interest_brand" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+        관심 브랜드
+      </button>
       <button type="button" id="sort-btn-created-at" data-sort="created_at" data-arrow="▼" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
         신청일시
       </button>
@@ -26,6 +29,7 @@ import Layout from "../../layouts/Layout.astro";
           <tr>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">번호</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">이메일</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">관심 브랜드</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">신청일시</th>
           </tr>
         </thead>
@@ -48,6 +52,17 @@ import Layout from "../../layouts/Layout.astro";
 <script>
   import { fetchLectureSignups, type LectureSignup } from "../../lib/api";
 
+  const BRAND_LABELS: Record<string, string> = {
+    SONY: "소니",
+    RICOH: "리코",
+    FUJI: "후지필름",
+  };
+
+  function formatBrand(brand: string | null) {
+    if (!brand) return "-";
+    return BRAND_LABELS[brand] ?? brand;
+  }
+
   let loadingEl: HTMLElement;
   let emptyEl: HTMLElement;
   let tableEl: HTMLElement;
@@ -61,7 +76,7 @@ import Layout from "../../layouts/Layout.astro";
   }
 
   let allSignups: LectureSignup[] = [];
-  let sortBy: "email" | "created_at" = "created_at";
+  let sortBy: "email" | "interest_brand" | "created_at" = "created_at";
   let sortDir: "asc" | "desc" = "desc";
 
   function sortSignups(signups: LectureSignup[], by: typeof sortBy, dir: typeof sortDir): LectureSignup[] {
@@ -69,6 +84,8 @@ import Layout from "../../layouts/Layout.astro";
       let cmp = 0;
       if (by === "email") {
         cmp = a.email.localeCompare(b.email, "ko");
+      } else if (by === "interest_brand") {
+        cmp = (a.interest_brand ?? "").localeCompare(b.interest_brand ?? "", "ko");
       } else {
         cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
       }
@@ -84,6 +101,7 @@ import Layout from "../../layouts/Layout.astro";
         <tr>
           <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${i + 1}</td>
           <td class="px-4 py-3 text-sm text-gray-900 sm:px-6"><a href="mailto:${escapeHtml(s.email)}" class="text-blue-600 hover:underline">${escapeHtml(s.email)}</a></td>
+          <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-700 sm:px-6">${escapeHtml(formatBrand(s.interest_brand))}</td>
           <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6">${new Date(s.created_at).toLocaleString("ko-KR")}</td>
         </tr>
       `
@@ -93,9 +111,14 @@ import Layout from "../../layouts/Layout.astro";
     // 화살표는 data-arrow 속성 + CSS ::after로 표시 (JS textContent 덮어쓰기 회피)
     const ARROW_UP = "\u25B2";
     const ARROW_DOWN = "\u25BC";
-    const defaultDir: Record<"email" | "created_at", "asc" | "desc"> = { email: "asc", created_at: "desc" };
+    const defaultDir: Record<"email" | "interest_brand" | "created_at", "asc" | "desc"> = {
+      email: "asc",
+      interest_brand: "asc",
+      created_at: "desc",
+    };
 
     const btnEmail = document.getElementById("sort-btn-email");
+    const btnBrand = document.getElementById("sort-btn-brand");
     const btnCreatedAt = document.getElementById("sort-btn-created-at");
     if (btnEmail) {
       const active = sortBy === "email";
@@ -108,6 +131,18 @@ import Layout from "../../layouts/Layout.astro";
       btnEmail.classList.toggle("border-gray-300", !active);
       btnEmail.classList.toggle("bg-white", !active);
       btnEmail.classList.toggle("text-gray-700", !active);
+    }
+    if (btnBrand) {
+      const active = sortBy === "interest_brand";
+      const dir = active ? sortDir : defaultDir.interest_brand;
+      btnBrand.textContent = "관심 브랜드";
+      btnBrand.setAttribute("data-arrow", dir === "asc" ? ARROW_UP : ARROW_DOWN);
+      btnBrand.classList.toggle("border-blue-500", active);
+      btnBrand.classList.toggle("bg-blue-50", active);
+      btnBrand.classList.toggle("text-blue-700", active);
+      btnBrand.classList.toggle("border-gray-300", !active);
+      btnBrand.classList.toggle("bg-white", !active);
+      btnBrand.classList.toggle("text-gray-700", !active);
     }
     if (btnCreatedAt) {
       const active = sortBy === "created_at";
@@ -156,7 +191,7 @@ import Layout from "../../layouts/Layout.astro";
     sortButtonsEl.addEventListener("click", (e) => {
       const btn = (e.target as HTMLElement).closest(".sort-btn");
       if (!btn || allSignups.length === 0) return;
-      const key = ((btn as HTMLButtonElement).getAttribute("data-sort") || "") as "email" | "created_at";
+      const key = ((btn as HTMLButtonElement).getAttribute("data-sort") || "") as "email" | "interest_brand" | "created_at";
       if (sortBy === key) {
         sortDir = sortDir === "asc" ? "desc" : "asc";
       } else {

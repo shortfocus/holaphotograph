@@ -61,9 +61,12 @@ export async function fetchPostsForAdmin(): Promise<Post[]> {
   return data.posts ?? [];
 }
 
+export type LectureInterestBrand = "SONY" | "RICOH" | "FUJI";
+
 export interface LectureSignup {
   id: number;
   email: string;
+  interest_brand: LectureInterestBrand | null;
   created_at: string;
 }
 
@@ -284,11 +287,17 @@ export interface LectureSignupResponse {
 
 export async function submitLectureSignup(
   email: string,
+  interestBrand?: LectureInterestBrand | null,
 ): Promise<LectureSignupResponse> {
+  const payload: { email: string; interest_brand?: LectureInterestBrand } = {
+    email: email.trim().toLowerCase(),
+  };
+  if (interestBrand) payload.interest_brand = interestBrand;
+
   const res = await fetch(`${API_BASE}/api/lecture-signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    body: JSON.stringify(payload),
   });
   const data = (await res.json()) as LectureSignupResponse & { error?: string };
   if (!res.ok) throw new Error(data.error || "등록에 실패했습니다.");

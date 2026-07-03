@@ -235,8 +235,8 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
             <p class="font-semibold text-white">카메라 입문 & 실전 강의 준비 중</p>
             <p class="text-sm text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
           </div>
-          <div class="flex w-full flex-col gap-2 sm:w-[28rem] sm:flex-shrink-0">
-            <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:w-full sm:flex-row">
+          <div class="flex w-full flex-col gap-2 sm:w-[31rem] sm:flex-shrink-0">
+            <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
               <input
                 type="email"
                 name="email"
@@ -244,8 +244,18 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
                 placeholder="이메일 주소"
                 required
                 autocomplete="email"
-                class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:flex-1 sm:min-w-0"
+                class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:min-w-0 sm:flex-[1.5]"
               />
+              <select
+                name="interest_brand"
+                id="lecture-interest-brand"
+                aria-label="관심 브랜드"
+                class="w-full shrink-0 cursor-pointer rounded-lg border border-slate-600 bg-slate-800/50 px-3 py-2.5 text-sm text-white focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:w-[7.25rem]"
+              >
+                <option value="RICOH" selected>리코</option>
+                <option value="FUJI">후지필름</option>
+                <option value="SONY">소니</option>
+              </select>
               <button
                 type="submit"
                 id="lecture-signup-btn"
@@ -290,6 +300,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
       (function initLectureSignup() {
         const form = document.getElementById('lecture-signup-form') as HTMLFormElement | null;
         const input = document.getElementById('lecture-email') as HTMLInputElement | null;
+        const brandSelect = document.getElementById('lecture-interest-brand') as HTMLSelectElement | null;
         const btn = document.getElementById('lecture-signup-btn') as HTMLButtonElement | null;
         const status = document.getElementById('lecture-signup-status') as HTMLElement | null;
         if (!form || !input || !btn || !status) return;
@@ -300,6 +311,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
           const email = input.value.trim();
+          const interestBrand = brandSelect?.value || null;
           if (!email) {
             status.textContent = '이메일을 입력해주세요.';
             status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
@@ -309,10 +321,12 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           status.textContent = '등록 중…';
           status.className = 'min-h-6 text-center text-sm sm:text-left text-slate-400';
           try {
+            const payload: { email: string; interest_brand?: string } = { email: email.toLowerCase() };
+            if (interestBrand) payload.interest_brand = interestBrand;
             const res = await fetch(`${API_BASE}/api/lecture-signup`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email.toLowerCase() }),
+              body: JSON.stringify(payload),
             });
             const data = (await res.json().catch(() => ({}))) as { message?: string; error?: string };
             if (res.ok) {

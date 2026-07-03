@@ -1160,6 +1160,20 @@ async function handleChannelStats(
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LECTURE_INTEREST_BRANDS = ["SONY", "RICOH", "FUJI"] as const;
+type LectureInterestBrand = (typeof LECTURE_INTEREST_BRANDS)[number];
+
+function parseLectureInterestBrand(
+  raw: unknown,
+): LectureInterestBrand | null | undefined {
+  if (raw === undefined || raw === null) return null;
+  const value = String(raw).trim().toUpperCase();
+  if (!value) return null;
+  if (!LECTURE_INTEREST_BRANDS.includes(value as LectureInterestBrand)) {
+    return undefined;
+  }
+  return value as LectureInterestBrand;
+}
 
 async function handleLectureSignup(
   request: Request,
@@ -1169,9 +1183,9 @@ async function handleLectureSignup(
   if (!contentType.includes("application/json")) {
     return errorResponse("Content-Type must be application/json", 400, request);
   }
-  let body: { email?: string };
+  let body: { email?: string; interest_brand?: string };
   try {
-    body = (await request.json()) as { email?: string };
+    body = (await request.json()) as { email?: string; interest_brand?: string };
   } catch {
     return errorResponse("Invalid JSON body", 400, request);
   }
@@ -1182,9 +1196,22 @@ async function handleLectureSignup(
   if (!EMAIL_REGEX.test(email))
     return errorResponse("Invalid email format", 400, request);
 
+  const interestBrand = parseLectureInterestBrand(body.interest_brand);
+  if (interestBrand === undefined) {
+    return errorResponse(
+      "interest_brand must be one of: SONY, RICOH, FUJI",
+      400,
+      request,
+    );
+  }
+
   try {
-    await env.DB.prepare("INSERT INTO lecture_signups (email) VALUES (?)")
-      .bind(email)
+    await env.DB.prepare(
+      `INSERT INTO lecture_signups (email, interest_brand) VALUES (?, ?)
+       ON CONFLICT(email) DO UPDATE SET
+         interest_brand = COALESCE(excluded.interest_brand, lecture_signups.interest_brand)`,
+    )
+      .bind(email, interestBrand)
       .run();
     return jsonResponse(
       { success: true, message: "등록되었습니다." },
@@ -1410,6 +1437,7 @@ async function handleListApprovedReviews(
 interface LectureSignupRow {
   id: number;
   email: string;
+  interest_brand: LectureInterestBrand | null;
   created_at: string;
 }
 
@@ -1420,7 +1448,7 @@ async function handleListLectureSignups(
 ): Promise<Response> {
   try {
     const { results } = await env.DB.prepare(
-      "SELECT id, email, created_at FROM lecture_signups ORDER BY created_at DESC",
+      "SELECT id, email, interest_brand, created_at FROM lecture_signups ORDER BY created_at DESC",
     ).all<LectureSignupRow>();
     return jsonResponse({ signups: results }, 200, request);
   } catch (err) {
