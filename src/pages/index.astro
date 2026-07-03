@@ -635,6 +635,64 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </section>
+
+  <!-- 본문 진입 시 우측 여백 빠른 링크 레일 (데스크톱) -->
+  <aside id="side-rail" class="side-rail" aria-label="빠른 링크">
+    <button
+      type="button"
+      id="lecture-signup-fab"
+      class="side-rail-btn side-rail-btn--primary"
+      aria-label="강의 신청 — 하단 신청 폼으로 이동"
+    >
+      <svg
+        class="side-rail-btn__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+      <span class="side-rail-btn__tooltip">강의 신청</span>
+    </button>
+    <a
+      href="https://www.instagram.com/snap.hola"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="인스타그램"
+    >
+      <img src="/icons/instagram.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">인스타그램</span>
+    </a>
+    <a
+      href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="유튜브"
+    >
+      <img src="/icons/youtube.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">유튜브</span>
+    </a>
+    <a
+      href="https://blog.naver.com/holaphotograph"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="네이버 블로그"
+    >
+      <img src="/icons/naver-blog.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">블로그</span>
+    </a>
+  </aside>
 </Layout>
 
 <script>
@@ -656,6 +714,32 @@ import Layout from "../layouts/Layout.astro";
       current = (current + 1) % slides.length;
       slides[current].classList.add("is-active");
     }, 2000);
+  })();
+
+  (function initLectureSignupFab() {
+    const hero = document.querySelector(".hero-section");
+    const rail = document.getElementById("side-rail");
+    const fab = document.getElementById("lecture-signup-fab");
+    if (!hero || !rail || !fab) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        rail.classList.toggle("is-visible", !entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: "-8% 0px 0px 0px" },
+    );
+    observer.observe(hero);
+
+    fab.addEventListener("click", () => {
+      document.body.classList.remove("lecture-bar-collapsed");
+      try {
+        sessionStorage.setItem("lecture-bar-collapsed", "0");
+      } catch (_) {}
+      const email = document.getElementById("lecture-email") as HTMLInputElement | null;
+      const bar = document.getElementById("lecture");
+      bar?.scrollIntoView({ behavior: "smooth", block: "end" });
+      window.setTimeout(() => email?.focus({ preventScroll: true }), 450);
+    });
   })();
 
   const youtubeLongGrid = document.getElementById("youtube-long-grid")!;
