@@ -66,9 +66,12 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <a href="/" id="header-logo-link" class="flex items-center gap-2" aria-label="올라포토 홈">
-          <img src="/logo.png" alt="" class="h-9 w-9 sm:h-10 sm:w-10 header-logo rounded-full object-cover" />
-          <span class="text-xl font-bold text-white sm:text-2xl header-logo-text">올라포토</span>
+        <a href="/" id="header-logo-link" class="flex items-center" aria-label="올라포토 홈">
+          <img
+            src="/images/holaphoto_new_logo.png"
+            alt="올라포토"
+            class="header-logo-wordmark h-8 w-auto shrink-0 object-contain sm:h-9"
+          />
         </a>
         <button
           type="button"
@@ -88,8 +91,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           <li><a href="/#youtube-long" class="nav-link-premium nav-link-mobile">카메라 매뉴얼</a></li>
           <li><a href="/#blog" class="nav-link-premium nav-link-mobile">카메라/렌즈 리뷰</a></li>
           <li><a href="/#youtube-shorts" class="nav-link-premium nav-link-mobile">장비 팁</a></li>
-          <li><a href="/#about" class="nav-link-premium nav-link-mobile">협업 및 광고 문의</a></li>
-          <li><a href="/reviews" class="nav-link-premium nav-link-mobile">고객 후기</a></li>
+          <li><a href="/reviews" class="nav-link-premium nav-link-mobile">수강생 후기</a></li>
           <li><a href="/notice" class="nav-link-premium nav-link-mobile">공지사항</a></li>
         </ul>
       </nav>

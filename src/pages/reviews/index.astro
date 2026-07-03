@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="고객 후기 - 올라포토" headerOpaque>
+<Layout title="수강생 후기 - 올라포토" headerOpaque>
   <Fragment slot="head">
     <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css" />
     <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
@@ -101,7 +101,7 @@ import Layout from '../../layouts/Layout.astro';
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-snap" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
-            <div id="add-card-snap" class="review-add-card" role="button" tabindex="0" aria-label="고객 후기 등록">
+            <div id="add-card-snap" class="review-add-card" role="button" tabindex="0" aria-label="수강생 후기 등록">
               <span class="review-add-btn" aria-hidden="true">➕</span>
             </div>
           </div>
@@ -116,7 +116,7 @@ import Layout from '../../layouts/Layout.astro';
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-lecture" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
-            <div id="add-card-lecture" class="review-add-card" role="button" tabindex="0" aria-label="고객 후기 등록">
+            <div id="add-card-lecture" class="review-add-card" role="button" tabindex="0" aria-label="수강생 후기 등록">
               <span class="review-add-btn" aria-hidden="true">➕</span>
             </div>
           </div>
@@ -144,7 +144,7 @@ import Layout from '../../layouts/Layout.astro';
   <div id="review-register-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 reviews-modal-backdrop" aria-hidden="true" aria-labelledby="review-register-modal-title">
     <div class="reviews-modal-content w-full max-w-lg rounded-lg bg-white p-6 shadow-xl" role="dialog">
       <div class="mb-4 flex items-center justify-between">
-        <h2 id="review-register-modal-title" class="text-lg font-bold text-stone-800">고객 후기 등록</h2>
+        <h2 id="review-register-modal-title" class="text-lg font-bold text-stone-800">수강생 후기 등록</h2>
         <button type="button" id="review-register-modal-close" class="shrink-0 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="닫기">✕</button>
       </div>
       <form id="review-form-modal" class="space-y-3">
@@ -482,7 +482,7 @@ import Layout from '../../layouts/Layout.astro';
       const errMsg = document.createElement('p');
       errMsg.className = 'col-span-2 sm:col-span-4 text-center text-red-600';
       errMsg.style.gridColumn = '1 / -1';
-      errMsg.textContent = `고객 후기를 불러올 수 없습니다: ${(e as Error).message}`;
+      errMsg.textContent = `수강생 후기를 불러올 수 없습니다: ${(e as Error).message}`;
       sectionSnap.appendChild(errMsg);
       sectionLecture.appendChild(errMsg.cloneNode(true));
     }

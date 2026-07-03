@@ -8,7 +8,7 @@ const SITE = "https://holaphoto.com";
 /** 피드에 넣을 메인 페이지 (경로, 제목, 설명) */
 const PAGES: { path: string; title: string; description: string }[] = [
   { path: "/", title: "올라포토 - 카메라 리뷰", description: "카메라 선택부터 촬영 노하우까지 실전 기반 리뷰 플랫폼" },
-  { path: "/reviews", title: "고객 후기", description: "올라포토 고객 후기 목록" },
+  { path: "/reviews", title: "수강생 후기", description: "올라포토 수강생 후기 목록" },
   { path: "/reviews/new", title: "후기 작성", description: "고객 후기 작성" },
 ];
 

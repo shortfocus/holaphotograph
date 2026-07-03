@@ -136,21 +136,28 @@ body.nav-open {
   padding-right: 0;
 }
 
-/* 히어로 캐러셀: 슬라이드 너비를 뷰포트 기준으로 고정해 1번 오버플로우가 2·3번에 영향 주지 않도록 */
-#hero-carousel {
+/* 히어로: 단일 슬라이드 */
+.hero-slide {
+  flex: 0 0 100%;
   width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
-.hero-carousel-track {
-  width: 300%;
-  flex-shrink: 0;
+
+.hero-bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
-.hero-slide {
-  flex: 0 0 33.333333%;
-  width: 33.333333%;
-  min-width: 0;
-  max-width: 33.333333%;
+
+.hero-bg-slide.is-active {
+  opacity: 1;
 }
+
 /* 플로팅 바 접힌 상태: 히어로가 뷰포트 전체 사용 */
 body.lecture-bar-collapsed .hero-section {
   height: 100dvh;
@@ -248,7 +255,6 @@ body.lecture-bar-collapsed .hero-section {
 .header-transparent {
   background: transparent;
 }
-.header-transparent .header-logo-text { color: white; }
 .header-transparent .header-toggle { color: white; }
 .header-transparent .nav-link-premium { color: rgba(255,255,255,0.9); }
 .header-transparent .nav-link-premium:hover { color: white; }
@@ -260,7 +266,6 @@ body.lecture-bar-collapsed .hero-section {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.header-scrolled .header-logo-text { color: white; }
 .header-scrolled .header-toggle { color: white; }
 .header-scrolled .nav-link-premium { color: rgba(255,255,255,0.85); }
 .header-scrolled .nav-link-premium:hover { color: white; }
