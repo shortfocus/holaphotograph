@@ -6,16 +6,30 @@ import Layout from "../../layouts/Layout.astro";
   <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
     <h1 class="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">강의 신청 목록</h1>
 
-    <div id="sort-buttons" class="mb-3 hidden flex-wrap items-center justify-start gap-2">
-      <span class="text-sm text-gray-500">정렬:</span>
-      <button type="button" id="sort-btn-email" data-sort="email" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
-        이메일
-      </button>
-      <button type="button" id="sort-btn-brand" data-sort="interest_brand" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
-        관심 브랜드
-      </button>
-      <button type="button" id="sort-btn-created-at" data-sort="created_at" data-arrow="▼" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
-        신청일시
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div id="sort-buttons" class="hidden flex-wrap items-center justify-start gap-2">
+        <span class="text-sm text-gray-500">정렬:</span>
+        <button type="button" id="sort-btn-email" data-sort="email" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+          이메일
+        </button>
+        <button type="button" id="sort-btn-brand" data-sort="interest_brand" data-arrow="▲" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+          관심 브랜드
+        </button>
+        <button type="button" id="sort-btn-created-at" data-sort="created_at" data-arrow="▼" class="sort-btn whitespace-nowrap rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+          신청일시
+        </button>
+      </div>
+      <button
+        type="button"
+        id="download-excel-btn"
+        class="hidden cursor-pointer items-center gap-2 self-start rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 sm:self-auto"
+      >
+        <svg class="h-4 w-4 shrink-0 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12" />
+          <path d="m7 10 5 5 5-5" />
+          <path d="M5 21h14" />
+        </svg>
+        엑셀 다운로드
       </button>
     </div>
 
@@ -50,6 +64,7 @@ import Layout from "../../layouts/Layout.astro";
 </style>
 
 <script>
+  import * as XLSX from "xlsx";
   import { fetchLectureSignups, type LectureSignup } from "../../lib/api";
 
   const BRAND_LABELS: Record<string, string> = {
@@ -68,11 +83,30 @@ import Layout from "../../layouts/Layout.astro";
   let tableEl: HTMLElement;
   let tbodyEl: HTMLElement;
   let sortButtonsEl: HTMLElement;
+  let downloadBtn: HTMLButtonElement;
 
   function escapeHtml(s: string) {
     const div = document.createElement("div");
     div.textContent = s;
     return div.innerHTML;
+  }
+
+  function downloadExcel(signups: LectureSignup[]) {
+    const sorted = sortSignups(signups, sortBy, sortDir);
+    const rows = sorted.map((s, i) => ({
+      번호: i + 1,
+      이메일: s.email,
+      "관심 브랜드": formatBrand(s.interest_brand),
+      "브랜드 코드": s.interest_brand ?? "",
+      신청일시: new Date(s.created_at).toLocaleString("ko-KR"),
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "강의 신청");
+    XLSX.writeFile(
+      workbook,
+      `lecture-signups-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
   }
 
   let allSignups: LectureSignup[] = [];
@@ -173,6 +207,8 @@ import Layout from "../../layouts/Layout.astro";
       tableEl.classList.remove("hidden");
       sortButtonsEl.classList.remove("hidden");
       sortButtonsEl.classList.add("flex");
+      downloadBtn.classList.remove("hidden");
+      downloadBtn.classList.add("inline-flex");
       renderTable();
     } catch (e) {
       loadingEl.textContent = "목록을 불러올 수 없습니다: " + (e as Error).message;
@@ -187,6 +223,12 @@ import Layout from "../../layouts/Layout.astro";
     tableEl = document.getElementById("signups-table")!;
     tbodyEl = document.getElementById("signups-tbody")!;
     sortButtonsEl = document.getElementById("sort-buttons")!;
+    downloadBtn = document.getElementById("download-excel-btn") as HTMLButtonElement;
+
+    downloadBtn.addEventListener("click", () => {
+      if (allSignups.length === 0) return;
+      downloadExcel(allSignups);
+    });
 
     sortButtonsEl.addEventListener("click", (e) => {
       const btn = (e.target as HTMLElement).closest(".sort-btn");
