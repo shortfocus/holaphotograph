@@ -388,6 +388,45 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
+  <!-- 2-1. 수강생 후기 마퀴 (히어로 직후) -->
+  <section
+    id="reviews-marquee"
+    class="reviews-marquee-section border-t border-slate-200/60 bg-[#F8FAFC] py-10 sm:py-12"
+    aria-label="고객 후기"
+  >
+    <div class="mx-auto mb-6 flex max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
+      <div>
+        <p class="text-sm font-medium text-[#6B7280]">강의 · 스냅 촬영 후기</p>
+        <h2 class="mt-1 text-xl font-bold text-[#111827] sm:text-2xl">💬 고객 후기</h2>
+      </div>
+      <a
+        href="/reviews"
+        class="shrink-0 text-sm font-medium text-[#E11D48] transition-colors hover:text-[#be123c]"
+      >
+        더보기 →
+      </a>
+    </div>
+
+    <div id="reviews-marquee-loading" class="px-4 sm:px-6">
+      <div class="mx-auto flex max-w-6xl gap-4 overflow-hidden">
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+      </div>
+    </div>
+
+    <div id="reviews-marquee-empty" class="mx-auto hidden max-w-6xl px-4 text-center sm:px-6">
+      <p class="text-sm text-[#6B7280]">아직 등록된 고객 후기가 없습니다.</p>
+      <a href="/reviews" class="mt-2 inline-block text-sm font-medium text-[#E11D48] hover:text-[#be123c]">
+        첫 후기 남기기 →
+      </a>
+    </div>
+
+    <div id="reviews-marquee-viewport" class="reviews-marquee-viewport hidden">
+      <div id="reviews-marquee-track" class="reviews-marquee-track"></div>
+    </div>
+  </section>
+
   <!-- 3. 실전 영상 리뷰 섹션 -->
   <section
     id="youtube-long"
@@ -699,8 +738,10 @@ import Layout from "../layouts/Layout.astro";
   import {
     fetchYoutubeLatest,
     fetchChannelStats,
+    fetchApprovedReviews,
     getRssThumbnailUrl,
     type NaverRssItem,
+    type Post,
     type YoutubeVideoItem,
   } from "../lib/api";
   import { FEATURED_BLOG } from "../data/featured-blog";
@@ -714,6 +755,109 @@ import Layout from "../layouts/Layout.astro";
       current = (current + 1) % slides.length;
       slides[current].classList.add("is-active");
     }, 2000);
+  })();
+
+  (function initReviewsMarquee() {
+    const loadingEl = document.getElementById("reviews-marquee-loading");
+    const emptyEl = document.getElementById("reviews-marquee-empty");
+    const viewportEl = document.getElementById("reviews-marquee-viewport");
+    const trackEl = document.getElementById("reviews-marquee-track");
+    if (!loadingEl || !emptyEl || !viewportEl || !trackEl) return;
+    const loading: HTMLElement = loadingEl;
+    const empty: HTMLElement = emptyEl;
+    const viewport: HTMLElement = viewportEl;
+    const track: HTMLElement = trackEl;
+
+    const MARQUEE_CARD_COLORS = [
+      "reviews-marquee-card--amber",
+      "reviews-marquee-card--rose",
+      "reviews-marquee-card--sky",
+      "reviews-marquee-card--emerald",
+    ];
+
+    function escapeHtml(s: string) {
+      const div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    function maskAuthorName(name: string | null | undefined) {
+      if (!name?.trim()) return "수강생";
+      const t = name.trim();
+      if (t.length === 1) return t;
+      return t[0] + "*".repeat(t.length - 1);
+    }
+
+    function getTextWithoutImages(html: string | null | undefined) {
+      if (!html?.trim()) return "";
+      let s = html
+        .replace(/<figure[^>]*>[\s\S]*?<\/figure>/gi, "")
+        .replace(/<figcaption[^>]*>[\s\S]*?<\/figcaption>/gi, "")
+        .replace(/<img[^>]*>/gi, "");
+      const div = document.createElement("div");
+      div.innerHTML = s;
+      return (div.textContent || div.innerText || "").trim();
+    }
+
+    function reviewTypeLabel(reviewType: Post["review_type"]) {
+      return reviewType === "snap" ? "스냅 촬영 후기" : "강의 수강 후기";
+    }
+
+    function renderMarqueeCard(post: Post, index: number) {
+      const text = getTextWithoutImages(post.content);
+      const excerpt =
+        text.length > 72 ? `${text.slice(0, 72)}…` : text || "후기를 확인해 보세요.";
+      const color = MARQUEE_CARD_COLORS[index % MARQUEE_CARD_COLORS.length];
+      const typeClass =
+        post.review_type === "snap"
+          ? "reviews-marquee-card__label--snap"
+          : "reviews-marquee-card__label--lecture";
+      return `
+        <article class="reviews-marquee-card ${color}" aria-label="${escapeHtml(reviewTypeLabel(post.review_type))}">
+          <p class="reviews-marquee-card__label ${typeClass}">${reviewTypeLabel(post.review_type)}</p>
+          <h3 class="reviews-marquee-card__title">${escapeHtml(post.title)}</h3>
+          <p class="reviews-marquee-card__excerpt">${escapeHtml(excerpt)}</p>
+          <p class="reviews-marquee-card__meta">${escapeHtml(maskAuthorName(post.author_name))} · ${new Date(post.created_at).toLocaleDateString("ko-KR")}</p>
+        </article>
+      `;
+    }
+
+    function buildMarqueeItems(posts: Post[]) {
+      let items = [...posts];
+      while (items.length < 8) items = items.concat(posts);
+      return items;
+    }
+
+    async function load() {
+      try {
+        const posts = await fetchApprovedReviews();
+        loading.classList.add("hidden");
+
+        if (posts.length === 0) {
+          empty.classList.remove("hidden");
+          return;
+        }
+
+        const items = buildMarqueeItems(posts);
+        const cardsHtml = items.map((p, i) => renderMarqueeCard(p, i)).join("");
+        track.innerHTML = cardsHtml + cardsHtml;
+
+        const duration = Math.max(28, items.length * 7);
+        track.style.setProperty("--marquee-duration", `${duration}s`);
+
+        empty.classList.add("hidden");
+        viewport.classList.remove("hidden");
+      } catch {
+        loading.classList.add("hidden");
+        empty.classList.remove("hidden");
+        const emptyMessage = empty.querySelector("p");
+        if (emptyMessage) {
+          emptyMessage.textContent = "고객 후기를 불러올 수 없습니다.";
+        }
+      }
+    }
+
+    load();
   })();
 
   (function initLectureSignupFab() {
