@@ -322,7 +322,7 @@ import Layout from "../layouts/Layout.astro";
               class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0 lg:text-xl"
               style="animation-delay: 200ms; opacity: 0"
             >
-              최적의 레시피 · 스냅 촬영 기법 · 실사용 심층 리뷰
+              리코 고유의 색감 표현부터 실전 스냅 스킬, 깊이 있는 장비 분석까지
             </p>
             <div
               class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start"
@@ -376,7 +376,7 @@ import Layout from "../layouts/Layout.astro";
               class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
             >
               <iframe
-                src="https://www.youtube.com/embed/jMMTLjQLTWg?rel=0&autoplay=1&mute=1"
+                src="https://www.youtube.com/embed/7BYd6RJp3RY?rel=0&autoplay=1&mute=1"
                 title="올라포토 리코 강의 영상"
                 class="aspect-video w-full min-h-[200px] sm:min-h-[280px]"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -910,13 +910,14 @@ import Layout from "../layouts/Layout.astro";
     bindScrollButtons("youtube-shorts-prev", "youtube-shorts-next", "youtube-shorts-grid");
   })();
 
-  /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID) */
+  /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID, 최신순) */
   const YOUTUBE_LONG_ORDER = [
-    "jMMTLjQLTWg",
-    "c-xvb8f9OHM",
-    "qEP4MaioFPM",
-    "cXfv3-85u6M",
-    "p8K7iu1Rzpo",
+    "U_6FuVf8T74",
+    "DR6TupLRcGc",
+    "rtXw14DrkDQ",
+    "7BYd6RJp3RY",
+    "Z4LFF7hb5XQ",
+    "RBwjl-weU00",
   ];
   function getVideoId(link: string): string | null {
     if (!link || typeof link !== "string") return null;

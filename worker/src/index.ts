@@ -906,17 +906,15 @@ function parseDurationSeconds(duration: string | undefined): number {
 /** 60초 이하 = Shorts (빠르게 보는 장비 팁) */
 const SHORTS_MAX_SECONDS = 60;
 
-/** 첫 번째 섹션(롱폼) 노출 순서 (video ID). 이 순서대로 정렬 후 반환 */
+/** 첫 번째 섹션(롱폼) 노출 순서 (video ID). 최신순 내림차순 */
 const YOUTUBE_LONG_ORDER = [
-  "jMMTLjQLTWg",
-  "c-xvb8f9OHM",
-  "qEP4MaioFPM",
-  "cXfv3-85u6M",
-  "p8K7iu1Rzpo",
+  "U_6FuVf8T74", // GR world로 GR 레시피 더 잘 써버리기
+  "DR6TupLRcGc", // 리코 GR4 스냅모드 3가지 꿀팁
+  "rtXw14DrkDQ", // 리코 GR 레시피 설정법
+  "7BYd6RJp3RY", // 누구나 쉽게 따라하는 GR4 사용법
+  "Z4LFF7hb5XQ", // 리코 GR4 언박싱
+  "RBwjl-weU00", // 리코 GR3 매뉴얼 셋팅의 바이블 1편
 ];
-
-/** 롱폼 검색 키워드: 제목이 '따.라.해' 패턴(따라해 등) 포함 시만 노출 */
-const LONG_FORM_TITLE_KEYWORD = /따.라.해/;
 
 /** 숏츠 검색 키워드: 제목에 '후지필름' 포함 시만 노출 */
 
@@ -1054,7 +1052,6 @@ async function handleYoutubeLatest(
       }>;
     };
     const items = detailsData.items || [];
-    const preferredSet = new Set(YOUTUBE_LONG_ORDER);
     const preferredVideos: YoutubeVideoItem[] = [];
     for (const vid of YOUTUBE_LONG_ORDER) {
       const it = items.find((i) => i.id === vid);
@@ -1062,35 +1059,21 @@ async function handleYoutubeLatest(
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (item && !item.link.includes("/shorts/")) preferredVideos.push(item);
     }
-    const restLong: YoutubeVideoItem[] = [];
     const shortsList: YoutubeVideoItem[] = [];
     for (const it of items) {
       const item = buildVideoItem(it as Parameters<typeof buildVideoItem>[0]);
       if (!item) continue;
       if (item.link.includes("/shorts/")) {
         if (!item.title.includes("[대여]")) shortsList.push(item);
-      } else {
-        const vid = it.id ?? item.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
-        if (
-          vid &&
-          !preferredSet.has(vid) &&
-          LONG_FORM_TITLE_KEYWORD.test(item.title)
-        )
-          restLong.push(item);
       }
     }
-    restLong.sort((a, b) => {
-      const va = parseInt(a.viewCount ?? "0", 10) || 0;
-      const vb = parseInt(b.viewCount ?? "0", 10) || 0;
-      return vb - va;
-    });
     // 쇼츠는 조회수 대신 최신 업로드 순으로 노출
     shortsList.sort((a, b) => {
       const ta = Date.parse(a.publishedAt ?? "") || 0;
       const tb = Date.parse(b.publishedAt ?? "") || 0;
       return tb - ta;
     });
-    const videos = [...preferredVideos, ...restLong].slice(0, 5);
+    const videos = preferredVideos;
     const shortsApiSucceeded = true;
 
     const expiresAt = shortsApiSucceeded
