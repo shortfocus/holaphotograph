@@ -135,6 +135,132 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
+  <!-- 전시 안내 팝업 (GR COLLECTIVE 1ST EXHIBITION) -->
+  <div
+    id="display-promo-popup"
+    class="fixed inset-0 z-[61] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="display-promo-title"
+  >
+    <div
+      class="relative mt-8 flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12"
+    >
+      <div
+        class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#0F172A] p-4"
+      >
+        <h2 id="display-promo-title" class="text-lg font-bold text-white sm:text-xl">
+          전시 안내
+        </h2>
+        <button
+          type="button"
+          id="display-promo-close"
+          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+          aria-label="팝업 닫기"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path></svg
+          >
+        </button>
+      </div>
+      <div
+        id="display-promo-slider"
+        class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+      >
+        <button
+          type="button"
+          id="display-promo-prev"
+          class="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="이전"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button
+          type="button"
+          id="display-promo-next"
+          class="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
+          aria-label="다음"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+        <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+          <div
+            class="display-promo-track flex h-full transition-transform duration-300 ease-out"
+            style="width: 200%; transform: translateX(0);"
+          >
+            <div
+              class="display-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
+            >
+              <div
+                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
+              >
+                <a
+                  href="/notice?id=11"
+                  class="display-promo-image-link flex min-w-0 max-w-full cursor-pointer"
+                  aria-label="GR COLLECTIVE 1ST EXHIBITION 전시 공지 상세로 이동"
+                >
+                  <img
+                    src="/images/display_07/leaflet_front.webp"
+                    alt="GR COLLECTIVE 1ST EXHIBITION · 2026.07.10 - 2026.07.19 · IACO갤러리"
+                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="display-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
+            >
+              <div
+                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
+              >
+                <a
+                  href="/notice?id=11"
+                  class="display-promo-image-link flex min-w-0 max-w-full cursor-pointer"
+                  aria-label="GR COLLECTIVE 1ST EXHIBITION 전시 공지 상세로 이동"
+                >
+                  <img
+                    src="/images/display_07/poster_black.webp"
+                    alt="GR COLLECTIVE 1ST EXHIBITION · 2026.07.10 - 2026.07.19 · 서울 용산 IACO갤러리"
+                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <label
+          class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400"
+        >
+          <input
+            type="checkbox"
+            id="display-promo-dont-show"
+            class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]"
+          />
+          오늘 하루 안 보기
+        </label>
+        <button
+          type="button"
+          id="display-promo-close-btn"
+          class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]"
+        >
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 모집 정보 팝업 (gr_14~gr_15) -->
   <div
     id="gr-promo-popup"
@@ -1266,7 +1392,9 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // GR Collective 팝업: 강의 팝업 닫은 뒤 1회 (오늘 하루 안 보기 가능)
+  let tryShowGrPromo: (() => void) | undefined;
+
+  // GR 모집 팝업 (전시 팝업 닫은 뒤 또는 전시 팝업 미노출 시)
   (function initGrPromoPopup() {
     const STORAGE_KEY = "holaphoto-gr-popup-seen";
     const popup = document.getElementById("gr-promo-popup");
@@ -1313,7 +1441,9 @@ import Layout from "../layouts/Layout.astro";
       hidePopup();
     }
 
-    if (shouldShowPopup()) showPopup();
+    tryShowGrPromo = () => {
+      if (shouldShowPopup()) showPopup();
+    };
 
     closeBtn?.addEventListener("click", close);
     closeBtn2?.addEventListener("click", close);
@@ -1321,6 +1451,103 @@ import Layout from "../layouts/Layout.astro";
       if (e.target === popup) close();
       if ((e.target as Element).closest(".gr-promo-image-link")) hidePopup();
     });
+  })();
+
+  // 전시 안내 팝업: 메인 진입 시 우선 노출 (오늘 하루 안 보기 가능)
+  (function initDisplayPromoPopup() {
+    const STORAGE_KEY = "holaphoto-display-popup-seen";
+    const popup = document.getElementById("display-promo-popup");
+    const closeBtn = document.getElementById("display-promo-close");
+    const closeBtn2 = document.getElementById("display-promo-close-btn");
+    const dontShow = document.getElementById(
+      "display-promo-dont-show",
+    ) as HTMLInputElement | null;
+
+    function hidePopup() {
+      popup?.classList.add("hidden");
+      popup?.classList.remove("flex");
+    }
+
+    function showPopup() {
+      popup?.classList.remove("hidden");
+      popup?.classList.add("flex");
+    }
+
+    function shouldShowPopup(): boolean {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return true;
+        const data = JSON.parse(raw) as { date?: string };
+        if (!data.date) return true;
+        const today = new Date().toDateString();
+        return data.date !== today;
+      } catch {
+        return true;
+      }
+    }
+
+    function setDontShowToday() {
+      try {
+        sessionStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ date: new Date().toDateString() }),
+        );
+      } catch (_) {}
+    }
+
+    function close() {
+      if (dontShow?.checked) setDontShowToday();
+      hidePopup();
+      tryShowGrPromo?.();
+    }
+
+    if (shouldShowPopup()) showPopup();
+    else tryShowGrPromo?.();
+
+    closeBtn?.addEventListener("click", close);
+    closeBtn2?.addEventListener("click", close);
+    popup?.addEventListener("click", (e) => {
+      if (e.target === popup) close();
+      if ((e.target as Element).closest(".display-promo-image-link")) hidePopup();
+    });
+  })();
+
+  // 전시 팝업 내부 슬라이드 (2장: leaflet_front, poster_black)
+  (function initDisplayPromoSlider() {
+    const track = document.querySelector(
+      ".display-promo-track",
+    ) as HTMLElement | null;
+    const total = 2;
+    const step = 100 / 2;
+    let current = 0;
+    const AUTOPLAY_MS = 3000;
+
+    function goTo(i: number) {
+      current = ((i % total) + total) % total;
+      if (track) track.style.transform = `translateX(-${current * step}%)`;
+    }
+
+    const slider = document.getElementById("display-promo-slider");
+    document.getElementById("display-promo-prev")?.addEventListener("click", () => goTo(current - 1));
+    document.getElementById("display-promo-next")?.addEventListener("click", () => goTo(current + 1));
+    let touchStartX = 0;
+    slider?.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = (e as TouchEvent).touches[0].clientX;
+      },
+      { passive: true },
+    );
+    slider?.addEventListener(
+      "touchend",
+      (e) => {
+        const dx = (e as TouchEvent).changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) dx < 0 ? goTo(current + 1) : goTo(current - 1);
+      },
+      { passive: true },
+    );
+
+    setInterval(() => goTo(current + 1), AUTOPLAY_MS);
   })();
 
   // GR 팝업 내부 슬라이드 (2장: gr_14~gr_15, 100/2% 이동)
