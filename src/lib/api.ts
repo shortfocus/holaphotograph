@@ -96,6 +96,7 @@ export interface GalleryPostImage {
   post_id: number;
   image_url: string;
   sort_order: number;
+  photo_settings: string | null;
   created_at: string;
 }
 
@@ -173,6 +174,23 @@ export async function deleteGalleryPost(id: number): Promise<void> {
     const err = (await res.json()) as { error?: string };
     throw new Error(err.error || "Failed to delete gallery post");
   }
+}
+
+export async function updateGalleryImageSettings(
+  id: number,
+  photo_settings: string | null,
+): Promise<GalleryPostImage> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery/images/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ photo_settings }),
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to update gallery image settings");
+  }
+  return res.json();
 }
 
 /** 공지사항 목록 (공개) */

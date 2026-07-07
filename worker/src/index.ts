@@ -55,6 +55,7 @@ interface GalleryPostImage {
   post_id: number;
   image_url: string;
   sort_order: number;
+  photo_settings: string | null;
   created_at: string;
 }
 
@@ -544,6 +545,7 @@ async function handleRequest(
             "GET /api/admin/gallery": "갤러리 글 목록",
             "POST /api/admin/gallery": "갤러리 글 등록 (이미지 여러 장)",
             "PUT /api/admin/gallery/:id": "갤러리 글 수정 (제목·순서·사진 추가)",
+            "PUT /api/admin/gallery/images/:id": "갤러리 이미지 사진 설정 수정",
             "DELETE /api/admin/gallery/:id": "갤러리 글 삭제",
             "GET /api/admin/posts": "리뷰 목록 (전체+status)",
             "GET /api/admin/posts/:id": "리뷰 상세 (pending 포함)",
@@ -648,6 +650,17 @@ async function handleRequest(
       default:
         return errorResponse("Method not allowed", 405, request);
     }
+  }
+
+  // PUT /api/admin/gallery/images/:id - 갤러리 이미지 사진 설정 (관리자 전용)
+  const adminGalleryImageMatch = url.pathname.match(
+    /^\/api\/admin\/gallery\/images\/(\d+)$/,
+  );
+  if (adminGalleryImageMatch && request.method === "PUT") {
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    const imageId = parseInt(adminGalleryImageMatch[1], 10);
+    return handleUpdateGalleryImageSettings(request, env, imageId);
   }
 
   // /api/admin/gallery - 갤러리 CRUD (관리자 전용)
@@ -1939,7 +1952,7 @@ async function loadGalleryPosts(
   if (posts.length === 0) return [];
 
   const { results: imageRows } = await env.DB.prepare(
-    "SELECT id, post_id, image_url, sort_order, created_at FROM gallery_images ORDER BY sort_order ASC, created_at ASC",
+    "SELECT id, post_id, image_url, sort_order, photo_settings, created_at FROM gallery_images ORDER BY sort_order ASC, created_at ASC",
   ).all<GalleryPostImage>();
 
   const origin = new URL(request.url).origin;
@@ -1994,7 +2007,7 @@ async function getGalleryPostById(
   if (!post) return null;
 
   const { results: imageRows } = await env.DB.prepare(
-    "SELECT id, post_id, image_url, sort_order, created_at FROM gallery_images WHERE post_id = ? ORDER BY sort_order ASC, created_at ASC",
+    "SELECT id, post_id, image_url, sort_order, photo_settings, created_at FROM gallery_images WHERE post_id = ? ORDER BY sort_order ASC, created_at ASC",
   )
     .bind(id)
     .all<GalleryPostImage>();
@@ -2192,6 +2205,79 @@ async function handleUpdateGalleryPost(
   const post = await getGalleryPostById(request, env, id);
   if (!post) return errorResponse("Not found", 404, request);
   return jsonResponse(post, 200, request);
+}
+
+function normalizePhotoSettings(value: unknown): string | null {
+  if (value == null) return null;
+  const trimmed = String(value).trim().slice(0, 500);
+  if (!trimmed) return null;
+  if (!/^[\w\s,+\-().]+$/i.test(trimmed)) {
+    throw new Error("INVALID_PHOTO_SETTINGS");
+  }
+  return trimmed;
+}
+
+async function handleUpdateGalleryImageSettings(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+
+  if (body.photo_settings === undefined) {
+    return errorResponse("photo_settings required", 400, request);
+  }
+
+  let photoSettings: string | null;
+  try {
+    photoSettings = normalizePhotoSettings(body.photo_settings);
+  } catch {
+    return errorResponse(
+      "Invalid photo_settings format (e.g. saturation -1, hue +1)",
+      400,
+      request,
+    );
+  }
+
+  const existing = await env.DB.prepare(
+    "SELECT id, post_id FROM gallery_images WHERE id = ?",
+  )
+    .bind(id)
+    .first<{ id: number; post_id: number }>();
+  if (!existing) return errorResponse("Not found", 404, request);
+
+  await env.DB.prepare(
+    "UPDATE gallery_images SET photo_settings = ? WHERE id = ?",
+  )
+    .bind(photoSettings, id)
+    .run();
+
+  const now = new Date().toISOString();
+  await env.DB.prepare("UPDATE gallery_posts SET updated_at = ? WHERE id = ?")
+    .bind(now, existing.post_id)
+    .run();
+
+  const image = await env.DB.prepare(
+    "SELECT id, post_id, image_url, sort_order, photo_settings, created_at FROM gallery_images WHERE id = ?",
+  )
+    .bind(id)
+    .first<GalleryPostImage>();
+  if (!image) return errorResponse("Not found", 404, request);
+
+  const origin = new URL(request.url).origin;
+  return jsonResponse(
+    {
+      ...image,
+      image_url: normalizeImageUrl(image.image_url, origin) ?? image.image_url,
+    },
+    200,
+    request,
+  );
 }
 
 async function handleDeleteGalleryPost(
