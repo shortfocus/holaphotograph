@@ -49,6 +49,24 @@ interface Notice {
   updated_at: string;
 }
 
+/** 갤러리 글에 속한 이미지 */
+interface GalleryPostImage {
+  id: number;
+  post_id: number;
+  image_url: string;
+  sort_order: number;
+  created_at: string;
+}
+
+/** 갤러리 글 (이미지 여러 장) */
+interface GalleryPost {
+  id: number;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+  images: GalleryPostImage[];
+}
+
 /** 리치 텍스트(HTML) XSS 방지: 허용된 태그/속성만 남기고 script·위험 스킴 제거. img의 data: 스킴 제거(대용량 base64 DoS·레거시 XSS 방지) */
 function sanitizeReviewContent(html: string): string {
   return sanitizeHtml(html, {
@@ -200,6 +218,11 @@ function normalizeImageUrl(url: string | null, origin: string): string | null {
   const match = url.match(/^(https?:\/\/[^/]+)(\/api\/images\/.+)$/);
   if (match) return origin + match[2];
   return url;
+}
+
+/** 업로드 응답용 이미지 URL (로컬 http / 프로덕션 https 프로토콜 유지) */
+function buildImageUrl(request: Request, key: string): string {
+  return `${new URL(request.url).origin}/api/images/${key}`;
 }
 
 /** HTML 본문 안의 /api/images/ 이미지 URL을 현재 도메인으로 치환 */
@@ -507,6 +530,7 @@ async function handleRequest(
               "동적 OG HTML (공유 미리보기, title/description/image)",
             "GET /api/notices": "공지사항 목록",
             "GET /api/notices/:id": "공지사항 상세",
+            "GET /api/gallery": "갤러리 글 목록 (이미지 포함)",
             "POST /api/reviews": "고객 후기 제출 (pending 저장)",
             "GET /api/images/:path": "이미지 조회",
           },
@@ -517,6 +541,10 @@ async function handleRequest(
             "POST /api/admin/notices": "공지사항 작성",
             "PUT /api/admin/notices/:id": "공지사항 수정",
             "DELETE /api/admin/notices/:id": "공지사항 삭제",
+            "GET /api/admin/gallery": "갤러리 글 목록",
+            "POST /api/admin/gallery": "갤러리 글 등록 (이미지 여러 장)",
+            "PUT /api/admin/gallery/:id": "갤러리 글 수정 (제목·순서·사진 추가)",
+            "DELETE /api/admin/gallery/:id": "갤러리 글 삭제",
             "GET /api/admin/posts": "리뷰 목록 (전체+status)",
             "GET /api/admin/posts/:id": "리뷰 상세 (pending 포함)",
             "POST /api/admin/posts": "리뷰 작성",
@@ -583,6 +611,11 @@ async function handleRequest(
     return handleReviewImageUpload(request, env);
   }
 
+  // GET /api/gallery - 갤러리 글 목록 (공개)
+  if (url.pathname === "/api/gallery" && request.method === "GET") {
+    return handleListGalleryPosts(request, env);
+  }
+
   // GET /api/notices, GET /api/notices/:id - 공지사항 목록/상세 (공개)
   const noticesMatch = url.pathname.match(/^\/api\/notices(?:\/(\d+))?$/);
   if (noticesMatch && request.method === "GET") {
@@ -617,6 +650,34 @@ async function handleRequest(
     }
   }
 
+  // /api/admin/gallery - 갤러리 CRUD (관리자 전용)
+  const adminGalleryMatch = url.pathname.match(
+    /^\/api\/admin\/gallery(?:\/(\d+))?$/,
+  );
+  if (adminGalleryMatch) {
+    const id = adminGalleryMatch[1]
+      ? parseInt(adminGalleryMatch[1], 10)
+      : null;
+    if (!isAllowedAdmin(request, env))
+      return errorResponse("Unauthorized", 401, request);
+    switch (request.method) {
+      case "GET":
+        if (id) return errorResponse("Method not allowed", 405, request);
+        return handleListGalleryPosts(request, env);
+      case "POST":
+        if (id) return errorResponse("Method not allowed", 405, request);
+        return handleCreateGalleryPost(request, env);
+      case "PUT":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleUpdateGalleryPost(request, env, id);
+      case "DELETE":
+        if (!id) return errorResponse("ID required", 400, request);
+        return handleDeleteGalleryPost(request, env, id);
+      default:
+        return errorResponse("Method not allowed", 405, request);
+    }
+  }
+
   const pathMatch = url.pathname.match(/^\/api\/posts(?:\/(\d+))?$/);
   const adminPostsMatch = url.pathname.match(
     /^\/api\/admin\/posts(?:\/(\d+))?$/,
@@ -635,13 +696,45 @@ async function handleRequest(
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     if (!file) return errorResponse("No file provided", 400, request);
-    const ext = file.name.split(".").pop() || "jpg";
-    const key = `uploads/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    const prefixRaw = String(formData.get("prefix") ?? "uploads").trim();
+    const prefix = prefixRaw === "gallery" ? "gallery" : "uploads";
+    if (prefix === "gallery") {
+      const sizeLimit = 5 * 1024 * 1024;
+      if (file.size > sizeLimit)
+        return errorResponse(
+          "이미지 용량이 너무 큽니다. 5MB 이하로 올려주세요.",
+          400,
+          request,
+        );
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        return errorResponse(
+          "Invalid file type (allowed: jpeg, png, gif, webp)",
+          400,
+          request,
+        );
+      }
+      if (!(await isAllowedImageMagicBytes(file))) {
+        return errorResponse(
+          "Invalid file: not a valid image (jpeg, png, gif, webp)",
+          400,
+          request,
+        );
+      }
+    }
+    const ext = (file.name.split(".").pop() || "jpg")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "jpg");
+    const key = `${prefix}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
     await env.BUCKET.put(key, file.stream(), {
       httpMetadata: { contentType: file.type },
     });
-    const baseUrl = url.origin.replace(/^https?:\/\//, "");
-    const imageUrl = `https://${baseUrl}/api/images/${key}`;
+    const imageUrl = buildImageUrl(request, key);
     return jsonResponse({ url: imageUrl, key }, 200, request);
   }
 
@@ -1393,8 +1486,7 @@ async function handleReviewImageUpload(
   await env.BUCKET.put(key, file.stream(), {
     httpMetadata: { contentType: file.type },
   });
-  const baseUrl = new URL(request.url).origin.replace(/^https?:\/\//, "");
-  const imageUrl = `https://${baseUrl}/api/images/${key}`;
+  const imageUrl = buildImageUrl(request, key);
   return jsonResponse({ url: imageUrl, key }, 200, request);
 }
 
@@ -1819,6 +1911,326 @@ async function handleDeleteNotice(
   const result = await env.DB.prepare("DELETE FROM notices WHERE id = ?")
     .bind(id)
     .run();
+  if (result.meta.changes === 0)
+    return errorResponse("Not found", 404, request);
+  return jsonResponse({ success: true }, 200, request);
+}
+
+// --- 갤러리 (gallery_posts + gallery_images) ---
+
+function extractR2KeyFromImageUrl(imageUrl: string): string | null {
+  const m = imageUrl.match(/\/api\/images\/([^?#]+)/);
+  if (!m) return null;
+  try {
+    return decodeURIComponent(m[1]);
+  } catch {
+    return m[1];
+  }
+}
+
+async function loadGalleryPosts(
+  request: Request,
+  env: Env,
+): Promise<GalleryPost[]> {
+  const { results: posts } = await env.DB.prepare(
+    "SELECT id, title, created_at, updated_at FROM gallery_posts ORDER BY created_at DESC",
+  ).all<Omit<GalleryPost, "images">>();
+
+  if (posts.length === 0) return [];
+
+  const { results: imageRows } = await env.DB.prepare(
+    "SELECT id, post_id, image_url, sort_order, created_at FROM gallery_images ORDER BY sort_order ASC, created_at ASC",
+  ).all<GalleryPostImage>();
+
+  const origin = new URL(request.url).origin;
+  const byPost = new Map<number, GalleryPostImage[]>();
+  for (const row of imageRows) {
+    const list = byPost.get(row.post_id) ?? [];
+    list.push({
+      ...row,
+      image_url: normalizeImageUrl(row.image_url, origin) ?? row.image_url,
+    });
+    byPost.set(row.post_id, list);
+  }
+
+  return posts
+    .map((post) => ({
+      ...post,
+      images: byPost.get(post.id) ?? [],
+    }))
+    .filter((post) => post.images.length > 0);
+}
+
+async function handleListGalleryPosts(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  try {
+    const posts = await loadGalleryPosts(request, env);
+    return jsonResponse({ posts }, 200, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: gallery tables not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request,
+      );
+    }
+    throw err;
+  }
+}
+
+async function getGalleryPostById(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<GalleryPost | null> {
+  const post = await env.DB.prepare(
+    "SELECT id, title, created_at, updated_at FROM gallery_posts WHERE id = ?",
+  )
+    .bind(id)
+    .first<Omit<GalleryPost, "images">>();
+  if (!post) return null;
+
+  const { results: imageRows } = await env.DB.prepare(
+    "SELECT id, post_id, image_url, sort_order, created_at FROM gallery_images WHERE post_id = ? ORDER BY sort_order ASC, created_at ASC",
+  )
+    .bind(id)
+    .all<GalleryPostImage>();
+
+  const origin = new URL(request.url).origin;
+  return {
+    ...post,
+    images: imageRows.map((row) => ({
+      ...row,
+      image_url: normalizeImageUrl(row.image_url, origin) ?? row.image_url,
+    })),
+  };
+}
+
+async function handleCreateGalleryPost(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+
+  const title =
+    body.title != null ? String(body.title).trim().slice(0, 200) || null : null;
+  const rawUrls = Array.isArray(body.image_urls) ? body.image_urls : [];
+  const imageUrls = rawUrls
+    .map((u) => String(u ?? "").trim())
+    .filter((u) => u.length > 0);
+
+  if (imageUrls.length === 0)
+    return errorResponse("image_urls required (at least one)", 400, request);
+
+  for (const imageUrl of imageUrls) {
+    if (!extractR2KeyFromImageUrl(imageUrl))
+      return errorResponse("Invalid image_url in image_urls", 400, request);
+  }
+
+  try {
+    const now = new Date().toISOString();
+    const result = await env.DB.prepare(
+      "INSERT INTO gallery_posts (title, created_at, updated_at) VALUES (?, ?, ?)",
+    )
+      .bind(title, now, now)
+      .run();
+    const postId = result.meta.last_row_id as number;
+
+    for (let i = 0; i < imageUrls.length; i++) {
+      await env.DB.prepare(
+        "INSERT INTO gallery_images (post_id, image_url, sort_order, created_at) VALUES (?, ?, ?, ?)",
+      )
+        .bind(postId, imageUrls[i], i, now)
+        .run();
+    }
+
+    const post = await getGalleryPostById(request, env, postId);
+    if (!post)
+      return errorResponse("Failed to fetch created gallery post", 500, request);
+    return jsonResponse(post, 201, request);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.error("createGalleryPost", { msg, err: String(err) });
+    if (msg.includes("no such table") || msg.includes("SQLITE_ERROR")) {
+      return errorResponse(
+        "Database error: gallery tables not found. Run: cd worker && npm run db:migrate:remote",
+        500,
+        request,
+      );
+    }
+    return errorResponse("Failed to create gallery post", 500, request);
+  }
+}
+
+async function handleUpdateGalleryPost(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return errorResponse("Invalid JSON body", 400, request);
+  }
+
+  const title =
+    body.title !== undefined
+      ? String(body.title ?? "").trim().slice(0, 200) || null
+      : undefined;
+
+  let imageIds: number[] | undefined;
+  if (body.image_ids !== undefined) {
+    if (!Array.isArray(body.image_ids)) {
+      return errorResponse("image_ids must be an array", 400, request);
+    }
+    imageIds = body.image_ids.map((raw) => Number(raw)).filter((n) => Number.isFinite(n));
+  }
+
+  let addImageUrls: string[] | undefined;
+  if (body.add_image_urls !== undefined) {
+    if (!Array.isArray(body.add_image_urls)) {
+      return errorResponse("add_image_urls must be an array", 400, request);
+    }
+    addImageUrls = body.add_image_urls
+      .map((u) => String(u ?? "").trim())
+      .filter((u) => u.length > 0);
+  }
+
+  const existing = await env.DB.prepare(
+    "SELECT id FROM gallery_posts WHERE id = ?",
+  )
+    .bind(id)
+    .first<{ id: number }>();
+  if (!existing) return errorResponse("Not found", 404, request);
+
+  if (title === undefined && imageIds === undefined && addImageUrls === undefined)
+    return errorResponse("No fields to update", 400, request);
+
+  const now = new Date().toISOString();
+
+  if (addImageUrls !== undefined) {
+    if (addImageUrls.length === 0) {
+      return errorResponse("add_image_urls must not be empty", 400, request);
+    }
+    for (const imageUrl of addImageUrls) {
+      if (!extractR2KeyFromImageUrl(imageUrl)) {
+        return errorResponse("Invalid image_url in add_image_urls", 400, request);
+      }
+    }
+
+    const maxRow = await env.DB.prepare(
+      "SELECT COALESCE(MAX(sort_order), -1) AS max_sort FROM gallery_images WHERE post_id = ?",
+    )
+      .bind(id)
+      .first<{ max_sort: number }>();
+    let nextSort = (maxRow?.max_sort ?? -1) + 1;
+
+    for (const imageUrl of addImageUrls) {
+      await env.DB.prepare(
+        "INSERT INTO gallery_images (post_id, image_url, sort_order, created_at) VALUES (?, ?, ?, ?)",
+      )
+        .bind(id, imageUrl, nextSort, now)
+        .run();
+      nextSort++;
+    }
+
+    await env.DB.prepare("UPDATE gallery_posts SET updated_at = ? WHERE id = ?")
+      .bind(now, id)
+      .run();
+  }
+
+  if (imageIds !== undefined) {
+    const { results: postImages } = await env.DB.prepare(
+      "SELECT id FROM gallery_images WHERE post_id = ?",
+    )
+      .bind(id)
+      .all<{ id: number }>();
+
+    if (imageIds.length !== postImages.length) {
+      return errorResponse("image_ids must include all images in the post", 400, request);
+    }
+
+    const allowed = new Set(postImages.map((row) => row.id));
+    const seen = new Set<number>();
+    for (const imageId of imageIds) {
+      if (!allowed.has(imageId) || seen.has(imageId)) {
+        return errorResponse("Invalid image_ids", 400, request);
+      }
+      seen.add(imageId);
+    }
+
+    for (let i = 0; i < imageIds.length; i++) {
+      await env.DB.prepare(
+        "UPDATE gallery_images SET sort_order = ? WHERE id = ? AND post_id = ?",
+      )
+        .bind(i, imageIds[i], id)
+        .run();
+    }
+
+    await env.DB.prepare("UPDATE gallery_posts SET updated_at = ? WHERE id = ?")
+      .bind(now, id)
+      .run();
+  }
+
+  if (title !== undefined) {
+    await env.DB.prepare(
+      "UPDATE gallery_posts SET title = ?, updated_at = ? WHERE id = ?",
+    )
+      .bind(title, now, id)
+      .run();
+  }
+
+  const post = await getGalleryPostById(request, env, id);
+  if (!post) return errorResponse("Not found", 404, request);
+  return jsonResponse(post, 200, request);
+}
+
+async function handleDeleteGalleryPost(
+  request: Request,
+  env: Env,
+  id: number,
+): Promise<Response> {
+  const { results: images } = await env.DB.prepare(
+    "SELECT image_url FROM gallery_images WHERE post_id = ?",
+  )
+    .bind(id)
+    .all<{ image_url: string }>();
+
+  if (images.length === 0) {
+    const post = await env.DB.prepare(
+      "SELECT id FROM gallery_posts WHERE id = ?",
+    )
+      .bind(id)
+      .first<{ id: number }>();
+    if (!post) return errorResponse("Not found", 404, request);
+  }
+
+  for (const row of images) {
+    const key = extractR2KeyFromImageUrl(row.image_url);
+    if (!key) continue;
+    try {
+      await env.BUCKET.delete(key);
+    } catch {
+      // R2 삭제 실패해도 DB 레코드는 제거
+    }
+  }
+
+  await env.DB.prepare("DELETE FROM gallery_images WHERE post_id = ?")
+    .bind(id)
+    .run();
+  const result = await env.DB.prepare("DELETE FROM gallery_posts WHERE id = ?")
+    .bind(id)
+    .run();
+
   if (result.meta.changes === 0)
     return errorResponse("Not found", 404, request);
   return jsonResponse({ success: true }, 200, request);

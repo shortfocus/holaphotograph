@@ -1,0 +1,230 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="작가 갤러리 - 올라포토" headerOpaque hideLectureBar>
+  <div
+    class="min-h-screen bg-[#F8FAFC] px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:pt-28 sm:pb-20"
+  >
+    <div class="mx-auto max-w-6xl">
+      <h1 class="text-2xl font-bold text-[#111827] sm:text-3xl">작가 갤러리</h1>
+
+      <div
+        id="gallery-grid"
+        class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+      >
+        <p class="col-span-full py-12 text-center text-slate-500">로딩 중...</p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="gallery-lightbox"
+    class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-label="갤러리 보기"
+  >
+    <button
+      type="button"
+      id="gallery-lightbox-close"
+      class="absolute right-4 top-4 z-10 cursor-pointer rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+      aria-label="닫기"
+    >
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"></path></svg
+      >
+    </button>
+
+    <button
+      type="button"
+      id="gallery-lightbox-prev"
+      class="absolute left-2 top-1/2 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:left-4"
+      aria-label="이전"
+    >
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"
+        ></path></svg
+      >
+    </button>
+
+    <button
+      type="button"
+      id="gallery-lightbox-next"
+      class="absolute right-2 top-1/2 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:right-4"
+      aria-label="다음"
+    >
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"
+        ></path></svg
+      >
+    </button>
+
+    <figure class="flex max-h-[85vh] max-w-5xl flex-col items-center px-10">
+      <img
+        id="gallery-lightbox-img"
+        src=""
+        alt=""
+        class="max-h-[72vh] w-auto max-w-full rounded-lg object-contain"
+      />
+      <figcaption class="mt-3 flex flex-col items-center gap-1 text-center">
+        <span id="gallery-lightbox-caption" class="text-sm text-white/90"></span>
+        <span id="gallery-lightbox-counter" class="text-xs text-white/60"></span>
+      </figcaption>
+    </figure>
+  </div>
+</Layout>
+
+<script>
+  import { fetchGalleryPosts, type GalleryPost } from "../../lib/api";
+
+  const gridEl = document.getElementById("gallery-grid")!;
+  const lightbox = document.getElementById("gallery-lightbox")!;
+  const lightboxImg = document.getElementById(
+    "gallery-lightbox-img",
+  ) as HTMLImageElement;
+  const lightboxCaption = document.getElementById("gallery-lightbox-caption")!;
+  const lightboxCounter = document.getElementById("gallery-lightbox-counter")!;
+  const lightboxClose = document.getElementById("gallery-lightbox-close")!;
+  const lightboxPrev = document.getElementById("gallery-lightbox-prev")!;
+  const lightboxNext = document.getElementById("gallery-lightbox-next")!;
+
+  let activePost: GalleryPost | null = null;
+  let activeIndex = 0;
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function renderLightboxSlide() {
+    if (!activePost?.images.length) return;
+    const image = activePost.images[activeIndex];
+    lightboxImg.src = image.image_url;
+    lightboxImg.alt = activePost.title || "갤러리 이미지";
+
+    const title = activePost.title?.trim() || "";
+    lightboxCaption.textContent = title;
+    lightboxCaption.classList.toggle("hidden", !title);
+
+    const total = activePost.images.length;
+    lightboxCounter.textContent = total > 1 ? `${activeIndex + 1} / ${total}` : "";
+    lightboxCounter.classList.toggle("hidden", total <= 1);
+
+    const showNav = total > 1;
+    lightboxPrev.classList.toggle("hidden", !showNav);
+    lightboxNext.classList.toggle("hidden", !showNav);
+  }
+
+  function openLightbox(post: GalleryPost, startIndex = 0) {
+    if (!post.images.length) return;
+    activePost = post;
+    activeIndex = Math.min(Math.max(startIndex, 0), post.images.length - 1);
+    renderLightboxSlide();
+    lightbox.classList.remove("hidden");
+    lightbox.classList.add("flex");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    lightbox.classList.add("hidden");
+    lightbox.classList.remove("flex");
+    lightboxImg.src = "";
+    activePost = null;
+    activeIndex = 0;
+    document.body.style.overflow = "";
+  }
+
+  function showPrev() {
+    if (!activePost || activePost.images.length <= 1) return;
+    activeIndex =
+      (activeIndex - 1 + activePost.images.length) % activePost.images.length;
+    renderLightboxSlide();
+  }
+
+  function showNext() {
+    if (!activePost || activePost.images.length <= 1) return;
+    activeIndex = (activeIndex + 1) % activePost.images.length;
+    renderLightboxSlide();
+  }
+
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightboxPrev.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showPrev();
+  });
+  lightboxNext.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showNext();
+  });
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!lightbox.classList.contains("flex")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") showPrev();
+    if (e.key === "ArrowRight") showNext();
+  });
+
+  async function loadGallery() {
+    try {
+      const posts = await fetchGalleryPosts();
+      if (posts.length === 0) {
+        gridEl.innerHTML =
+          '<p class="col-span-full py-12 text-center text-slate-500">아직 등록된 사진이 없습니다.</p>';
+        return;
+      }
+
+      gridEl.innerHTML = posts
+        .map((post) => {
+          const cover = post.images[0];
+          const count = post.images.length;
+          return `
+        <button
+          type="button"
+          class="gallery-item group relative aspect-square cursor-pointer overflow-hidden rounded-xl bg-slate-200 ring-1 ring-slate-200 transition hover:ring-[#E11D48]/40 focus:outline-none focus:ring-2 focus:ring-[#E11D48]"
+          data-id="${post.id}"
+        >
+          <img
+            src="${escapeHtml(cover.image_url)}"
+            alt="${escapeHtml(post.title || "갤러리")}"
+            class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+          ${
+            count > 1
+              ? `<span class="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">${count}</span>`
+              : ""
+          }
+          ${
+            post.title
+              ? `<span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2 text-left text-xs font-medium text-white sm:text-sm">${escapeHtml(post.title)}</span>`
+              : ""
+          }
+        </button>
+      `;
+        })
+        .join("");
+
+      const postMap = new Map(posts.map((post) => [String(post.id), post]));
+      gridEl.querySelectorAll(".gallery-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = (btn as HTMLElement).dataset.id;
+          const post = id ? postMap.get(id) : undefined;
+          if (post) openLightbox(post, 0);
+        });
+      });
+    } catch {
+      gridEl.innerHTML =
+        '<p class="col-span-full py-12 text-center text-[#E11D48]">갤러리를 불러오지 못했습니다.</p>';
+    }
+  }
+
+  loadGallery();
+</script>

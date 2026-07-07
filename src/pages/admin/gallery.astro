@@ -1,0 +1,428 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="관리자 - 작가 갤러리" headerOpaque hideFooter adminFrame>
+  <div class="w-full min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">작가 갤러리</h1>
+    </div>
+
+    <div
+      id="gallery-dropzone"
+      class="mb-2 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white px-6 py-10 text-center transition-colors hover:border-red-300 hover:bg-red-50/30"
+      role="button"
+      tabindex="0"
+      aria-label="이미지 업로드"
+    >
+      <input
+        type="file"
+        id="gallery-file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        multiple
+        class="sr-only"
+      />
+      <p class="text-sm font-medium text-gray-700">클릭하거나 파일을 놓으세요</p>
+      <p class="mt-1 text-xs text-gray-400">
+        한 번에 올린 사진은 하나의 글로 묶입니다 · jpeg, png, gif, webp · 5MB
+      </p>
+    </div>
+    <p id="gallery-upload-status" class="mb-8 min-h-5 text-sm text-gray-500" aria-live="polite"></p>
+
+    <section>
+      <h2 class="mb-4 text-lg font-semibold text-gray-900">목록</h2>
+      <div id="gallery-admin-list" class="space-y-4">
+        <p class="text-gray-500">로딩 중...</p>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import {
+    createGalleryPost,
+    deleteGalleryPost,
+    fetchGalleryPostsForAdmin,
+    updateGalleryPost,
+    uploadGalleryImage,
+    type GalleryPost,
+  } from "../../lib/api";
+
+  const dropzone = document.getElementById("gallery-dropzone")!;
+  const fileInput = document.getElementById("gallery-file") as HTMLInputElement;
+  const statusEl = document.getElementById("gallery-upload-status")!;
+  const listEl = document.getElementById("gallery-admin-list")!;
+
+  let uploading = false;
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function getImageFiles(files: FileList | File[]): File[] {
+    return Array.from(files).filter((file) => file.type.startsWith("image/"));
+  }
+
+  function initAddDropzone(
+    addLabel: HTMLElement,
+    postId: number,
+    addInput: HTMLInputElement,
+    postStatus: HTMLElement | null,
+  ) {
+    const highlight = () => {
+      addLabel.classList.add("border-red-400", "bg-red-50/50", "text-red-600");
+    };
+    const reset = () => {
+      addLabel.classList.remove("border-red-400", "bg-red-50/50", "text-red-600");
+    };
+
+    addLabel.addEventListener("dragover", (e) => {
+      if (!e.dataTransfer?.types.includes("Files")) return;
+      e.preventDefault();
+      e.stopPropagation();
+      highlight();
+    });
+    addLabel.addEventListener("dragleave", (e) => {
+      if (addLabel.contains(e.relatedTarget as Node)) return;
+      reset();
+    });
+    addLabel.addEventListener("drop", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      reset();
+      const files = getImageFiles(e.dataTransfer?.files ?? []);
+      if (files.length) void addImagesToPost(postId, files, postStatus, addInput);
+    });
+  }
+
+  function openFilePicker() {
+    if (!uploading) fileInput.click();
+  }
+
+  dropzone.addEventListener("click", openFilePicker);
+  dropzone.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openFilePicker();
+    }
+  });
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("border-red-400", "bg-red-50/50");
+  });
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("border-red-400", "bg-red-50/50");
+  });
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("border-red-400", "bg-red-50/50");
+    const files = e.dataTransfer?.files;
+    if (files?.length) void uploadFiles(getImageFiles(files));
+  });
+
+  fileInput.addEventListener("change", () => {
+    const files = fileInput.files;
+    if (files?.length) void uploadFiles(Array.from(files));
+    fileInput.value = "";
+  });
+
+  async function uploadFiles(fileList: File[]) {
+    if (uploading || !fileList.length) return;
+
+    uploading = true;
+    dropzone.classList.add("pointer-events-none", "opacity-60");
+    statusEl.className = "mb-8 min-h-5 text-sm text-gray-500";
+
+    const imageUrls: string[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      statusEl.textContent = `업로드 ${i + 1}/${fileList.length}…`;
+      try {
+        const uploaded = await uploadGalleryImage(fileList[i]);
+        imageUrls.push(uploaded.url);
+      } catch (err) {
+        errors.push(`${fileList[i].name}: ${(err as Error).message}`);
+      }
+    }
+
+    if (imageUrls.length > 0) {
+      try {
+        statusEl.textContent = "등록 중…";
+        await createGalleryPost({ image_urls: imageUrls });
+        statusEl.textContent =
+          errors.length > 0
+            ? `${imageUrls.length}장 등록 · ${errors.join(" / ")}`
+            : imageUrls.length === 1
+              ? "완료"
+              : `${imageUrls.length}장 완료`;
+        statusEl.className =
+          errors.length > 0
+            ? "mb-8 min-h-5 text-sm text-amber-600"
+            : "mb-8 min-h-5 text-sm text-green-600";
+        await loadGallery();
+      } catch (err) {
+        statusEl.textContent = (err as Error).message;
+        statusEl.className = "mb-8 min-h-5 text-sm text-red-600";
+      }
+    } else {
+      statusEl.textContent = errors[0] ?? "실패";
+      statusEl.className = "mb-8 min-h-5 text-sm text-red-600";
+    }
+
+    uploading = false;
+    dropzone.classList.remove("pointer-events-none", "opacity-60");
+  }
+
+  async function loadGallery() {
+    try {
+      const posts = await fetchGalleryPostsForAdmin();
+      if (posts.length === 0) {
+        listEl.innerHTML = '<p class="text-gray-500">없음</p>';
+        return;
+      }
+
+      listEl.innerHTML = posts
+        .map(
+          (post: GalleryPost) => `
+        <article class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm" data-id="${post.id}">
+          <div class="mb-3 flex items-start justify-between gap-3">
+            <input
+              type="text"
+              class="gallery-title-input min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-1 text-sm font-medium text-gray-900 placeholder:text-gray-400 hover:border-gray-200 focus:border-gray-300 focus:outline-none"
+              value="${escapeHtml(post.title || "")}"
+              placeholder="제목 (선택)"
+              maxlength="200"
+            />
+            <button
+              type="button"
+              class="gallery-delete-btn shrink-0 cursor-pointer rounded bg-red-50 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+            >삭제</button>
+          </div>
+          <div class="flex items-stretch gap-3">
+            <div
+              class="gallery-sort-row flex min-w-0 flex-1 gap-3 overflow-x-auto pb-2"
+              data-post-id="${post.id}"
+            >
+              ${post.images
+                .map(
+                  (img) => `
+                <div
+                  class="gallery-sort-item aspect-square w-36 shrink-0 overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-200 sm:w-44 md:w-48 ${post.images.length > 1 ? "cursor-grab active:cursor-grabbing" : ""}"
+                  data-image-id="${img.id}"
+                  draggable="${post.images.length > 1 ? "true" : "false"}"
+                >
+                  <img src="${escapeHtml(img.image_url)}" alt="" class="pointer-events-none h-full w-full object-cover select-none" loading="lazy" draggable="false" />
+                </div>
+              `,
+                )
+                .join("")}
+            </div>
+            <label
+              class="gallery-add-item flex aspect-square w-36 shrink-0 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition-colors hover:border-red-300 hover:bg-red-50/40 hover:text-red-600 sm:w-44 md:w-48"
+            >
+              <input
+                type="file"
+                class="gallery-add-input sr-only"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                multiple
+              />
+              <span class="text-2xl leading-none">+</span>
+              <span class="mt-1 text-xs">추가</span>
+              <span class="mt-0.5 text-[10px] text-gray-400">또는 놓기</span>
+            </label>
+          </div>
+          <p class="gallery-post-status mt-2 hidden min-h-5 text-xs" aria-live="polite"></p>
+          ${
+            post.images.length > 1
+              ? `<p class="mt-1 text-xs text-gray-400">사진을 드래그해 순서를 변경할 수 있습니다.</p>`
+              : ""
+          }
+        </article>
+      `,
+        )
+        .join("");
+
+      listEl.querySelectorAll("article").forEach((card) => {
+        const id = Number((card as HTMLElement).dataset.id);
+        const titleEl = card.querySelector(
+          ".gallery-title-input",
+        ) as HTMLInputElement;
+        let lastTitle = titleEl.value.trim();
+
+        titleEl.addEventListener("blur", async () => {
+          const next = titleEl.value.trim();
+          if (next === lastTitle) return;
+          try {
+            await updateGalleryPost(id, { title: next || null });
+            lastTitle = next;
+          } catch (err) {
+            alert((err as Error).message);
+            titleEl.value = lastTitle;
+          }
+        });
+
+        card.querySelector(".gallery-delete-btn")?.addEventListener("click", async () => {
+          if (!confirm("삭제할까요?")) return;
+          try {
+            await deleteGalleryPost(id);
+            await loadGallery();
+          } catch (err) {
+            alert((err as Error).message);
+          }
+        });
+
+        const sortRow = card.querySelector(".gallery-sort-row") as HTMLElement | null;
+        if (sortRow && sortRow.querySelectorAll(".gallery-sort-item").length > 1) {
+          initImageSortable(sortRow, id);
+        }
+
+        const addLabel = card.querySelector(".gallery-add-item") as HTMLElement | null;
+        const addInput = card.querySelector(
+          ".gallery-add-input",
+        ) as HTMLInputElement | null;
+        const postStatus = card.querySelector(".gallery-post-status") as HTMLElement | null;
+        if (addLabel && addInput) {
+          addInput.addEventListener("change", () => {
+            const files = addInput.files;
+            if (files?.length) {
+              void addImagesToPost(id, getImageFiles(files), postStatus, addInput);
+            }
+          });
+          initAddDropzone(addLabel, id, addInput, postStatus);
+        }
+      });
+    } catch {
+      listEl.innerHTML =
+        '<p class="text-red-500">목록을 불러오지 못했습니다.</p>';
+    }
+  }
+
+  function getDragAfterElement(row: HTMLElement, x: number): HTMLElement | null {
+    const items = [
+      ...row.querySelectorAll<HTMLElement>(".gallery-sort-item:not(.is-dragging)"),
+    ];
+    let closest: { offset: number; element: HTMLElement } | null = null;
+    for (const child of items) {
+      const box = child.getBoundingClientRect();
+      const offset = x - box.left - box.width / 2;
+      if (offset < 0 && (!closest || offset > closest.offset)) {
+        closest = { offset, element: child };
+      }
+    }
+    return closest?.element ?? null;
+  }
+
+  function initImageSortable(row: HTMLElement, postId: number) {
+    let dragEl: HTMLElement | null = null;
+    let saving = false;
+
+    row.querySelectorAll<HTMLElement>(".gallery-sort-item").forEach((item) => {
+      item.addEventListener("dragstart", () => {
+        dragEl = item;
+        item.classList.add("is-dragging", "opacity-50", "ring-2", "ring-red-400");
+      });
+      item.addEventListener("dragend", () => {
+        item.classList.remove("is-dragging", "opacity-50", "ring-2", "ring-red-400");
+        dragEl = null;
+      });
+    });
+
+    row.addEventListener("dragover", (e) => {
+      if (!dragEl) return;
+      e.preventDefault();
+      const after = getDragAfterElement(row, e.clientX);
+      if (after == null) {
+        row.appendChild(dragEl);
+      } else {
+        row.insertBefore(dragEl, after);
+      }
+    });
+
+    row.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      if (!dragEl || saving) return;
+
+      const imageIds = [...row.querySelectorAll<HTMLElement>(".gallery-sort-item")].map(
+        (el) => Number(el.dataset.imageId),
+      );
+
+      saving = true;
+      row.classList.add("opacity-60", "pointer-events-none");
+      try {
+        await updateGalleryPost(postId, { image_ids: imageIds });
+      } catch (err) {
+        alert((err as Error).message);
+        await loadGallery();
+      } finally {
+        saving = false;
+        row.classList.remove("opacity-60", "pointer-events-none");
+      }
+    });
+  }
+
+  async function addImagesToPost(
+    postId: number,
+    fileList: File[],
+    statusEl: HTMLElement | null,
+    input: HTMLInputElement,
+  ) {
+    if (!fileList.length || uploading) return;
+
+    uploading = true;
+    if (statusEl) {
+      statusEl.classList.remove("hidden");
+      statusEl.className = "gallery-post-status mt-2 min-h-5 text-xs text-gray-500";
+    }
+
+    const imageUrls: string[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      if (statusEl) statusEl.textContent = `업로드 ${i + 1}/${fileList.length}…`;
+      try {
+        const uploaded = await uploadGalleryImage(fileList[i]);
+        imageUrls.push(uploaded.url);
+      } catch (err) {
+        errors.push(`${fileList[i].name}: ${(err as Error).message}`);
+      }
+    }
+
+    input.value = "";
+
+    if (imageUrls.length > 0) {
+      try {
+        if (statusEl) statusEl.textContent = "등록 중…";
+        await updateGalleryPost(postId, { add_image_urls: imageUrls });
+        if (statusEl) {
+          statusEl.textContent =
+            errors.length > 0
+              ? `${imageUrls.length}장 추가 · ${errors.join(" / ")}`
+              : imageUrls.length === 1
+                ? "추가 완료"
+                : `${imageUrls.length}장 추가 완료`;
+          statusEl.className =
+            errors.length > 0
+              ? "gallery-post-status mt-2 min-h-5 text-xs text-amber-600"
+              : "gallery-post-status mt-2 min-h-5 text-xs text-green-600";
+        }
+        await loadGallery();
+      } catch (err) {
+        if (statusEl) {
+          statusEl.textContent = (err as Error).message;
+          statusEl.className = "gallery-post-status mt-2 min-h-5 text-xs text-red-600";
+        }
+      }
+    } else if (statusEl) {
+      statusEl.textContent = errors[0] ?? "실패";
+      statusEl.className = "gallery-post-status mt-2 min-h-5 text-xs text-red-600";
+    }
+
+    uploading = false;
+  }
+
+  loadGallery();
+</script>
