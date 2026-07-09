@@ -1,18 +1,19 @@
 # 사이트 개선·고도화 계획 (2026-07)
 
 **작성일:** 2026년 7월 3일  
-**최종 업데이트:** 2026년 7월 7일  
+**최종 업데이트:** 2026년 7월 9일  
 **근거:** 고객 미팅 피드백 정리  
 **목표:** 브랜드 포지셔닝을 **「리코 GR 전문 강사·콘텐츠」** 중심으로 재정렬
 
-### 브랜치·배포 전략 (2026-07-07)
+### 브랜치·배포 전략 (2026-07-09)
 
 | 브랜치 | 상태 | 비고 |
 |--------|------|------|
 | `main` | 프로덕션 배포됨 | 긴급 핫픽스만 반영 (전시 팝업 등) |
-| `feature/site-improvement-2026-07` | 커밋·푸시 완료, **main 미머지** | 사이트 개선 작업 대부분 포함 |
+| `feature/site-improvement-2026-07` | 커밋·푸시 완료, **main 미머지** | 사이트 개선 + 작가 갤러리 MVP 포함 |
 
 - **전시 팝업·갤러리 분리:** 전시 안내 팝업은 영향도가 적어 `main`에 먼저 배포 완료. 갤러리 등 대규모 기능은 feature 브랜치에서 개발 후 최종 main 머지 예정.
+- **고객 사전 공유:** Worker/DB 변경이 있어 Pages 프리뷰만으로는 부족. 당장은 **ngrok 로컬 터널**로 공유 가능. 상세는 `docs/DEPLOY.md` 「main 머지 전 — 고객 공유용 테스트 환경」.
 
 ### 진행 현황 — `main` (배포됨)
 
@@ -37,13 +38,15 @@
 | 플로팅 바 브랜드 선택 (리코/후지/소니) | ✅ | `33901aa` — DB 마이그레이션 `0012` |
 | 관리자 강의 신청 xlsx + 관심 브랜드 | ✅ | `a5e38b8` |
 | 히어로 배경 고해상도 이미지 | ⏳ | 고객 에셋 수령 후 `hero-bg/` 교체 |
-| 작가 갤러리 | ❌ 미착수 | 다음 큰 작업 (P2) |
-| feature → main 머지 & 배포 | ❌ 미완료 | Worker 배포 + DB `0012` 프로덕션 적용 필요 |
+| 작가 갤러리 MVP | ✅ | `29996cd` — 글 단위 다중 이미지, `/gallery`·`/admin/gallery` |
+| 갤러리 사진별 설정 태그 + WebP 변환 | ✅ | `cf1d36d` — 마이그레이션 `0015`, 관리자 팝업 태그 입력 |
+| 갤러리 상세 설정 토글 패널 | ✅ | `d1447e0` — 사진 우측 리스트, 정보 아이콘 토글 |
+| feature → main 머지 & 배포 | ❌ 미완료 | Worker + DB `0012`~`0015` 프로덕션 적용 필요 |
 
 ### 남은 작업 요약 (우선순위)
 
-1. **작가 갤러리 MVP** (feature 브랜치) — 메뉴, `/gallery`, `/admin/gallery`, DB·API·R2
-2. **feature → main 머지 & 배포** — Worker(`YOUTUBE_LONG_ORDER`, `interest_brand`), 마이그레이션 `0012`
+1. **고객 사전 공유 (선택)** — ngrok으로 feature 로컬 환경 공유 (`docs/DEPLOY.md` 참고). 장기적으로는 staging Worker/D1 검토
+2. **feature → main 머지 & 배포** — Worker, 마이그레이션 `0012`~`0015`, Pages
 3. **히어로 배경 고해상도** — 고객 에셋 수령 시
 4. **숏폼 → Instagram API** (P3, 추후)
 5. **리코 행사 데이터 연동** (P4, 추후)
@@ -86,6 +89,7 @@
 | API 클라이언트 | `src/lib/api.ts` |
 | Worker (YouTube, 강의신청, 리뷰) | `worker/src/index.ts` |
 | 수강생 후기 | `src/pages/reviews/index.astro` |
+| 작가 갤러리 | `src/pages/gallery/index.astro`, `src/pages/admin/gallery.astro` |
 | 관리자 강의 신청 | `src/pages/admin/lecture-signups.astro` |
 
 ---
@@ -300,12 +304,13 @@ Phase 2 브랜드 컬럼 반영 후 함께 배포 권장.
 ```
 ✅ Done  [main] 전시 안내 팝업 배포
 ✅ Done  [feature] P0~P2 대부분 (히어로·메뉴·로고·마퀴·롱폼·플로팅 바·엑셀)
-Next    [feature] 작가 갤러리 MVP
-Next    [feature→main] 머지 & 배포 (Worker + DB 0012)
+✅ Done  [feature] 작가 갤러리 MVP (설정 태그·토글 패널 포함)
+Next    [선택] ngrok 등으로 고객 사전 공유 (`docs/DEPLOY.md`)
+Next    [feature→main] 머지 & 배포 (Worker + DB 0012~0015)
 Later   [P3] Instagram API / [P4] 리코 행사 연동
 ```
 
-**추천 다음 스텝:** 갤러리 MVP를 feature에서 완료한 뒤, feature 전체를 main에 머지·배포. 또는 갤러리 전에 feature만 먼저 머지하는 것도 가능 (충돌: `index.astro` 팝업·히어로, `Layout.astro` 메뉴).
+**추천 다음 스텝:** feature 전체를 main에 머지·배포. 머지 전 고객 확인이 필요하면 ngrok으로 로컬 환경을 공유한다 (Pages 프리뷰만으로는 Worker 변경을 담기 어려움).
 
 ---
 
@@ -319,7 +324,7 @@ Later   [P3] Instagram API / [P4] 리코 행사 연동
 | 4 | 노출할 리코 YouTube 영상 ID 목록 | 1 | ✅ 6개 큐레이션 (feature) |
 | 5 | 신규 로고 파일 (SVG/PNG) | 1 | ✅ `holaphoto_new_logo.png` (feature) |
 | 6 | 강의 신청 버튼 클릭 시 이동 URL | 2 | ✅ 우측 레일 + 플로팅 바 (feature) |
-| 7 | 작가 갤러리: 업로드 주체·이미지 수·용량 | 3 | ❌ 미확정 |
+| 7 | 작가 갤러리: 업로드 주체·이미지 수·용량 | 3 | ✅ MVP 반영 (관리자 업로드, 5MB, WebP 변환, `gallery/`) |
 | 8 | Instagram: 계정 종류·연동 범위 (Reels만?) | 4 | ❌ 미착수 |
 | 9 | 리코 행사 데이터 소스·형식 | 4 | ❌ 미착수 |
 | 10 | 전시 팝업 이미지·공지 링크 | hotfix | ✅ main 배포 (공지 11번) |
@@ -368,6 +373,7 @@ Later   [P3] Instagram API / [P4] 리코 행사 연동
 - 장비 팁 → `/#youtube-shorts`
 - 수강생 후기 → `/reviews`
 - 공지사항 → `/notice`
+- 작가 갤러리 → `/gallery`
 - (협업 및 광고 문의 상단 메뉴 제거됨, `#about` 섹션은 유지)
 
 ### 상단 메뉴 — main (프로덕션)
@@ -395,13 +401,14 @@ Later   [P3] Instagram API / [P4] 리코 행사 연동
 | 후기 텍스트 | author 100자, title 500자, content 50,000자 |
 | 전시 팝업 이미지 | WebP, `public/images/display_07/` |
 | 강의 신청 `interest_brand` | `SONY` / `RICOH` / `FUJI` (마이그레이션 `0012`, feature만) |
-| 갤러리 | **미구현** — 신규 설계 필요 |
+| 갤러리 글·이미지 | `gallery_posts` / `gallery_images` (`0013`~`0015`), R2 `gallery/`, jpeg/png→WebP, 5MB |
+| 갤러리 사진 설정 | `photo_settings` 텍스트(쉼표 구분 태그), 공개 라이트박스 우측 토글 패널 |
 
 ---
 
 ## 8. 결론
 
 1. **완료 (main):** 전시 안내 팝업 배포 — 긴급 노출 대응
-2. **완료 (feature, 미머지):** 히어로 리코화, 메뉴·로고, 유튜브 큐레이션, 후기 마퀴, 강의 CTA, 플로팅 바 브랜드, 관리자 엑셀
-3. **다음 작업:** 작가 갤러리 MVP (feature) → feature main 머지·배포
-4. **별도 스펙 후 진행:** Instagram API, 리코 행사 연동, 히어로 배경 고해상도
+2. **완료 (feature, 미머지):** 히어로 리코화, 메뉴·로고, 유튜브 큐레이션, 후기 마퀴, 강의 CTA, 플로팅 바 브랜드, 관리자 엑셀, **작가 갤러리 MVP**
+3. **다음 작업:** 고객 사전 공유(선택, ngrok) → feature main 머지·배포 (`0012`~`0015`)
+4. **별도 스펙 후 진행:** Instagram API, 리코 행사 연동, 히어로 배경 고해상도, staging 환경 구축
