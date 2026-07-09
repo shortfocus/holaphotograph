@@ -48,7 +48,7 @@
 1. **고객 사전 공유 (선택)** — ngrok으로 feature 로컬 환경 공유 (`docs/DEPLOY.md` 참고). 장기적으로는 staging Worker/D1 검토
 2. **feature → main 머지 & 배포** — Worker, 마이그레이션 `0012`~`0015`, Pages
 3. **히어로 배경 고해상도** — 고객 에셋 수령 시
-4. **숏폼 → Instagram API** (P3, 추후)
+4. **숏폼 → Instagram API** (P3, 추후) — 상세: [`docs/INSTAGRAM_SETUP.md`](./INSTAGRAM_SETUP.md)
 5. **리코 행사 데이터 연동** (P4, 추후)
 
 ### 보류·패스
@@ -291,6 +291,8 @@ Phase 2 브랜드 컬럼 반영 후 함께 배포 권장.
 
 **권장:** Instagram 계정·API 접근 권한 확보 전까지 **YouTube Shorts 유지**. 권한 확보 후 Phase 4로 분리.
 
+**상세 가이드:** [`docs/INSTAGRAM_SETUP.md`](./INSTAGRAM_SETUP.md) — 계정 전제, Meta 앱·토큰, API 설계, 체크리스트, 임시 대안.
+
 #### 4-2. 리코 행사 데이터 연동 (추후)
 
 - 외부 API / 스프레드시트 / 수동 입력 방식 미정
@@ -325,7 +327,7 @@ Later   [P3] Instagram API / [P4] 리코 행사 연동
 | 5 | 신규 로고 파일 (SVG/PNG) | 1 | ✅ `holaphoto_new_logo.png` (feature) |
 | 6 | 강의 신청 버튼 클릭 시 이동 URL | 2 | ✅ 우측 레일 + 플로팅 바 (feature) |
 | 7 | 작가 갤러리: 업로드 주체·이미지 수·용량 | 3 | ✅ MVP 반영 (관리자 업로드, 5MB, WebP 변환, `gallery/`) |
-| 8 | Instagram: 계정 종류·연동 범위 (Reels만?) | 4 | ❌ 미착수 |
+| 8 | Instagram: 계정 종류·연동 범위 (Reels만?) | 4 | ❌ 미착수 — 가이드: `docs/INSTAGRAM_SETUP.md` |
 | 9 | 리코 행사 데이터 소스·형식 | 4 | ❌ 미착수 |
 | 10 | 전시 팝업 이미지·공지 링크 | hotfix | ✅ main 배포 (공지 11번) |
 

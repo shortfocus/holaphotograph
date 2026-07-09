@@ -10,6 +10,8 @@
 | Shorts | YouTube Data API v3 | `GET /api/youtube-latest` (60초 이하 영상) |
 | 최신 블로그 | 네이버 블로그 RSS | `GET /api/naver-rss` (reviews+guides+models 통합, 날짜순) |
 
+> **Instagram Reels로 Shorts 대체/병행**은 미구현(P3). 계정·Meta 앱·Worker 설계는 [INSTAGRAM_SETUP.md](./INSTAGRAM_SETUP.md) 참고.
+
 ---
 
 ## 네이버 블로그 RSS
