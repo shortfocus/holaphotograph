@@ -69,54 +69,12 @@ import Layout from "../../layouts/Layout.astro";
         id="gallery-lightbox-stage"
         class="relative flex max-h-[72vh] w-full items-stretch justify-center gap-0"
       >
-        <div class="relative min-w-0">
-          <img
-            id="gallery-lightbox-img"
-            src=""
-            alt=""
-            class="max-h-[72vh] w-auto max-w-full rounded-lg object-contain"
-          />
-          <button
-            type="button"
-            id="gallery-lightbox-settings-toggle"
-            class="absolute right-2 top-2 z-10 hidden cursor-pointer rounded-full bg-black/45 p-2 text-white ring-1 ring-white/25 backdrop-blur-sm hover:bg-black/60"
-            aria-label="사진 설정 보기"
-            aria-expanded="false"
-            aria-controls="gallery-lightbox-settings"
-          >
-            <svg
-              data-icon="info"
-              class="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="9" stroke-width="2.25"></circle>
-              <path
-                stroke-linecap="round"
-                stroke-width="2.5"
-                d="M12 11v5.5"
-              ></path>
-              <circle cx="12" cy="7.75" r="1.15" fill="currentColor" stroke="none"></circle>
-            </svg>
-            <svg
-              data-icon="close"
-              class="hidden h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.75"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
+        <img
+          id="gallery-lightbox-img"
+          src=""
+          alt=""
+          class="max-h-[72vh] min-w-0 w-auto max-w-full rounded-lg object-contain"
+        />
         <aside
           id="gallery-lightbox-settings"
           class="ml-0 hidden max-h-[72vh] w-[min(100%,16rem)] shrink-0 overflow-y-auto rounded-lg bg-white sm:w-64"
@@ -150,9 +108,6 @@ import Layout from "../../layouts/Layout.astro";
   const lightboxSettingsList = document.getElementById(
     "gallery-lightbox-settings-list",
   )!;
-  const lightboxSettingsToggle = document.getElementById(
-    "gallery-lightbox-settings-toggle",
-  ) as HTMLButtonElement;
   const lightboxCounter = document.getElementById("gallery-lightbox-counter")!;
   const lightboxClose = document.getElementById("gallery-lightbox-close")!;
   const lightboxPrev = document.getElementById("gallery-lightbox-prev")!;
@@ -160,7 +115,6 @@ import Layout from "../../layouts/Layout.astro";
 
   let activePost: GalleryPost | null = null;
   let activeIndex = 0;
-  let settingsOpen = false;
 
   function escapeHtml(text: string): string {
     const div = document.createElement("div");
@@ -177,30 +131,10 @@ import Layout from "../../layouts/Layout.astro";
   }
 
   function applySettingsPanelState(hasSettings: boolean) {
-    const open = hasSettings && settingsOpen;
-    const infoIcon = lightboxSettingsToggle.querySelector('[data-icon="info"]');
-    const closeIcon = lightboxSettingsToggle.querySelector('[data-icon="close"]');
-
-    lightboxSettingsToggle.classList.toggle("hidden", !hasSettings);
-    lightboxSettingsToggle.setAttribute("aria-expanded", String(open));
-    lightboxSettingsToggle.setAttribute(
-      "aria-label",
-      open ? "사진 설정 닫기" : "사진 설정 보기",
-    );
-    infoIcon?.classList.toggle("hidden", open);
-    closeIcon?.classList.toggle("hidden", !open);
-
-    lightboxSettings.classList.toggle("hidden", !open);
-    lightboxSettings.setAttribute("aria-hidden", String(!open));
-
-    lightboxStage.classList.toggle("gap-3", open);
-    lightboxStage.classList.toggle("sm:gap-4", open);
-  }
-
-  function setSettingsOpen(open: boolean) {
-    settingsOpen = open;
-    const hasSettings = lightboxSettingsList.children.length > 0;
-    applySettingsPanelState(hasSettings);
+    lightboxSettings.classList.toggle("hidden", !hasSettings);
+    lightboxSettings.setAttribute("aria-hidden", String(!hasSettings));
+    lightboxStage.classList.toggle("gap-3", hasSettings);
+    lightboxStage.classList.toggle("sm:gap-4", hasSettings);
   }
 
   function renderLightboxSlide() {
@@ -223,7 +157,6 @@ import Layout from "../../layouts/Layout.astro";
         .join("");
     } else {
       lightboxSettingsList.innerHTML = "";
-      settingsOpen = false;
     }
 
     applySettingsPanelState(settings.length > 0);
@@ -241,7 +174,6 @@ import Layout from "../../layouts/Layout.astro";
     if (!post.images.length) return;
     activePost = post;
     activeIndex = Math.min(Math.max(startIndex, 0), post.images.length - 1);
-    settingsOpen = false;
     renderLightboxSlide();
     lightbox.classList.remove("hidden");
     lightbox.classList.add("flex");
@@ -253,7 +185,6 @@ import Layout from "../../layouts/Layout.astro";
     lightbox.classList.remove("flex");
     lightboxImg.src = "";
     lightboxSettingsList.innerHTML = "";
-    settingsOpen = false;
     applySettingsPanelState(false);
     activePost = null;
     activeIndex = 0;
@@ -274,10 +205,6 @@ import Layout from "../../layouts/Layout.astro";
   }
 
   lightboxClose.addEventListener("click", closeLightbox);
-  lightboxSettingsToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setSettingsOpen(!settingsOpen);
-  });
   lightboxPrev.addEventListener("click", (e) => {
     e.stopPropagation();
     showPrev();
@@ -291,13 +218,7 @@ import Layout from "../../layouts/Layout.astro";
   });
   document.addEventListener("keydown", (e) => {
     if (!lightbox.classList.contains("flex")) return;
-    if (e.key === "Escape") {
-      if (settingsOpen) {
-        setSettingsOpen(false);
-        return;
-      }
-      closeLightbox();
-    }
+    if (e.key === "Escape") closeLightbox();
     if (e.key === "ArrowLeft") showPrev();
     if (e.key === "ArrowRight") showNext();
   });
