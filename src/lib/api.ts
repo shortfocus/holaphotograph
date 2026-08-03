@@ -61,9 +61,12 @@ export async function fetchPostsForAdmin(): Promise<Post[]> {
   return data.posts ?? [];
 }
 
+export type LectureInterestBrand = "SONY" | "RICOH" | "FUJI";
+
 export interface LectureSignup {
   id: number;
   email: string;
+  interest_brand: LectureInterestBrand | null;
   created_at: string;
 }
 
@@ -85,6 +88,109 @@ export interface Notice {
   form_link: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/** 갤러리 글에 속한 이미지 */
+export interface GalleryPostImage {
+  id: number;
+  post_id: number;
+  image_url: string;
+  sort_order: number;
+  photo_settings: string | null;
+  created_at: string;
+}
+
+/** 갤러리 글 (이미지 여러 장) */
+export interface GalleryPost {
+  id: number;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+  images: GalleryPostImage[];
+}
+
+/** 갤러리 글 목록 (공개) */
+export async function fetchGalleryPosts(): Promise<GalleryPost[]> {
+  const res = await fetch(`${API_BASE}/api/gallery`);
+  if (!res.ok) throw new Error("Failed to fetch gallery posts");
+  const data = (await res.json()) as { posts?: GalleryPost[] };
+  return data.posts ?? [];
+}
+
+/** 관리자용: 갤러리 글 목록 */
+export async function fetchGalleryPostsForAdmin(): Promise<GalleryPost[]> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to fetch gallery posts");
+  const data = (await res.json()) as { posts?: GalleryPost[] };
+  return data.posts ?? [];
+}
+
+export async function createGalleryPost(payload: {
+  image_urls: string[];
+  title?: string | null;
+}): Promise<GalleryPost> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to create gallery post");
+  }
+  return res.json();
+}
+
+export async function updateGalleryPost(
+  id: number,
+  payload: {
+    title?: string | null;
+    image_ids?: number[];
+    add_image_urls?: string[];
+  },
+): Promise<GalleryPost> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to update gallery post");
+  }
+  return res.json();
+}
+
+export async function deleteGalleryPost(id: number): Promise<void> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to delete gallery post");
+  }
+}
+
+export async function updateGalleryImageSettings(
+  id: number,
+  photo_settings: string | null,
+): Promise<GalleryPostImage> {
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/gallery/images/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ photo_settings }),
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Failed to update gallery image settings");
+  }
+  return res.json();
 }
 
 /** 공지사항 목록 (공개) */
@@ -284,11 +390,17 @@ export interface LectureSignupResponse {
 
 export async function submitLectureSignup(
   email: string,
+  interestBrand?: LectureInterestBrand | null,
 ): Promise<LectureSignupResponse> {
+  const payload: { email: string; interest_brand?: LectureInterestBrand } = {
+    email: email.trim().toLowerCase(),
+  };
+  if (interestBrand) payload.interest_brand = interestBrand;
+
   const res = await fetch(`${API_BASE}/api/lecture-signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    body: JSON.stringify(payload),
   });
   const data = (await res.json()) as LectureSignupResponse & { error?: string };
   if (!res.ok) throw new Error(data.error || "등록에 실패했습니다.");
@@ -364,6 +476,24 @@ export interface UploadResult {
 export async function uploadImage(file: File): Promise<UploadResult> {
   const formData = new FormData();
   formData.append("file", file);
+  const res = await fetch(`${ADMIN_API_BASE}/api/admin/upload`, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = (await res.json()) as { error?: string };
+    throw new Error(err.error || "Upload failed");
+  }
+  const data = (await res.json()) as UploadResult;
+  return data;
+}
+
+/** 갤러리 이미지 업로드 (관리자, R2 gallery/ prefix) */
+export async function uploadGalleryImage(file: File): Promise<UploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("prefix", "gallery");
   const res = await fetch(`${ADMIN_API_BASE}/api/admin/upload`, {
     method: "POST",
     body: formData,

@@ -67,6 +67,92 @@ npx wrangler pages deploy dist --project-name=holaphotograph
 
 ---
 
+## main 머지 전 — 고객 공유용 테스트 환경
+
+프로덕션은 **Pages 1개 + Worker(`api.holaphoto.com`) 1개 + D1 1개** 구조입니다.  
+feature 브랜치에 **Worker/DB 변경**이 있으면, 프론트만 프리뷰해도 새 API가 없어 기능이 깨지고, Worker를 그대로 배포하면 **실서버가 덮어써질 수 있습니다.**
+
+### 선택지 요약
+
+| 방법 | 적합한 경우 | 리스크 |
+|------|-------------|--------|
+| **ngrok (로컬 터널)** | Worker 포함 기능을 당장 고객에게 보여주기 | PC·터널이 켜져 있어야 함. URL이 자주 바뀜 |
+| **Pages 프리뷰만** | UI만 확인 (API 변경 없음) | Worker 변경이 있으면 갤러리 등이 깨질 수 있음 |
+| **Staging Worker + D1 분리** | 반복적으로 안전하게 공유 | 초기 세팅 필요 (아직 미구축) |
+| **프로덕션에 API만 선배포** | 스키마/API가 하위 호환일 때 | 실서버에 마이그레이션·API가 먼저 들어감 |
+
+기존 참고: `.github/workflows/deploy-design.yml`은 `design-improvement` 브랜치용 Pages 프리뷰 배포 예시입니다.  
+**주의:** 그 워크플로는 Worker도 `wrangler deploy`하므로, 그대로 쓰면 프로덕션 API가 바뀔 수 있습니다. 고객 공유용으로는 **Pages만** 프리뷰하거나, staging Worker를 따로 두는 편이 안전합니다.
+
+### A. ngrok으로 로컬 환경 공유 (Worker 포함 시 권장)
+
+프론트(Astro `4321`)와 API(Worker `8787`)를 각각 터널로 엽니다.
+
+#### 1) 준비
+
+```bash
+brew install ngrok
+ngrok config add-authtoken <토큰>   # https://dashboard.ngrok.com 에서 발급
+```
+
+#### 2) 로컬 서버
+
+```bash
+# 터미널 1 — Worker
+npm run dev:worker
+# → http://localhost:8787
+
+# 터미널 2 — Astro
+npm run dev
+# → http://localhost:4321
+```
+
+#### 3) 터널 2개
+
+```bash
+ngrok http 4321   # 프론트 → https://xxxx.ngrok-free.app
+ngrok http 8787   # API    → https://yyyy.ngrok-free.app
+```
+
+#### 4) 프론트가 로컬 Worker를 보게 하기
+
+`src/lib/api.ts`는 hostname이 `localhost`가 아니면 기본으로 `https://api.holaphoto.com`을 사용합니다.  
+ngrok 도메인으로 열면 실서버 API를 치므로, **프론트를 다시 띄울 때** API URL을 지정합니다.
+
+```bash
+PUBLIC_API_URL=https://yyyy.ngrok-free.app npm run dev
+```
+
+고객에게는 **프론트 ngrok URL**만 공유합니다. 예: `https://xxxx.ngrok-free.app/gallery`
+
+#### 주의
+
+- 로컬 PC와 ngrok이 켜져 있는 동안만 접속 가능
+- 무료 플랜은 재시작 시 URL이 바뀌고, 브라우저에 ngrok 중간 확인 페이지가 뜰 수 있음
+- 공개 `/gallery` 등 확인용으로는 충분. 관리자(Access·쿠키)는 ngrok에서 불편할 수 있음
+
+### B. Cloudflare Pages 프리뷰 (프론트만)
+
+```bash
+npm run build
+cd worker && npx wrangler pages deploy ../dist \
+  --project-name=holaphotograph \
+  --branch=feature/site-improvement-2026-07
+```
+
+배포 후 나오는 `*.pages.dev` URL을 공유합니다.  
+API는 기본적으로 프로덕션(`api.holaphoto.com`)을 가리키므로, **이번처럼 갤러리 Worker/마이그레이션이 필요한 작업에는 부적합**할 수 있습니다.
+
+### C. 앞으로 권장 — Staging 분리
+
+반복 공유가 필요하면 아래를 한 번 구축하는 것이 정석입니다.
+
+- Worker: `holaphotograph-api-staging` (별도 이름)
+- D1: staging DB + 마이그레이션
+- Pages 프리뷰 빌드 시 `PUBLIC_API_URL`을 staging Worker로 지정
+
+---
+
 ## 동적 OG (공유 미리보기)
 
 `/post?id=123`, `/notice?id=456` 링크를 SNS/카카오톡 등에 공유할 때, **글마다 다른 제목·설명·이미지**가 미리보기로 나오게 하려면 아래 둘 중 하나를 사용하면 됩니다.

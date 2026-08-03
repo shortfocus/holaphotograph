@@ -387,10 +387,37 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- 2. 히어로 섹션 (캐러셀) - 플로팅 바 높이 제외한 뷰포트 -->
+  <!-- 2. 히어로 섹션 (리코 단일 슬라이드) -->
   <section
     class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]"
   >
+    <div id="hero-bg-slides" class="absolute inset-0" aria-hidden="true">
+      <div
+        class="hero-bg-slide is-active"
+        style="background-image: url('/images/hero-bg/gr_1.jpeg');"
+      >
+      </div>
+      <div
+        class="hero-bg-slide"
+        style="background-image: url('/images/hero-bg/gr_2.jpeg');"
+      >
+      </div>
+      <div
+        class="hero-bg-slide"
+        style="background-image: url('/images/hero-bg/gr_3.jpeg');"
+      >
+      </div>
+      <div
+        class="hero-bg-slide"
+        style="background-image: url('/images/hero-bg/gr_4.jpeg');"
+      >
+      </div>
+    </div>
+    <div
+      class="absolute inset-0 bg-[#0F172A]/80"
+      aria-hidden="true"
+    >
+    </div>
     <div
       class="hero-glow absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(225,29,72,0.1),transparent)] pointer-events-none"
       aria-hidden="true"
@@ -402,271 +429,132 @@ import Layout from "../layouts/Layout.astro";
     >
     </div>
 
-    <div
-      id="hero-carousel"
-      class="relative flex h-full flex-col overflow-hidden"
-    >
+    <div class="relative z-10 flex h-full flex-col overflow-hidden">
       <div
-        class="hero-carousel-track flex h-full flex-1 items-center transition-transform duration-500 ease-out"
-        style="transform: translateX(0);"
+        class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
       >
-        <!-- Slide 1: Camera Review Archive -->
         <div
-          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
+          class="relative mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
         >
-          <div
-            class="relative mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
-          >
-            <div class="flex-1 text-center lg:text-left">
-              <span
-                class="hero-animate inline-block rounded-full border border-[#E11D48]/40 bg-[#E11D48]/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-red-300"
-                style="animation-delay: 0ms; opacity: 0"
-                >Camera Review Archive</span
-              >
-              <h1
-                class="hero-animate mt-6 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
-                style="animation-delay: 100ms; opacity: 0"
-              >
-                카메라 선택부터 <span class="whitespace-nowrap"
-                  >촬영 노하우까지</span
-                ><br />
-                <span class="text-[#F43F5E] whitespace-nowrap"
-                  >실전 기반 리뷰 플랫폼</span
-                >
-              </h1>
-              <p
-                class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg lg:mx-0 lg:text-xl"
-                style="animation-delay: 200ms; opacity: 0"
-              >
-                <span class="whitespace-nowrap">장비 비교</span> · <span
-                  class="whitespace-nowrap">실사용 테스트</span
-                > · <span class="whitespace-nowrap">구매 가이드</span>
-              </p>
-              <div
-                class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start"
-                style="animation-delay: 300ms; opacity: 0"
-              >
-                <a
-                  href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hero-channel-icon group"
-                  aria-label="유튜브"
-                >
-                  <img src="/icons/youtube.svg" alt="" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://blog.naver.com/holaphotograph"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hero-channel-icon"
-                  aria-label="네이버 블로그"
-                >
-                  <img
-                    src="/icons/naver-blog-hover.svg"
-                    alt=""
-                    aria-hidden="true"
-                  />
-                </a>
-                <a
-                  href="https://www.instagram.com/snap.hola"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hero-channel-icon group"
-                  aria-label="인스타그램"
-                >
-                  <img src="/icons/instagram.svg" alt="" aria-hidden="true" />
-                </a>
-                <a
-                  href="mailto:holaphotographer@gmail.com"
-                  class="hero-channel-icon group"
-                  aria-label="문의하기"
-                >
-                  <img src="/icons/contact.svg" alt="" aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-            <div
-              class="hero-animate flex-1 min-w-0"
-              style="animation-delay: 150ms; opacity: 0"
-            >
-              <div
-                class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
-              >
-                <iframe
-                  src="https://www.youtube.com/embed/jMMTLjQLTWg?rel=0&autoplay=1&mute=1"
-                  title="올라포토 유튜브 영상"
-                  class="aspect-video w-full min-h-[200px] sm:min-h-[280px]"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Slide 2: 강의 안내 (팝업과 동일 콘텐츠) -->
-        <div
-          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-4 sm:py-4 lg:py-6"
-        >
-          <div
-            class="hero-slide-2-inner mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center justify-center px-4 text-center sm:px-4"
-          >
+          <div class="flex-1 text-center lg:text-left">
             <span
-              class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
-              >강의 안내</span
+              class="hero-animate inline-block rounded-full border border-[#E11D48]/40 bg-[#E11D48]/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-red-300"
+              style="animation-delay: 0ms; opacity: 0"
+              >Ricoh Specialist</span
             >
             <h1
-              class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+              class="hero-animate mt-6 max-w-3xl text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
+              style="animation-delay: 100ms; opacity: 0"
             >
-              <span class="text-[#F43F5E]">올라포토</span> 강의 안내
+              찰나의 시선이 기록이 되는 순간,<br />
+              <span class="text-[#F43F5E]">리코</span> 유저를 위한 실전 가이드
             </h1>
             <p
-              class="hero-slide-2-desc mx-auto mt-2 min-w-0 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
+              class="hero-animate mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0 lg:text-xl"
+              style="animation-delay: 200ms; opacity: 0"
             >
-              X-E5 매뉴얼 강의 · 국중박 출사를<br class="sm:hidden" /> 오프라인에서 만나보세요
+              리코 고유의 색감 표현부터 실전 스냅 스킬, 깊이 있는 장비 분석까지
             </p>
-            <!-- 모바일 전용: 강의 이미지 1장 -->
             <div
-              class="hero-slide-2-mobile-images mx-auto mt-5 w-full max-w-[320px] sm:mt-0 sm:hidden"
+              class="hero-animate mt-8 flex items-center justify-center gap-6 lg:justify-start"
+              style="animation-delay: 300ms; opacity: 0"
             >
               <a
-                href="/notice?id=5"
-                class="hero-slide-2-mobile-single inline-flex overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02]"
-                aria-label="4월 강의 안내 공지 상세"
+                href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-channel-icon group"
+                aria-label="유튜브"
+              >
+                <img src="/icons/youtube.svg" alt="" aria-hidden="true" />
+              </a>
+              <a
+                href="https://blog.naver.com/holaphotograph"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-channel-icon"
+                aria-label="네이버 블로그"
               >
                 <img
-                  src="/images/class-xe5.png"
-                  alt="X-E5 class · 2026.04.18(토) 오전 10시~12시 · 즐카 · 2만원"
-                  class="max-h-[40vh] block rounded-xl object-contain object-center"
+                  src="/icons/naver-blog-hover.svg"
+                  alt=""
+                  aria-hidden="true"
                 />
+              </a>
+              <a
+                href="https://www.instagram.com/snap.hola"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-channel-icon group"
+                aria-label="인스타그램"
+              >
+                <img src="/icons/instagram.svg" alt="" aria-hidden="true" />
+              </a>
+              <a
+                href="mailto:holaphotographer@gmail.com"
+                class="hero-channel-icon group"
+                aria-label="문의하기"
+              >
+                <img src="/icons/contact.svg" alt="" aria-hidden="true" />
               </a>
             </div>
-            <!-- 데스크톱: 강의 이미지 2장 나란히 (X-E5 · 국중박 출사) -->
-            <div
-              class="hero-class-images mx-auto mt-5 hidden w-full max-w-lg sm:mt-6 sm:flex sm:flex-row sm:justify-center sm:gap-4 sm:overflow-visible"
-              style="-webkit-overflow-scrolling: touch; scrollbar-width: none;"
-            >
-              <a
-                href="/notice?id=5"
-                class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
-                aria-label="X-E5 class 공지 상세"
-              >
-                <img
-                  src="/images/class-xe5.png"
-                  alt="X-E5 class · 2026.04.18(토) 오전 10시~12시 · 즐카 · 2만원"
-                  class="max-h-[36vh] w-full max-w-[260px] object-contain object-center sm:max-h-[45vh]"
-                />
-              </a>
-              <a
-                href="/notice?id=5"
-                class="hero-class-slide flex flex-shrink-0 snap-center justify-center overflow-hidden rounded-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] sm:w-1/2 sm:min-w-0 sm:flex-1 sm:snap-align-none"
-                aria-label="국중박 출사 공지 상세"
-              >
-                <img
-                  src="/images/class-museum.png"
-                  alt="국중박 출사 · 2026.04.18(토) 오후 1시~3시 · 국립중앙박물관 · 2만원"
-                  class="max-h-[36vh] w-full max-w-[260px] object-contain object-center sm:max-h-[45vh]"
-                />
-              </a>
-            </div>
-            <a
-              href="/notice?id=5"
-              class="hero-cta mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#E11D48] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#be123c] active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
-            >
-              자세히 보기
-            </a>
           </div>
-        </div>
-        <!-- Slide 3: 고객 리뷰 -->
-        <div
-          class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-4 sm:py-4 lg:py-6"
-        >
           <div
-            class="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4 text-center sm:px-4"
+            class="hero-animate flex-1 min-w-0"
+            style="animation-delay: 150ms; opacity: 0"
           >
-            <span
-              class="inline-block rounded-full border border-[#F43F5E]/40 bg-[#F43F5E]/10 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur sm:px-4 sm:py-1.5 sm:text-sm"
-              >실제 이용 후기</span
+            <div
+              class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
             >
-            <h1
-              class="mt-3 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
-            >
-              <span class="text-[#F43F5E]">고객 리뷰</span> 확인하기
-            </h1>
-            <p
-              class="mx-auto mt-2 max-w-lg text-sm leading-loose text-slate-400 sm:mt-4 sm:text-lg sm:leading-loose lg:text-xl lg:leading-loose"
-            >
-              올라포토와 함께한 고객님들의 솔직한 후기를 확인해보세요.<br />
-              카메라 리뷰 · 촬영 서비스 만족도
-            </p>
-            <a
-              href="/reviews"
-              class="hero-cta mt-4 inline-flex items-center gap-2 rounded-2xl border-2 border-[#E11D48] bg-transparent px-6 py-3 text-base font-semibold text-white shadow-md transition-transform duration-200 hover:scale-105 hover:bg-[#E11D48]/20 active:scale-100 sm:mt-6 sm:px-8 sm:py-3.5 sm:text-lg"
-            >
-              <svg
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                ></path></svg
-              >
-              리뷰 보러 가기
-            </a>
+              <iframe
+                src="https://www.youtube.com/embed/7BYd6RJp3RY?rel=0&autoplay=1&mute=1"
+                title="올라포토 리코 강의 영상"
+                class="aspect-video w-full min-h-[200px] sm:min-h-[280px]"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- 좌우 버튼 -->
-      <button
-        type="button"
-        id="hero-carousel-prev"
-        class="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/80 p-2.5 text-white shadow-lg backdrop-blur-sm transition hover:bg-slate-700/90 focus:outline-none focus:ring-2 focus:ring-[#E11D48] sm:left-4"
-        aria-label="이전 슬라이드"
-      >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        id="hero-carousel-next"
-        class="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/80 p-2.5 text-white shadow-lg backdrop-blur-sm transition hover:bg-slate-700/90 focus:outline-none focus:ring-2 focus:ring-[#E11D48] sm:right-4"
-        aria-label="다음 슬라이드"
-      >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      <!-- 인디케이터 -->
-      <div
-        class="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-slate-600/40 bg-slate-800/80 px-4 py-2 shadow-lg backdrop-blur-sm"
-      >
-        <button
-          type="button"
-          data-hero-dot="0"
-          class="hero-dot cursor-pointer h-2.5 w-7 rounded-full bg-[#E11D48] shadow-sm transition-all"
-          aria-label="슬라이드 1"
-          aria-current="page"></button>
-        <button
-          type="button"
-          data-hero-dot="1"
-          class="hero-dot cursor-pointer h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400"
-          aria-label="슬라이드 2"></button>
-        <button
-          type="button"
-          data-hero-dot="2"
-          class="hero-dot cursor-pointer h-2.5 w-2.5 rounded-full bg-slate-500 transition-all hover:bg-slate-400"
-          aria-label="슬라이드 3"></button>
+  <!-- 2-1. 수강생 후기 마퀴 (히어로 직후) -->
+  <section
+    id="reviews-marquee"
+    class="reviews-marquee-section border-t border-slate-200/60 bg-[#F8FAFC] py-10 sm:py-12"
+    aria-label="고객 후기"
+  >
+    <div class="mx-auto mb-6 flex max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
+      <div>
+        <p class="text-sm font-medium text-[#6B7280]">강의 · 스냅 촬영 후기</p>
+        <h2 class="mt-1 text-xl font-bold text-[#111827] sm:text-2xl">💬 고객 후기</h2>
       </div>
+      <a
+        href="/reviews"
+        class="shrink-0 text-sm font-medium text-[#E11D48] transition-colors hover:text-[#be123c]"
+      >
+        더보기 →
+      </a>
+    </div>
+
+    <div id="reviews-marquee-loading" class="px-4 sm:px-6">
+      <div class="mx-auto flex max-w-6xl gap-4 overflow-hidden">
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+      </div>
+    </div>
+
+    <div id="reviews-marquee-empty" class="mx-auto hidden max-w-6xl px-4 text-center sm:px-6">
+      <p class="text-sm text-[#6B7280]">아직 등록된 고객 후기가 없습니다.</p>
+      <a href="/reviews" class="mt-2 inline-block text-sm font-medium text-[#E11D48] hover:text-[#be123c]">
+        첫 후기 남기기 →
+      </a>
+    </div>
+
+    <div id="reviews-marquee-viewport" class="reviews-marquee-viewport hidden">
+      <div id="reviews-marquee-track" class="reviews-marquee-track"></div>
     </div>
   </section>
 
@@ -678,10 +566,10 @@ import Layout from "../layouts/Layout.astro";
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-3">
         <span class="block text-sm font-medium text-[#6B7280] sm:text-base"
-          >후지필름 카메라 클래스 누적 수강생 1위</span
+          >GR COLLECTIVE 멘토 올라포토</span
         >
         <span class="mt-1 block text-2xl font-bold text-[#111827] sm:text-3xl"
-          >📺 올라포토 카메라 매뉴얼 클래스</span
+          >📺 리코 시리즈 매뉴얼 클래스</span
         >
       </h2>
       <div class="scroll-section-wrapper relative">
@@ -917,101 +805,216 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </section>
+
+  <!-- 본문 진입 시 우측 여백 빠른 링크 레일 (데스크톱) -->
+  <aside id="side-rail" class="side-rail" aria-label="빠른 링크">
+    <button
+      type="button"
+      id="lecture-signup-fab"
+      class="side-rail-btn side-rail-btn--primary"
+      aria-label="강의 신청 — 하단 신청 폼으로 이동"
+    >
+      <svg
+        class="side-rail-btn__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+      <span class="side-rail-btn__tooltip">강의 신청</span>
+    </button>
+    <a
+      href="https://www.instagram.com/snap.hola"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="인스타그램"
+    >
+      <img src="/icons/instagram.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">인스타그램</span>
+    </a>
+    <a
+      href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="유튜브"
+    >
+      <img src="/icons/youtube.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">유튜브</span>
+    </a>
+    <a
+      href="https://blog.naver.com/holaphotograph"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="side-rail-btn"
+      aria-label="네이버 블로그"
+    >
+      <img src="/icons/naver-blog.svg" alt="" class="side-rail-btn__logo" aria-hidden="true" />
+      <span class="side-rail-btn__tooltip">블로그</span>
+    </a>
+  </aside>
 </Layout>
 
 <script>
   import {
     fetchYoutubeLatest,
     fetchChannelStats,
+    fetchApprovedReviews,
     getRssThumbnailUrl,
     type NaverRssItem,
+    type Post,
     type YoutubeVideoItem,
   } from "../lib/api";
   import { FEATURED_BLOG } from "../data/featured-blog";
 
-  // Hero Carousel
-  (function initHeroCarousel() {
-    const track = document.querySelector(".hero-carousel-track") as HTMLElement;
-    const dots = document.querySelectorAll("[data-hero-dot]");
-    const total = 3;
+  (function initHeroBgSlideshow() {
+    const slides = document.querySelectorAll(".hero-bg-slide");
+    if (slides.length < 2) return;
     let current = 0;
-    let autoplayTimer: ReturnType<typeof setInterval> | null = null;
-    const AUTOPLAY_MS = 5000;
+    setInterval(() => {
+      slides[current].classList.remove("is-active");
+      current = (current + 1) % slides.length;
+      slides[current].classList.add("is-active");
+    }, 2000);
+  })();
 
-    function goTo(i: number) {
-      current = ((i % total) + total) % total;
-      if (track) track.style.transform = `translateX(-${current * (100 / 3)}%)`;
-      dots.forEach((d, idx) => {
-        if (idx === current) {
-          d.setAttribute("aria-current", "page");
-          d.classList.add("bg-[#E11D48]", "w-7");
-          d.classList.remove("bg-slate-500", "w-2.5");
-        } else {
-          d.removeAttribute("aria-current");
-          d.classList.add("bg-slate-500", "w-2.5");
-          d.classList.remove("bg-[#E11D48]", "w-7");
+  (function initReviewsMarquee() {
+    const loadingEl = document.getElementById("reviews-marquee-loading");
+    const emptyEl = document.getElementById("reviews-marquee-empty");
+    const viewportEl = document.getElementById("reviews-marquee-viewport");
+    const trackEl = document.getElementById("reviews-marquee-track");
+    if (!loadingEl || !emptyEl || !viewportEl || !trackEl) return;
+    const loading: HTMLElement = loadingEl;
+    const empty: HTMLElement = emptyEl;
+    const viewport: HTMLElement = viewportEl;
+    const track: HTMLElement = trackEl;
+
+    const MARQUEE_CARD_COLORS = [
+      "reviews-marquee-card--amber",
+      "reviews-marquee-card--rose",
+      "reviews-marquee-card--sky",
+      "reviews-marquee-card--emerald",
+    ];
+
+    function escapeHtml(s: string) {
+      const div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    function maskAuthorName(name: string | null | undefined) {
+      if (!name?.trim()) return "수강생";
+      const t = name.trim();
+      if (t.length === 1) return t;
+      return t[0] + "*".repeat(t.length - 1);
+    }
+
+    function getTextWithoutImages(html: string | null | undefined) {
+      if (!html?.trim()) return "";
+      let s = html
+        .replace(/<figure[^>]*>[\s\S]*?<\/figure>/gi, "")
+        .replace(/<figcaption[^>]*>[\s\S]*?<\/figcaption>/gi, "")
+        .replace(/<img[^>]*>/gi, "");
+      const div = document.createElement("div");
+      div.innerHTML = s;
+      return (div.textContent || div.innerText || "").trim();
+    }
+
+    function reviewTypeLabel(reviewType: Post["review_type"]) {
+      return reviewType === "snap" ? "스냅 촬영 후기" : "강의 수강 후기";
+    }
+
+    function renderMarqueeCard(post: Post, index: number) {
+      const text = getTextWithoutImages(post.content);
+      const excerpt =
+        text.length > 72 ? `${text.slice(0, 72)}…` : text || "후기를 확인해 보세요.";
+      const color = MARQUEE_CARD_COLORS[index % MARQUEE_CARD_COLORS.length];
+      const typeClass =
+        post.review_type === "snap"
+          ? "reviews-marquee-card__label--snap"
+          : "reviews-marquee-card__label--lecture";
+      return `
+        <article class="reviews-marquee-card ${color}" aria-label="${escapeHtml(reviewTypeLabel(post.review_type))}">
+          <p class="reviews-marquee-card__label ${typeClass}">${reviewTypeLabel(post.review_type)}</p>
+          <h3 class="reviews-marquee-card__title">${escapeHtml(post.title)}</h3>
+          <p class="reviews-marquee-card__excerpt">${escapeHtml(excerpt)}</p>
+          <p class="reviews-marquee-card__meta">${escapeHtml(maskAuthorName(post.author_name))} · ${new Date(post.created_at).toLocaleDateString("ko-KR")}</p>
+        </article>
+      `;
+    }
+
+    function buildMarqueeItems(posts: Post[]) {
+      let items = [...posts];
+      while (items.length < 8) items = items.concat(posts);
+      return items;
+    }
+
+    async function load() {
+      try {
+        const posts = await fetchApprovedReviews();
+        loading.classList.add("hidden");
+
+        if (posts.length === 0) {
+          empty.classList.remove("hidden");
+          return;
         }
-      });
-    }
 
-    function next() {
-      goTo(current + 1);
-    }
-    function prev() {
-      goTo(current - 1);
-    }
+        const items = buildMarqueeItems(posts);
+        const cardsHtml = items.map((p, i) => renderMarqueeCard(p, i)).join("");
+        track.innerHTML = cardsHtml + cardsHtml;
 
-    function startAutoplay() {
-      stopAutoplay();
-      autoplayTimer = setInterval(next, AUTOPLAY_MS);
-    }
-    function stopAutoplay() {
-      if (autoplayTimer) clearInterval(autoplayTimer);
-      autoplayTimer = null;
-    }
+        const duration = Math.max(28, items.length * 7);
+        track.style.setProperty("--marquee-duration", `${duration}s`);
 
-    dots.forEach((d, i) =>
-      d.addEventListener("click", () => {
-        goTo(i);
-        startAutoplay();
-      }),
-    );
-    const prevBtn = document.getElementById("hero-carousel-prev");
-    const nextBtn = document.getElementById("hero-carousel-next");
-    prevBtn?.addEventListener("click", () => {
-      prev();
-      startAutoplay();
-    });
-    nextBtn?.addEventListener("click", () => {
-      next();
-      startAutoplay();
-    });
-    const carousel = track?.closest("#hero-carousel");
-    carousel?.addEventListener("mouseenter", stopAutoplay);
-    carousel?.addEventListener("mouseleave", startAutoplay);
-
-    let touchStartX = 0;
-    carousel?.addEventListener(
-      "touchstart",
-      (e) => {
-        touchStartX = (e as TouchEvent).touches[0].clientX;
-      },
-      { passive: true },
-    );
-    carousel?.addEventListener(
-      "touchend",
-      (e) => {
-        const te = e as TouchEvent;
-        const dx = te.changedTouches[0].clientX - touchStartX;
-        if (Math.abs(dx) > 50) {
-          dx < 0 ? next() : prev();
-          startAutoplay();
+        empty.classList.add("hidden");
+        viewport.classList.remove("hidden");
+      } catch {
+        loading.classList.add("hidden");
+        empty.classList.remove("hidden");
+        const emptyMessage = empty.querySelector("p");
+        if (emptyMessage) {
+          emptyMessage.textContent = "고객 후기를 불러올 수 없습니다.";
         }
-      },
-      { passive: true },
-    );
+      }
+    }
 
-    startAutoplay();
+    load();
+  })();
+
+  (function initLectureSignupFab() {
+    const hero = document.querySelector(".hero-section");
+    const rail = document.getElementById("side-rail");
+    const fab = document.getElementById("lecture-signup-fab");
+    if (!hero || !rail || !fab) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        rail.classList.toggle("is-visible", !entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: "-8% 0px 0px 0px" },
+    );
+    observer.observe(hero);
+
+    fab.addEventListener("click", () => {
+      document.body.classList.remove("lecture-bar-collapsed");
+      try {
+        sessionStorage.setItem("lecture-bar-collapsed", "0");
+      } catch (_) {}
+      const email = document.getElementById("lecture-email") as HTMLInputElement | null;
+      const bar = document.getElementById("lecture");
+      bar?.scrollIntoView({ behavior: "smooth", block: "end" });
+      window.setTimeout(() => email?.focus({ preventScroll: true }), 450);
+    });
   })();
 
   const youtubeLongGrid = document.getElementById("youtube-long-grid")!;
@@ -1038,13 +1041,14 @@ import Layout from "../layouts/Layout.astro";
     bindScrollButtons("youtube-shorts-prev", "youtube-shorts-next", "youtube-shorts-grid");
   })();
 
-  /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID) */
+  /** 첫 번째 섹션(롱폼 영상) 노출 순서 (video ID, 최신순) */
   const YOUTUBE_LONG_ORDER = [
-    "jMMTLjQLTWg",
-    "c-xvb8f9OHM",
-    "qEP4MaioFPM",
-    "cXfv3-85u6M",
-    "p8K7iu1Rzpo",
+    "U_6FuVf8T74",
+    "DR6TupLRcGc",
+    "rtXw14DrkDQ",
+    "7BYd6RJp3RY",
+    "Z4LFF7hb5XQ",
+    "RBwjl-weU00",
   ];
   function getVideoId(link: string): string | null {
     if (!link || typeof link !== "string") return null;
@@ -1626,44 +1630,3 @@ import Layout from "../layouts/Layout.astro";
     setInterval(() => goTo(current + 1), AUTOPLAY_MS);
   })();
 </script>
-
-<style is:global>
-  .hero-slide-2-inner {
-    overflow: visible;
-  }
-  .hero-slide-2-desc {
-    overflow-wrap: break-word;
-    word-break: keep-all;
-  }
-  /* 모바일: 히어로 2번 슬라이드 내 이미지 1장, 정중앙·보더는 이미지 크기에 맞춤 */
-  .hero-slide-2-mobile-images {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.25rem 0 0.5rem;
-  }
-  .hero-slide-2-mobile-single {
-    display: inline-flex;
-    line-height: 0;
-    max-width: 100%;
-  }
-  .hero-slide-2-mobile-single img {
-    max-width: 100%;
-  }
-  /* 모바일 전용: 768px 이상에서는 모바일 이미지 영역 숨김 (PC에서 중복 방지) */
-  @media (min-width: 768px) {
-    .hero-slide-2-mobile-images {
-      display: none !important;
-    }
-    .hero-class-slide {
-      width: auto;
-      min-width: 0;
-    }
-  }
-  /* 데스크톱용 2장 영역은 모바일에서만 숨김 */
-  @media (max-width: 767px) {
-    .hero-class-images {
-      display: none !important;
-    }
-  }
-</style>

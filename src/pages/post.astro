@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="고객 후기 상세 - 올라포토" headerOpaque>
+<Layout title="수강생 후기 상세 - 올라포토" headerOpaque>
   <Fragment slot="head">
     <script src="https://unpkg.com/dompurify@3.0.9/dist/purify.min.js"></script>
   </Fragment>
@@ -30,12 +30,12 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
       <div class="mt-6">
-        <a href="/reviews" class="text-gray-600 hover:text-gray-900">← 고객 후기 목록으로</a>
+        <a href="/reviews" class="text-gray-600 hover:text-gray-900">← 수강생 후기 목록으로</a>
       </div>
     </div>
     <div id="post-error" class="hidden py-16 text-center">
       <p class="text-red-600">후기를 찾을 수 없습니다.</p>
-      <a href="/reviews" class="mt-4 inline-block text-blue-600 hover:underline">고객 후기 목록으로</a>
+      <a href="/reviews" class="mt-4 inline-block text-blue-600 hover:underline">수강생 후기 목록으로</a>
     </div>
   </article>
 </Layout>
@@ -101,7 +101,7 @@ import Layout from '../layouts/Layout.astro';
       const youtubeEl = document.getElementById('post-youtube')!;
       youtubeEl.classList.add('hidden');
 
-      document.title = `${post.title} - 고객 후기`;
+      document.title = `${post.title} - 수강생 후기`;
     } catch (e) {
       loadingEl.classList.add('hidden');
       errorEl.classList.remove('hidden');
