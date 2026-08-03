@@ -135,7 +135,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- 전시 안내 팝업 (GR COLLECTIVE 1ST EXHIBITION) -->
+  <!-- 전시 안내 팝업 (비노출 유지 — 재사용 시 스크립트에서 show 로직 복구) -->
   <div
     id="display-promo-popup"
     class="fixed inset-0 z-[61] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
@@ -261,7 +261,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- 모집 정보 팝업 (gr_14~gr_15) -->
+  <!-- 모집 정보 팝업 (gr_16~gr_17) -->
   <div
     id="gr-promo-popup"
     class="fixed inset-0 z-[59] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
@@ -329,13 +329,13 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=10"
+                  href="/notice?id=12"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 노출의 3요소 강의 공지 상세로 이동"
+                  aria-label="리코 GR4 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_14.png"
-                    alt="리코 GR4 노출의 3요소 강의 · 2026.07.11(토) 오후 2시~4시 · 즐거운 카메라 · 2만원"
+                    src="/images/gr_16.jpeg"
+                    alt="리코 GR4 카메라 클래스 · 2026.08.08(토) 오전 11시~오후 1시 · 즐거운카메라 · 2만원"
                     class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                   />
                 </a>
@@ -348,13 +348,13 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=10"
+                  href="/notice?id=12"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 카메라 매뉴얼 강의 공지 상세로 이동"
+                  aria-label="리코 GR4 노출의 3요소 강의 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_15.png"
-                    alt="리코 GR4 카메라 매뉴얼 강의 · 2026.07.11(토) 오전 11시~오후 1시 · 즐거운 카메라 · 2만원"
+                    src="/images/gr_17.jpeg"
+                    alt="리코 GR4 노출의 3요소 강의 · 2026.08.08(토) 오후 2시~4시 · 즐거운 카메라 · 2만원"
                     class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                   />
                 </a>
@@ -1398,9 +1398,9 @@ import Layout from "../layouts/Layout.astro";
 
   let tryShowGrPromo: (() => void) | undefined;
 
-  // GR 모집 팝업 (전시 팝업 닫은 뒤 또는 전시 팝업 미노출 시)
+  // GR 모집 팝업 (메인 진입 시 노출)
   (function initGrPromoPopup() {
-    const STORAGE_KEY = "holaphoto-gr-popup-seen";
+    const STORAGE_KEY = "holaphoto-gr-popup-seen-20260808";
     const popup = document.getElementById("gr-promo-popup");
     const closeBtn = document.getElementById("gr-promo-close");
     const closeBtn2 = document.getElementById("gr-promo-close-btn");
@@ -1457,104 +1457,10 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // 전시 안내 팝업: 메인 진입 시 우선 노출 (오늘 하루 안 보기 가능)
-  (function initDisplayPromoPopup() {
-    const STORAGE_KEY = "holaphoto-display-popup-seen";
-    const popup = document.getElementById("display-promo-popup");
-    const closeBtn = document.getElementById("display-promo-close");
-    const closeBtn2 = document.getElementById("display-promo-close-btn");
-    const dontShow = document.getElementById(
-      "display-promo-dont-show",
-    ) as HTMLInputElement | null;
+  // 전시 안내 팝업: 비노출 (모집 팝업만 표시)
+  tryShowGrPromo?.();
 
-    function hidePopup() {
-      popup?.classList.add("hidden");
-      popup?.classList.remove("flex");
-    }
-
-    function showPopup() {
-      popup?.classList.remove("hidden");
-      popup?.classList.add("flex");
-    }
-
-    function shouldShowPopup(): boolean {
-      try {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
-        if (!raw) return true;
-        const data = JSON.parse(raw) as { date?: string };
-        if (!data.date) return true;
-        const today = new Date().toDateString();
-        return data.date !== today;
-      } catch {
-        return true;
-      }
-    }
-
-    function setDontShowToday() {
-      try {
-        sessionStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ date: new Date().toDateString() }),
-        );
-      } catch (_) {}
-    }
-
-    function close() {
-      if (dontShow?.checked) setDontShowToday();
-      hidePopup();
-      tryShowGrPromo?.();
-    }
-
-    if (shouldShowPopup()) showPopup();
-    else tryShowGrPromo?.();
-
-    closeBtn?.addEventListener("click", close);
-    closeBtn2?.addEventListener("click", close);
-    popup?.addEventListener("click", (e) => {
-      if (e.target === popup) close();
-      if ((e.target as Element).closest(".display-promo-image-link")) hidePopup();
-    });
-  })();
-
-  // 전시 팝업 내부 슬라이드 (2장: leaflet_front, poster_black)
-  (function initDisplayPromoSlider() {
-    const track = document.querySelector(
-      ".display-promo-track",
-    ) as HTMLElement | null;
-    const total = 2;
-    const step = 100 / 2;
-    let current = 0;
-    const AUTOPLAY_MS = 3000;
-
-    function goTo(i: number) {
-      current = ((i % total) + total) % total;
-      if (track) track.style.transform = `translateX(-${current * step}%)`;
-    }
-
-    const slider = document.getElementById("display-promo-slider");
-    document.getElementById("display-promo-prev")?.addEventListener("click", () => goTo(current - 1));
-    document.getElementById("display-promo-next")?.addEventListener("click", () => goTo(current + 1));
-    let touchStartX = 0;
-    slider?.addEventListener(
-      "touchstart",
-      (e) => {
-        touchStartX = (e as TouchEvent).touches[0].clientX;
-      },
-      { passive: true },
-    );
-    slider?.addEventListener(
-      "touchend",
-      (e) => {
-        const dx = (e as TouchEvent).changedTouches[0].clientX - touchStartX;
-        if (Math.abs(dx) > 40) dx < 0 ? goTo(current + 1) : goTo(current - 1);
-      },
-      { passive: true },
-    );
-
-    setInterval(() => goTo(current + 1), AUTOPLAY_MS);
-  })();
-
-  // GR 팝업 내부 슬라이드 (2장: gr_14~gr_15, 100/2% 이동)
+  // GR 팝업 내부 슬라이드 (2장: gr_16~gr_17, 100/2% 이동)
   (function initGrPromoSlider() {
     const track = document.querySelector(
       ".gr-promo-track",
