@@ -86,18 +86,44 @@ import Layout from '../../layouts/Layout.astro';
       @keyframes review-skeleton-shine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
       #review-modal-body img { min-height: 6rem; background: #e7e5e4; opacity: 0; transition: opacity 0.25s ease-out; border-radius: 0.25rem; }
       #review-modal-body img.img-loaded { opacity: 1; }
+      .reviews-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 0 0 0.5rem 0.5rem;
+      }
+      .reviews-loading.hidden { display: none; }
+      .reviews-loading-spinner {
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid #e7e5e4;
+        border-top-color: #78716c;
+        border-radius: 50%;
+        animation: reviews-spin 0.7s linear infinite;
+      }
+      @keyframes reviews-spin { to { transform: rotate(360deg); } }
     </style>
   </Fragment>
   <div class="padlet-board px-4 pt-[calc(5.5rem+env(safe-area-inset-top,0px))] pb-16 sm:px-6 sm:pt-28 sm:pb-20 reviews-board">
     <div class="relative mx-auto max-w-6xl">
       <!-- 탭: 스냅 촬영 후기 | 강의 수강 후기 -->
       <div id="reviews-tablist" class="reviews-tablist reviews-tablist--lecture flex overflow-hidden rounded-t-lg bg-stone-200 shadow sm:mb-0" role="tablist">
-        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기</button>
-        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기</button>
+        <button type="button" id="tab-snap" class="reviews-tab reviews-tab-snap flex-1 rounded-tl-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="false" aria-controls="panel-snap" data-tab="snap">스냅 촬영 후기 <span id="tab-snap-count" class="tabular-nums opacity-80"></span></button>
+        <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기 <span id="tab-lecture-count" class="tabular-nums opacity-80"></span></button>
       </div>
 
       <!-- 탭 1: 스냅 촬영 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
-      <div id="panel-snap" class="reviews-panel-snap hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
+      <div id="panel-snap" class="reviews-panel-snap relative hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
+        <div id="reviews-loading-snap" class="reviews-loading" aria-live="polite" aria-busy="true">
+          <div class="reviews-loading-spinner" aria-hidden="true"></div>
+          <p class="text-sm text-stone-500">후기를 불러오는 중…</p>
+        </div>
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-snap" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
@@ -112,7 +138,11 @@ import Layout from '../../layouts/Layout.astro';
       </div>
 
       <!-- 탭 2: 강의 수강 후기 — 전체 4×3 그리드, 1번 칸=등록, 2~12번=후기 카드 -->
-      <div id="panel-lecture" class="reviews-panel-lecture rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
+      <div id="panel-lecture" class="reviews-panel-lecture relative rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
+        <div id="reviews-loading-lecture" class="reviews-loading" aria-live="polite" aria-busy="true">
+          <div class="reviews-loading-spinner" aria-hidden="true"></div>
+          <p class="text-sm text-stone-500">후기를 불러오는 중…</p>
+        </div>
         <p class="mb-6 text-sm font-bold text-stone-600">작성하신 후기는 관리자 검토 후 보드에 게시됩니다.</p>
         <section id="reviews-section-lecture" class="relative grid min-h-[20rem] grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 grid-rows-3">
           <div class="relative z-10 min-w-0">
@@ -192,6 +222,8 @@ import Layout from '../../layouts/Layout.astro';
   const sectionLecture = document.getElementById('reviews-section-lecture')!;
   const emptyEl = document.getElementById('reviews-empty')!;
   const emptySnap = document.getElementById('reviews-empty-snap')!;
+  const loadingSnap = document.getElementById('reviews-loading-snap')!;
+  const loadingLecture = document.getElementById('reviews-loading-lecture')!;
   const modal = document.getElementById('review-modal')!;
   const registerModal = document.getElementById('review-register-modal')!;
   const registerModalClose = document.getElementById('review-register-modal-close')!;
@@ -206,6 +238,8 @@ import Layout from '../../layouts/Layout.astro';
   const modalClose = document.getElementById('review-modal-close')!;
   const tabSnap = document.getElementById('tab-snap')!;
   const tabLecture = document.getElementById('tab-lecture')!;
+  const tabSnapCount = document.getElementById('tab-snap-count')!;
+  const tabLectureCount = document.getElementById('tab-lecture-count')!;
   const panelSnap = document.getElementById('panel-snap')!;
   const panelLecture = document.getElementById('panel-lecture')!;
 
@@ -455,11 +489,21 @@ import Layout from '../../layouts/Layout.astro';
     if (trixEditor?.editor) trixEditor.editor.loadHTML('');
   });
 
+  function setReviewsLoading(isLoading: boolean) {
+    loadingSnap.classList.toggle('hidden', !isLoading);
+    loadingLecture.classList.toggle('hidden', !isLoading);
+    loadingSnap.setAttribute('aria-busy', String(isLoading));
+    loadingLecture.setAttribute('aria-busy', String(isLoading));
+  }
+
   async function load() {
+    setReviewsLoading(true);
     try {
       const posts = await fetchApprovedReviews();
       const lecturePosts = posts.filter((p) => (p.review_type ?? 'lecture') === 'lecture');
       const snapPosts = posts.filter((p) => p.review_type === 'snap');
+      tabSnapCount.textContent = `(${snapPosts.length})`;
+      tabLectureCount.textContent = `(${lecturePosts.length})`;
       emptyEl.classList.toggle('hidden', lecturePosts.length > 0);
       emptySnap.classList.toggle('hidden', snapPosts.length > 0);
       sectionSnap.querySelectorAll('.review-card').forEach((el) => el.remove());
@@ -485,6 +529,8 @@ import Layout from '../../layouts/Layout.astro';
       errMsg.textContent = `수강생 후기를 불러올 수 없습니다: ${(e as Error).message}`;
       sectionSnap.appendChild(errMsg);
       sectionLecture.appendChild(errMsg.cloneNode(true));
+    } finally {
+      setReviewsLoading(false);
     }
   }
 
