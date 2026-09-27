@@ -261,7 +261,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- 모집 정보 팝업 (gr_16~gr_17) -->
+  <!-- 모집 정보 팝업 (gr_18~gr_20) -->
   <div
     id="gr-promo-popup"
     class="fixed inset-0 z-[59] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
@@ -320,41 +320,60 @@ import Layout from "../layouts/Layout.astro";
         <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <div
             class="gr-promo-track flex h-full transition-transform duration-300 ease-out"
-            style="width: 200%; transform: translateX(0);"
+            style="width: 300%; transform: translateX(0);"
           >
             <div
-              class="gr-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
+              class="gr-promo-slide flex min-h-0 w-1/3 shrink-0 flex-col px-2 py-4"
             >
               <div
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=12"
+                  href="/notice?id=13"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
                   aria-label="리코 GR4 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_16.jpeg"
-                    alt="리코 GR4 카메라 클래스 · 2026.08.08(토) 오전 11시~오후 1시 · 즐거운카메라 · 2만원"
+                    src="/images/gr_18.png"
+                    alt="리코 GR4 카메라 클래스 · 2026.10.10(토) 오전 11시~오후 1시 · 즐거운 카메라 · 2만원"
                     class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                   />
                 </a>
               </div>
             </div>
             <div
-              class="gr-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
+              class="gr-promo-slide flex min-h-0 w-1/3 shrink-0 flex-col px-2 py-4"
             >
               <div
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=12"
+                  href="/notice?id=13"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 노출의 3요소 강의 공지 상세로 이동"
+                  aria-label="리코 GR4 용산공원 출사 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_17.jpeg"
-                    alt="리코 GR4 노출의 3요소 강의 · 2026.08.08(토) 오후 2시~4시 · 즐거운 카메라 · 2만원"
+                    src="/images/gr_19.png"
+                    alt="리코 GR4 용산공원 출사 · 2026.10.10(토) 오후 2시 30분~4시 30분 · 용산공원 · 2만원"
+                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                  />
+                </a>
+              </div>
+            </div>
+            <div
+              class="gr-promo-slide flex min-h-0 w-1/3 shrink-0 flex-col px-2 py-4"
+            >
+              <div
+                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
+              >
+                <a
+                  href="/notice?id=13"
+                  class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
+                  aria-label="리코 GR4 야경 출사 공지 상세로 이동"
+                >
+                  <img
+                    src="/images/gr_20.png"
+                    alt="리코 GR4 야경 출사 · 2026.10.10(토) 오후 6시 30분~8시 30분 · 반포한강공원 · 2만원"
                     class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                   />
                 </a>
@@ -1400,7 +1419,7 @@ import Layout from "../layouts/Layout.astro";
 
   // GR 모집 팝업 (메인 진입 시 노출)
   (function initGrPromoPopup() {
-    const STORAGE_KEY = "holaphoto-gr-popup-seen-20260808";
+    const STORAGE_KEY = "holaphoto-gr-popup-seen-20261010";
     const popup = document.getElementById("gr-promo-popup");
     const closeBtn = document.getElementById("gr-promo-close");
     const closeBtn2 = document.getElementById("gr-promo-close-btn");
@@ -1460,13 +1479,13 @@ import Layout from "../layouts/Layout.astro";
   // 전시 안내 팝업: 비노출 (모집 팝업만 표시)
   tryShowGrPromo?.();
 
-  // GR 팝업 내부 슬라이드 (2장: gr_16~gr_17, 100/2% 이동)
+  // GR 팝업 내부 슬라이드 (3장: gr_18~gr_20, 100/3% 이동)
   (function initGrPromoSlider() {
     const track = document.querySelector(
       ".gr-promo-track",
     ) as HTMLElement | null;
-    const total = 2;
-    const step = 100 / 2;
+    const total = 3;
+    const step = 100 / 3;
     let current = 0;
     const AUTOPLAY_MS = 3000;
 
