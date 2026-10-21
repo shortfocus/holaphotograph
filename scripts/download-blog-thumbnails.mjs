@@ -16,6 +16,7 @@ import { readFile, writeFile } from "fs/promises";
 import { mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -167,8 +168,11 @@ async function downloadImage(url, logNo) {
   });
   if (!res.ok) throw new Error(`Image HTTP ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
-  const outPath = join(OUT_DIR, `${logNo}.jpg`);
-  await writeFile(outPath, buf);
+  const outPath = join(OUT_DIR, `${logNo}.webp`);
+  await sharp(buf)
+    .resize({ width: 420, withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .toFile(outPath);
   return outPath;
 }
 
@@ -225,7 +229,7 @@ async function main() {
 
       if (thumbUrl) {
         await downloadImage(thumbUrl, logNo);
-        console.log(`  Saved: ${logNo}.jpg`);
+        console.log(`  Saved: ${logNo}.webp`);
       } else {
         console.warn(`  No og:image for ${logNo}`);
       }
@@ -235,7 +239,7 @@ async function main() {
         link,
         title: title || "올라포토 카메라/렌즈 리뷰",
         description,
-        thumbnail_url: `${THUMB_BASE}/${logNo}.jpg`,
+        thumbnail_url: `${THUMB_BASE}/${logNo}.webp`,
         youtube_url,
       });
     } catch (e) {
@@ -245,7 +249,7 @@ async function main() {
         link,
         title: "올라포토 카메라/렌즈 리뷰",
         description: "",
-        thumbnail_url: `${THUMB_BASE}/${logNo}.jpg`,
+        thumbnail_url: `${THUMB_BASE}/${logNo}.webp`,
         youtube_url,
       });
     }

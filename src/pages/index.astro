@@ -334,9 +334,12 @@ import Layout from "../layouts/Layout.astro";
                   aria-label="리코 GR4 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_18.png"
+                    data-src="/images/gr_18.webp"
+                    width="800"
+                    height="1000"
                     alt="리코 GR4 카메라 클래스 · 2026.10.10(토) 오전 11시~오후 1시 · 즐거운 카메라 · 2만원"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    decoding="async"
                   />
                 </a>
               </div>
@@ -353,9 +356,12 @@ import Layout from "../layouts/Layout.astro";
                   aria-label="리코 GR4 용산공원 출사 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_19.png"
+                    data-src="/images/gr_19.webp"
+                    width="800"
+                    height="1000"
                     alt="리코 GR4 용산공원 출사 · 2026.10.10(토) 오후 2시 30분~4시 30분 · 용산공원 · 2만원"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    decoding="async"
                   />
                 </a>
               </div>
@@ -372,9 +378,12 @@ import Layout from "../layouts/Layout.astro";
                   aria-label="리코 GR4 야경 출사 공지 상세로 이동"
                 >
                   <img
-                    src="/images/gr_20.png"
+                    data-src="/images/gr_20.webp"
+                    width="800"
+                    height="1000"
                     alt="리코 GR4 야경 출사 · 2026.10.10(토) 오후 6시 30분~8시 30분 · 반포한강공원 · 2만원"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
+                    decoding="async"
                   />
                 </a>
               </div>
@@ -525,12 +534,37 @@ import Layout from "../layouts/Layout.astro";
             <div
               class="overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-1 ring-white/10"
             >
-              <iframe
-                src="https://www.youtube.com/embed/7BYd6RJp3RY?rel=0&autoplay=1&mute=1"
-                title="올라포토 리코 강의 영상"
-                class="aspect-video w-full min-h-[200px] sm:min-h-[280px]"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+              <div
+                id="hero-youtube-facade"
+                class="group relative aspect-video w-full min-h-[200px] cursor-pointer bg-black sm:min-h-[280px]"
+                data-youtube-id="7BYd6RJp3RY"
+                role="button"
+                tabindex="0"
+                aria-label="올라포토 리코 강의 영상 재생"
+              >
+                <img
+                  src="https://i.ytimg.com/vi/7BYd6RJp3RY/hqdefault.jpg"
+                  alt=""
+                  width="480"
+                  height="360"
+                  class="absolute inset-0 h-full w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <span
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"
+                  aria-hidden="true"
+                ></span>
+                <span
+                  class="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#E11D48] text-white shadow-lg ring-4 ring-white/20 transition group-hover:scale-105"
+                  aria-hidden="true"
+                >
+                  <svg class="ml-1 h-7 w-7" viewBox="0 0 24 24" fill="currentColor"
+                    ><path d="M8 5v14l11-7z"></path></svg
+                  >
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -1156,7 +1190,7 @@ import Layout from "../layouts/Layout.astro";
     const fetchPriority =
       options?.priority === "high" ? ' fetchpriority="high"' : "";
     const thumb = imgUrl
-      ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" onerror="this.style.display='none'" /></div>`
+      ? `<div class="aspect-[209/314] w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.title)}" width="209" height="314" class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-300" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" onerror="this.style.display='none'" /></div>`
       : '<div class="aspect-[209/314] w-full bg-gray-200" />';
     const rawDesc = item.description ?? "";
     const desc =
@@ -1432,7 +1466,19 @@ import Layout from "../layouts/Layout.astro";
       popup?.classList.remove("flex");
     }
 
+    function loadPromoImages() {
+      popup
+        ?.querySelectorAll<HTMLImageElement>("img.gr-promo-img[data-src]")
+        .forEach((img) => {
+          const src = img.dataset.src;
+          if (!src || img.getAttribute("src")) return;
+          img.src = src;
+          img.removeAttribute("data-src");
+        });
+    }
+
     function showPopup() {
+      loadPromoImages();
       popup?.classList.remove("hidden");
       popup?.classList.add("flex");
     }
@@ -1478,6 +1524,33 @@ import Layout from "../layouts/Layout.astro";
 
   // 전시 안내 팝업: 비노출 (모집 팝업만 표시)
   tryShowGrPromo?.();
+
+  // 히어로 YouTube facade — 클릭 시에만 iframe 로드
+  (function initHeroYoutubeFacade() {
+    const facade = document.getElementById("hero-youtube-facade");
+    if (!facade) return;
+    const videoId = facade.getAttribute("data-youtube-id");
+    if (!videoId) return;
+
+    function activate() {
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0`;
+      iframe.title = "올라포토 리코 강의 영상";
+      iframe.className = "aspect-video w-full min-h-[200px] sm:min-h-[280px]";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      facade.replaceWith(iframe);
+    }
+
+    facade.addEventListener("click", activate);
+    facade.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        activate();
+      }
+    });
+  })();
 
   // GR 팝업 내부 슬라이드 (3장: gr_18~gr_20, 100/3% 이동)
   (function initGrPromoSlider() {
