@@ -194,8 +194,8 @@ unsized-images로 지적된 항목:
 | Cloudflare Insights beacon | 레거시 JS ~10 KiB 지적 | 플랫폼 스크립트 — 우선순위 낮음 |
 | YouTube 썸네일 캐시 | `i.ytimg.com` 캐시 TTL 짧음 | Google 측 — facade로 요청 수 자체를 줄이는 편이 유효 |
 | CSP | 시행 모드 CSP 없음 | 별도 보안 작업 (`docs/TODO_SECURITY.md`와 연계) |
-| `poster_black.webp` 등 전시 잔여 이미지 | ~619 KB | 전시 팝업 비활성 시 DOM/로드 제거 확인 |
-| 클래스 카드 PNG (`class-museum.png` 등) | 150~175 KB | WebP 변환 여지 |
+| ~~`poster_black.webp` 등 전시 잔여 이미지~~ | ~~~619 KB~~ | ✅ 2026-10-21: 비활성 전시·강의 팝업 DOM 제거 (에셋은 `public/` 유지) |
+| ~~클래스 카드 PNG (`class-museum.png` 등)~~ | ~~150~175 KB~~ | ✅ 동일 — 홈에서 로드되지 않음 |
 
 ---
 
@@ -205,10 +205,10 @@ unsized-images로 지적된 항목:
 [x] 1. gr_18~20 → WebP 리사이즈 + width/height + 팝업 오픈 시 로드  (2026-10-21)
 [x] 2. featured-blog/*.jpg → WebP 썸네일 + lazy  (2026-10-21)
 [x] 3. 히어로 YouTube → facade (클릭 시 iframe)  (2026-10-21)
-[ ] 4. Pretendard weight 축소 / self-host / font-display
-[ ] 5. 히어로 배경 JPEG → WebP
-[ ] 6. 색상 대비 (#E11D48, footer slate-500)
-[ ] 7. 블로그 카드 링크 min-height 24px
+[x] 4. Pretendard weight 축소 / self-host / font-display  (2026-10-21)
+[x] 5. 히어로 배경 JPEG → WebP  (2026-10-21)
+[x] 6. 색상 대비 (#E11D48, footer slate-500)  (2026-10-21)
+[x] 7. 블로그 카드 링크 min-height 24px  (2026-10-21)
 [ ] 8. 시크릿 모드로 Lighthouse 재측정 → 문서에 Before/After 기록
 ```
 
@@ -219,6 +219,16 @@ unsized-images로 지적된 항목:
 | `gr_18~20` | PNG 합 ~6.0 MB | WebP 합 ~263 KB + 팝업 오픈 시만 로드 |
 | featured-blog 6장 | JPG 합 ~4.7 MB | WebP 합 ~279 KB |
 | 히어로 YouTube | 즉시 iframe + autoplay | 썸네일 facade, 클릭 시 iframe |
+
+### P1 적용 요약 (2026-10-21)
+
+| 항목 | Before | After |
+|------|--------|-------|
+| Pretendard | JSDelivr static 4 weights ~3 MB, 렌더 차단 | self-host Variable dynamic-subset + 비동기 CSS |
+| 히어로 배경 | JPEG 합 ~722 KB, 4장 동시 로드 | WebP 합 ~121 KB, 활성·다음만 로드 |
+| 색상 대비 | `#E11D48` / footer `slate-500` | `#BE123C` / `slate-400` |
+| 터치 타겟 | 블로그 링크 높이 16px | `min-h-6` (24px) |
+| 로고 | width/height 없음 | `216×100` 명시 |
 
 ---
 

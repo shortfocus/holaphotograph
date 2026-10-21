@@ -3,263 +3,11 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <!-- 강의 홍보 팝업 (메인 진입 시 1회) -->
-  <div
-    id="class-promo-popup"
-    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="class-promo-title"
-  >
-    <div
-      class="relative mt-8 flex max-h-[85vh] w-full max-w-sm flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12"
-    >
-      <!-- 헤더 -->
-      <div
-        class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#0F172A] p-4"
-      >
-        <h2
-          id="class-promo-title"
-          class="text-lg font-bold text-white sm:text-xl"
-        >
-          올라포토 강의 안내
-        </h2>
-        <button
-          type="button"
-          id="class-promo-close"
-          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
-          aria-label="팝업 닫기"
-        >
-          <svg
-            class="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path></svg
-          >
-        </button>
-      </div>
-      <!-- 슬라이드 영역: 모바일에서 이미지 잘림 방지(트랙/슬라이드 너비 명시, min-w-0) -->
-      <div
-        id="class-promo-slider"
-        class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
-      >
-        <button
-          type="button"
-          id="class-promo-prev"
-          class="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
-          aria-label="이전"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button
-          type="button"
-          id="class-promo-next"
-          class="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
-          aria-label="다음"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-        </button>
-        <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-          <div
-            class="class-promo-track flex h-full transition-transform duration-300 ease-out"
-            style="width: 200%; transform: translateX(0);"
-          >
-            <div
-              class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
-            >
-              <div
-                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
-              >
-                <a
-                  href="/notice?id=5"
-                  class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="국중박 출사 공지 상세로 이동"
-                >
-                  <img
-                    src="/images/class-museum.png"
-                    alt="국중박 출사 · 2026.04.18(토) 오후 1시~3시 · 국립중앙박물관 · 2만원"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
-                  />
-                </a>
-              </div>
-            </div>
-            <div
-              class="class-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
-            >
-              <div
-                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
-              >
-                <a
-                  href="/notice?id=5"
-                  class="class-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="X-E5 오프라인 클래스 공지 상세로 이동"
-                >
-                  <img
-                    src="/images/class-xe5.png"
-                    alt="X-E5 class · 2026.04.18(토) 오전 10시~12시 · 즐카 · 2만원"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 푸터 -->
-      <div
-        class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <label
-          class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400"
-        >
-          <input
-            type="checkbox"
-            id="class-promo-dont-show"
-            class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]"
-          />
-          오늘 하루 안 보기
-        </label>
-        <button
-          type="button"
-          id="class-promo-close-btn"
-          class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]"
-        >
-          닫기
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 전시 안내 팝업 (비노출 유지 — 재사용 시 스크립트에서 show 로직 복구) -->
-  <div
-    id="display-promo-popup"
-    class="fixed inset-0 z-[61] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="display-promo-title"
-  >
-    <div
-      class="relative mt-8 flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12"
-    >
-      <div
-        class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#0F172A] p-4"
-      >
-        <h2 id="display-promo-title" class="text-lg font-bold text-white sm:text-xl">
-          전시 안내
-        </h2>
-        <button
-          type="button"
-          id="display-promo-close"
-          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
-          aria-label="팝업 닫기"
-        >
-          <svg
-            class="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path></svg
-          >
-        </button>
-      </div>
-      <div
-        id="display-promo-slider"
-        class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
-      >
-        <button
-          type="button"
-          id="display-promo-prev"
-          class="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
-          aria-label="이전"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-        </button>
-        <button
-          type="button"
-          id="display-promo-next"
-          class="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-slate-600/40 bg-slate-800/90 p-2 text-white shadow backdrop-blur-sm transition hover:bg-slate-700"
-          aria-label="다음"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-        </button>
-        <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-          <div
-            class="display-promo-track flex h-full transition-transform duration-300 ease-out"
-            style="width: 200%; transform: translateX(0);"
-          >
-            <div
-              class="display-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
-            >
-              <div
-                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
-              >
-                <a
-                  href="/notice?id=11"
-                  class="display-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="GR COLLECTIVE 1ST EXHIBITION 전시 공지 상세로 이동"
-                >
-                  <img
-                    src="/images/display_07/leaflet_front.webp"
-                    alt="GR COLLECTIVE 1ST EXHIBITION · 2026.07.10 - 2026.07.19 · IACO갤러리"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
-                  />
-                </a>
-              </div>
-            </div>
-            <div
-              class="display-promo-slide flex min-h-0 w-1/2 shrink-0 flex-col px-2 py-4"
-            >
-              <div
-                class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
-              >
-                <a
-                  href="/notice?id=11"
-                  class="display-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="GR COLLECTIVE 1ST EXHIBITION 전시 공지 상세로 이동"
-                >
-                  <img
-                    src="/images/display_07/poster_black.webp"
-                    alt="GR COLLECTIVE 1ST EXHIBITION · 2026.07.10 - 2026.07.19 · 서울 용산 IACO갤러리"
-                    class="max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <label
-          class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400"
-        >
-          <input
-            type="checkbox"
-            id="display-promo-dont-show"
-            class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]"
-          />
-          오늘 하루 안 보기
-        </label>
-        <button
-          type="button"
-          id="display-promo-close-btn"
-          class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]"
-        >
-          닫기
-        </button>
-      </div>
-    </div>
-  </div>
+  <!--
+    비활성 팝업 제거 (Lighthouse: hidden이어도 <img src>는 로드됨)
+    - 강의 홍보: /images/class-museum.png, class-xe5.png — git 히스토리에서 복구
+    - 전시 안내: /images/display_07/* — 에셋은 public에 유지, 재노출 시 마크업 복구
+  -->
 
   <!-- 모집 정보 팝업 (gr_18~gr_20) -->
   <div
@@ -422,24 +170,13 @@ import Layout from "../layouts/Layout.astro";
     <div id="hero-bg-slides" class="absolute inset-0" aria-hidden="true">
       <div
         class="hero-bg-slide is-active"
-        style="background-image: url('/images/hero-bg/gr_1.jpeg');"
+        data-bg="/images/hero-bg/gr_1.webp"
+        style="background-image: url('/images/hero-bg/gr_1.webp');"
       >
       </div>
-      <div
-        class="hero-bg-slide"
-        style="background-image: url('/images/hero-bg/gr_2.jpeg');"
-      >
-      </div>
-      <div
-        class="hero-bg-slide"
-        style="background-image: url('/images/hero-bg/gr_3.jpeg');"
-      >
-      </div>
-      <div
-        class="hero-bg-slide"
-        style="background-image: url('/images/hero-bg/gr_4.jpeg');"
-      >
-      </div>
+      <div class="hero-bg-slide" data-bg="/images/hero-bg/gr_2.webp"></div>
+      <div class="hero-bg-slide" data-bg="/images/hero-bg/gr_3.webp"></div>
+      <div class="hero-bg-slide" data-bg="/images/hero-bg/gr_4.webp"></div>
     </div>
     <div
       class="absolute inset-0 bg-[#0F172A]/80"
@@ -585,7 +322,7 @@ import Layout from "../layouts/Layout.astro";
       </div>
       <a
         href="/reviews"
-        class="shrink-0 text-sm font-medium text-[#E11D48] transition-colors hover:text-[#be123c]"
+        class="shrink-0 text-sm font-medium text-[#BE123C] transition-colors hover:text-[#9f1239]"
       >
         더보기 →
       </a>
@@ -601,7 +338,7 @@ import Layout from "../layouts/Layout.astro";
 
     <div id="reviews-marquee-empty" class="mx-auto hidden max-w-6xl px-4 text-center sm:px-6">
       <p class="text-sm text-[#6B7280]">아직 등록된 고객 후기가 없습니다.</p>
-      <a href="/reviews" class="mt-2 inline-block text-sm font-medium text-[#E11D48] hover:text-[#be123c]">
+      <a href="/reviews" class="mt-2 inline-block text-sm font-medium text-[#BE123C] hover:text-[#9f1239]">
         첫 후기 남기기 →
       </a>
     </div>
@@ -931,12 +668,28 @@ import Layout from "../layouts/Layout.astro";
   import { FEATURED_BLOG } from "../data/featured-blog";
 
   (function initHeroBgSlideshow() {
-    const slides = document.querySelectorAll(".hero-bg-slide");
+    const slides = Array.from(
+      document.querySelectorAll(".hero-bg-slide"),
+    ) as HTMLElement[];
     if (slides.length < 2) return;
+
+    function ensureBg(el: HTMLElement | undefined) {
+      if (!el) return;
+      const bg = el.dataset.bg;
+      if (bg && !el.style.backgroundImage) {
+        el.style.backgroundImage = `url('${bg}')`;
+      }
+    }
+
+    // 다음 슬라이드까지 미리 로드
+    ensureBg(slides[1]);
+
     let current = 0;
     setInterval(() => {
       slides[current].classList.remove("is-active");
       current = (current + 1) % slides.length;
+      ensureBg(slides[current]);
+      ensureBg(slides[(current + 1) % slides.length]);
       slides[current].classList.add("is-active");
     }, 2000);
   })();
@@ -1211,8 +964,8 @@ import Layout from "../layouts/Layout.astro";
           </div>
         </a>
         <div class="flex items-center justify-between gap-2 px-4 pb-4 pt-0">
-          <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">블로그 보기 →</a>
-          <a href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" class="text-xs text-[#E11D48] font-medium hover:underline">유튜브 보기 →</a>
+          <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" class="inline-flex min-h-6 items-center text-xs text-[#E11D48] font-medium hover:underline">블로그 보기 →</a>
+          <a href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" class="inline-flex min-h-6 items-center text-xs text-[#E11D48] font-medium hover:underline">유튜브 보기 →</a>
         </div>
       </div>
     `;
@@ -1373,82 +1126,6 @@ import Layout from "../layouts/Layout.astro";
 
   load();
 
-  // 강의 홍보 팝업: 메인 진입 시 1회 (오늘 하루 안 보기 가능)
-  (function initClassPromoPopup() {
-    const STORAGE_KEY = "holaphoto-class-popup-seen";
-    const popup = document.getElementById("class-promo-popup");
-    const closeBtn = document.getElementById("class-promo-close");
-    const closeBtn2 = document.getElementById("class-promo-close-btn");
-    const dontShow = document.getElementById(
-      "class-promo-dont-show",
-    ) as HTMLInputElement | null;
-
-    function hidePopup() {
-      popup?.classList.add("hidden");
-      popup?.classList.remove("flex");
-    }
-
-    function showPopup() {
-      popup?.classList.remove("hidden");
-      popup?.classList.add("flex");
-    }
-
-    function shouldShowPopup(): boolean {
-      try {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
-        if (!raw) return true;
-        const data = JSON.parse(raw) as { date?: string };
-        if (!data.date) return true;
-        const today = new Date().toDateString();
-        return data.date !== today;
-      } catch {
-        return true;
-      }
-    }
-
-    function setDontShowToday() {
-      try {
-        sessionStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ date: new Date().toDateString() }),
-        );
-      } catch (_) {}
-    }
-
-    // 팝업 비노출 요청: 메인 진입 시 강의 팝업 비활성화
-    // if (shouldShowPopup()) showPopup();
-
-    function close() {
-      if (dontShow?.checked) setDontShowToday();
-      hidePopup();
-    }
-
-    function tryShowGrPopup() {
-      // 모집 팝업 숨김 처리 요청에 따라 내부 로직 비움
-    }
-
-    closeBtn?.addEventListener("click", () => {
-      close();
-      tryShowGrPopup();
-    });
-    closeBtn2?.addEventListener("click", () => {
-      close();
-      tryShowGrPopup();
-    });
-    popup?.addEventListener("click", (e) => {
-      if (e.target === popup) {
-        close();
-        tryShowGrPopup();
-        return;
-      }
-      const link = (e.target as Element).closest(".class-promo-image-link");
-      if (link) {
-        hidePopup();
-        tryShowGrPopup();
-      }
-    });
-  })();
-
   let tryShowGrPromo: (() => void) | undefined;
 
   // GR 모집 팝업 (메인 진입 시 노출)
@@ -1467,14 +1144,15 @@ import Layout from "../layouts/Layout.astro";
     }
 
     function loadPromoImages() {
-      popup
-        ?.querySelectorAll<HTMLImageElement>("img.gr-promo-img[data-src]")
-        .forEach((img) => {
-          const src = img.dataset.src;
-          if (!src || img.getAttribute("src")) return;
-          img.src = src;
-          img.removeAttribute("data-src");
-        });
+      const imgs = Array.from(
+        popup?.querySelectorAll("img.gr-promo-img[data-src]") ?? [],
+      ) as HTMLImageElement[];
+      imgs.forEach((img) => {
+        const src = img.dataset.src;
+        if (!src || img.getAttribute("src")) return;
+        img.src = src;
+        img.removeAttribute("data-src");
+      });
     }
 
     function showPopup() {
@@ -1570,44 +1248,6 @@ import Layout from "../layouts/Layout.astro";
     const slider = document.getElementById("gr-promo-slider");
     document.getElementById("gr-promo-prev")?.addEventListener("click", () => goTo(current - 1));
     document.getElementById("gr-promo-next")?.addEventListener("click", () => goTo(current + 1));
-    let touchStartX = 0;
-    slider?.addEventListener(
-      "touchstart",
-      (e) => {
-        touchStartX = (e as TouchEvent).touches[0].clientX;
-      },
-      { passive: true },
-    );
-    slider?.addEventListener(
-      "touchend",
-      (e) => {
-        const dx = (e as TouchEvent).changedTouches[0].clientX - touchStartX;
-        if (Math.abs(dx) > 40) dx < 0 ? goTo(current + 1) : goTo(current - 1);
-      },
-      { passive: true },
-    );
-
-    setInterval(() => goTo(current + 1), AUTOPLAY_MS);
-  })();
-
-  // 강의 팝업 내부 슬라이드 (트랙 width 200%, 슬라이드 2장, 슬라이드당 100/2% 이동)
-  (function initClassPromoSlider() {
-    const track = document.querySelector(
-      ".class-promo-track",
-    ) as HTMLElement | null;
-    const total = 2;
-    let current = 0;
-    const AUTOPLAY_MS = 3000;
-
-    function goTo(i: number) {
-      current = ((i % total) + total) % total;
-      if (track)
-        track.style.transform = `translateX(-${(current * 100) / 2}%)`;
-    }
-
-    const slider = document.getElementById("class-promo-slider");
-    document.getElementById("class-promo-prev")?.addEventListener("click", () => goTo(current - 1));
-    document.getElementById("class-promo-next")?.addEventListener("click", () => goTo(current + 1));
     let touchStartX = 0;
     slider?.addEventListener(
       "touchstart",
