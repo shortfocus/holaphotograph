@@ -9,7 +9,7 @@ import Layout from "../layouts/Layout.astro";
     - 전시 안내: /images/display_07/* — 에셋은 public에 유지, 재노출 시 마크업 복구
   -->
 
-  <!-- 모집 정보 팝업 (gr_18~gr_20) -->
+  <!-- 모집 정보 팝업 (gr_21~gr_23, 2026.11.14) -->
   <div
     id="gr-promo-popup"
     class="fixed inset-0 z-[59] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
@@ -77,15 +77,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=13"
+                  href="/notice?id=14"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
                   aria-label="리코 GR4 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_18.webp"
+                    data-src="/images/gr_21.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 카메라 클래스 · 2026.10.10(토) 오전 11시~오후 1시 · 즐거운 카메라 · 2만원"
+                    alt="리코 GR4 카메라 클래스 · 2026.11.14(토) 오전 11시~오후 12시 30분 · 즐거운 카메라 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -99,15 +99,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=13"
+                  href="/notice?id=14"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 용산공원 출사 공지 상세로 이동"
+                  aria-label="리코 GR4 P모드 잘 쓰는 법 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_19.webp"
+                    data-src="/images/gr_22.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 용산공원 출사 · 2026.10.10(토) 오후 2시 30분~4시 30분 · 용산공원 · 2만원"
+                    alt="리코 GR4 P모드 잘 쓰는 법 · 2026.11.14(토) 오후 1시 30분~오후 3시 · 즐거운 카메라 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -121,15 +121,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=13"
+                  href="/notice?id=14"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 야경 출사 공지 상세로 이동"
+                  aria-label="리코 GR4 선유도 가을 출사 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_20.webp"
+                    data-src="/images/gr_23.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 야경 출사 · 2026.10.10(토) 오후 6시 30분~8시 30분 · 반포한강공원 · 2만원"
+                    alt="리코 GR4 선유도 가을 출사 · 2026.11.14(토) 오후 4시 30분~6시 30분 · 선유도공원 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -661,7 +661,6 @@ import Layout from "../layouts/Layout.astro";
     fetchChannelStats,
     fetchApprovedReviews,
     getRssThumbnailUrl,
-    type NaverRssItem,
     type Post,
     type YoutubeVideoItem,
   } from "../lib/api";
@@ -1130,7 +1129,7 @@ import Layout from "../layouts/Layout.astro";
 
   // GR 모집 팝업 (메인 진입 시 노출)
   (function initGrPromoPopup() {
-    const STORAGE_KEY = "holaphoto-gr-popup-seen-20261010";
+    const STORAGE_KEY = "holaphoto-gr-popup-seen-20261114";
     const popup = document.getElementById("gr-promo-popup");
     const closeBtn = document.getElementById("gr-promo-close");
     const closeBtn2 = document.getElementById("gr-promo-close-btn");
@@ -1205,9 +1204,10 @@ import Layout from "../layouts/Layout.astro";
 
   // 히어로 YouTube facade — 클릭 시에만 iframe 로드
   (function initHeroYoutubeFacade() {
-    const facade = document.getElementById("hero-youtube-facade");
-    if (!facade) return;
-    const videoId = facade.getAttribute("data-youtube-id");
+    const el = document.getElementById("hero-youtube-facade");
+    if (!el) return;
+    const root: HTMLElement = el;
+    const videoId = root.getAttribute("data-youtube-id");
     if (!videoId) return;
 
     function activate() {
@@ -1218,11 +1218,11 @@ import Layout from "../layouts/Layout.astro";
       iframe.allow =
         "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
       iframe.allowFullscreen = true;
-      facade.replaceWith(iframe);
+      root.replaceWith(iframe);
     }
 
-    facade.addEventListener("click", activate);
-    facade.addEventListener("keydown", (e) => {
+    root.addEventListener("click", activate);
+    root.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         activate();
@@ -1230,7 +1230,7 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // GR 팝업 내부 슬라이드 (3장: gr_18~gr_20, 100/3% 이동)
+  // GR 팝업 내부 슬라이드 (3장: gr_21~gr_23, 100/3% 이동)
   (function initGrPromoSlider() {
     const track = document.querySelector(
       ".gr-promo-track",
