@@ -309,16 +309,17 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
+  <div class="home-body">
   <!-- 2-1. 수강생 후기 마퀴 (히어로 직후) -->
   <section
     id="reviews-marquee"
-    class="reviews-marquee-section border-t border-slate-200/60 bg-[#F8FAFC] py-10 sm:py-12"
+    class="home-section home-section--tight reviews-marquee-section"
     aria-label="고객 후기"
   >
-    <div class="mx-auto mb-6 flex max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
+    <div class="mx-auto mb-7 flex max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
       <div>
-        <p class="text-sm font-medium text-[#6B7280]">강의 · 스냅 촬영 후기</p>
-        <h2 class="mt-1 text-xl font-bold text-[#111827] sm:text-2xl">💬 고객 후기</h2>
+        <p class="text-sm font-medium tracking-wide text-[#6B7280]">강의 · 스냅 촬영 후기</p>
+        <h2 class="mt-1 text-xl font-bold tracking-tight text-[#0F172A] sm:text-2xl">고객 후기</h2>
       </div>
       <a
         href="/reviews"
@@ -329,10 +330,10 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
     <div id="reviews-marquee-loading" class="px-4 sm:px-6">
-      <div class="mx-auto flex max-w-6xl gap-4 overflow-hidden">
-        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
-        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
-        <div class="h-28 w-72 shrink-0 animate-pulse rounded-xl bg-slate-200"></div>
+      <div class="mx-auto flex max-w-6xl gap-5 overflow-hidden">
+        <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
+        <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
+        <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
       </div>
     </div>
 
@@ -351,7 +352,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- 3. 실전 영상 리뷰 섹션 -->
   <section
     id="youtube-long"
-    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
+    class="home-section"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-3">
@@ -389,7 +390,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- 5. 고품격! 올라포토 카메라/렌즈 리뷰 (블로그) -->
   <section
     id="blog"
-    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
+    class="home-section"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-3">
@@ -427,7 +428,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- 6. 빠르게 보는 장비 팁 (Shorts) -->
   <section
     id="youtube-shorts"
-    class="section-spacing border-t border-slate-200/60 bg-white py-14 sm:py-16"
+    class="home-section"
   >
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h2 class="section-title mb-3">
@@ -463,42 +464,42 @@ import Layout from "../layouts/Layout.astro";
   </section>
 
   <!-- 7. 성과 지표 (Performance Section) -->
-  <section
-    class="section-spacing border-t border-slate-200/60 bg-[#F8FAFC] py-14 sm:py-16"
-  >
+  <section class="home-section" aria-label="누적 성과">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <p
-        class="section-title mb-8 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
-      >
-        누적 성과
-      </p>
-      <div class="grid gap-8 sm:grid-cols-3">
-        <div class="text-center">
-          <p
-            id="stats-youtube-subscribers"
-            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
-          >
-            0
-          </p>
-          <p class="mt-2 text-[#6B7280]">유튜브 구독자</p>
-        </div>
-        <div class="text-center">
-          <p
-            id="stats-youtube-views"
-            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
-          >
-            0
-          </p>
-          <p class="mt-2 text-[#6B7280]">월간 조회수</p>
-        </div>
-        <div class="text-center">
-          <p
-            id="stats-naver-visitors"
-            class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
-          >
-            0
-          </p>
-          <p class="mt-2 text-[#6B7280]">누적 방문자</p>
+      <div class="home-stats-panel">
+        <p
+          class="section-title mb-8 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
+        >
+          누적 성과
+        </p>
+        <div class="grid gap-8 sm:grid-cols-3">
+          <div class="text-center">
+            <p
+              id="stats-youtube-subscribers"
+              class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+            >
+              0
+            </p>
+            <p class="mt-2 text-[#6B7280]">유튜브 구독자</p>
+          </div>
+          <div class="text-center">
+            <p
+              id="stats-youtube-views"
+              class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+            >
+              0
+            </p>
+            <p class="mt-2 text-[#6B7280]">월간 조회수</p>
+          </div>
+          <div class="text-center">
+            <p
+              id="stats-naver-visitors"
+              class="count-up text-5xl font-bold text-[#E11D48] sm:text-6xl"
+            >
+              0
+            </p>
+            <p class="mt-2 text-[#6B7280]">누적 방문자</p>
+          </div>
         </div>
       </div>
     </div>
@@ -507,7 +508,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- 8. 협업 / 광고 문의 -->
   <section
     id="about"
-    class="section-spacing border-t border-slate-200/60 !mt-0 bg-white py-14 sm:py-16"
+    class="home-section"
   >
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
       <h2
@@ -523,7 +524,7 @@ import Layout from "../layouts/Layout.astro";
           href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="유튜브"
         >
           <img
@@ -541,7 +542,7 @@ import Layout from "../layouts/Layout.astro";
           href="https://blog.naver.com/holaphotograph"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="네이버 블로그"
         >
           <img
@@ -559,7 +560,7 @@ import Layout from "../layouts/Layout.astro";
           href="https://www.instagram.com/snap.hola"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="인스타그램"
         >
           <img
@@ -575,7 +576,7 @@ import Layout from "../layouts/Layout.astro";
         </a>
         <a
           href="mailto:holaphotographer@gmail.com"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-6 py-5 transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
         >
           <img
             src="/icons/contact.svg"
@@ -595,6 +596,7 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </section>
+  </div>
 
   <!-- 본문 진입 시 우측 여백 빠른 링크 레일 (데스크톱) -->
   <aside id="side-rail" class="side-rail" aria-label="빠른 링크">
@@ -704,13 +706,6 @@ import Layout from "../layouts/Layout.astro";
     const viewport: HTMLElement = viewportEl;
     const track: HTMLElement = trackEl;
 
-    const MARQUEE_CARD_COLORS = [
-      "reviews-marquee-card--amber",
-      "reviews-marquee-card--rose",
-      "reviews-marquee-card--sky",
-      "reviews-marquee-card--emerald",
-    ];
-
     function escapeHtml(s: string) {
       const div = document.createElement("div");
       div.textContent = s;
@@ -739,21 +734,27 @@ import Layout from "../layouts/Layout.astro";
       return reviewType === "snap" ? "스냅 촬영 후기" : "강의 수강 후기";
     }
 
-    function renderMarqueeCard(post: Post, index: number) {
+    function renderMarqueeCard(post: Post) {
       const text = getTextWithoutImages(post.content);
       const excerpt =
         text.length > 72 ? `${text.slice(0, 72)}…` : text || "후기를 확인해 보세요.";
-      const color = MARQUEE_CARD_COLORS[index % MARQUEE_CARD_COLORS.length];
-      const typeClass =
-        post.review_type === "snap"
-          ? "reviews-marquee-card__label--snap"
-          : "reviews-marquee-card__label--lecture";
+      const isSnap = post.review_type === "snap";
+      const typeClass = isSnap
+        ? "reviews-marquee-card__label--snap"
+        : "reviews-marquee-card__label--lecture";
+      const cardTypeClass = isSnap ? " reviews-marquee-card--snap" : "";
+      const author = maskAuthorName(post.author_name);
+      const initial = (author[0] || "수").toUpperCase();
+      const date = new Date(post.created_at).toLocaleDateString("ko-KR");
       return `
-        <article class="reviews-marquee-card ${color}" aria-label="${escapeHtml(reviewTypeLabel(post.review_type))}">
+        <article class="reviews-marquee-card${cardTypeClass}" aria-label="${escapeHtml(reviewTypeLabel(post.review_type))}">
           <p class="reviews-marquee-card__label ${typeClass}">${reviewTypeLabel(post.review_type)}</p>
           <h3 class="reviews-marquee-card__title">${escapeHtml(post.title)}</h3>
           <p class="reviews-marquee-card__excerpt">${escapeHtml(excerpt)}</p>
-          <p class="reviews-marquee-card__meta">${escapeHtml(maskAuthorName(post.author_name))} · ${new Date(post.created_at).toLocaleDateString("ko-KR")}</p>
+          <div class="reviews-marquee-card__meta">
+            <span class="reviews-marquee-card__avatar" aria-hidden="true">${escapeHtml(initial)}</span>
+            <span class="reviews-marquee-card__meta-text">${escapeHtml(author)} · ${date}</span>
+          </div>
         </article>
       `;
     }
@@ -775,7 +776,7 @@ import Layout from "../layouts/Layout.astro";
         }
 
         const items = buildMarqueeItems(posts);
-        const cardsHtml = items.map((p, i) => renderMarqueeCard(p, i)).join("");
+        const cardsHtml = items.map((p) => renderMarqueeCard(p)).join("");
         track.innerHTML = cardsHtml + cardsHtml;
 
         const duration = Math.max(28, items.length * 7);
