@@ -274,13 +274,13 @@ import Layout from "../layouts/Layout.astro";
               <div
                 id="hero-youtube-facade"
                 class="group relative aspect-video w-full min-h-[200px] cursor-pointer bg-black sm:min-h-[280px]"
-                data-youtube-id="7BYd6RJp3RY"
+                data-youtube-id="Ol6h2xOkaIA"
                 role="button"
                 tabindex="0"
                 aria-label="올라포토 리코 강의 영상 재생"
               >
                 <img
-                  src="https://i.ytimg.com/vi/7BYd6RJp3RY/hqdefault.jpg"
+                  src="https://i.ytimg.com/vi/Ol6h2xOkaIA/hqdefault.jpg"
                   alt=""
                   width="480"
                   height="360"
@@ -767,7 +767,7 @@ import Layout from "../layouts/Layout.astro";
 
     async function load() {
       try {
-        const posts = await fetchApprovedReviews();
+        const { posts } = await fetchApprovedReviews({ limit: 20 });
         loading.classList.add("hidden");
 
         if (posts.length === 0) {

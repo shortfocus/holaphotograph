@@ -43,12 +43,47 @@ export async function fetchPosts(): Promise<Post[]> {
   return data.posts ?? [];
 }
 
-/** 고객 후기 목록 (승인된 것만) - /reviews 페이지용 */
-export async function fetchApprovedReviews(): Promise<Post[]> {
-  const res = await fetch(`${API_BASE}/api/reviews`);
+export type ReviewTypeFilter = "snap" | "lecture";
+
+export interface FetchApprovedReviewsOptions {
+  limit?: number;
+  offset?: number;
+  review_type?: ReviewTypeFilter;
+}
+
+export interface ApprovedReviewsResult {
+  posts: Post[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+/** 고객 후기 목록 (승인된 것만) - /reviews·홈 마퀴용 */
+export async function fetchApprovedReviews(
+  options: FetchApprovedReviewsOptions = {},
+): Promise<ApprovedReviewsResult> {
+  const params = new URLSearchParams();
+  if (options.limit != null) params.set("limit", String(options.limit));
+  if (options.offset != null) params.set("offset", String(options.offset));
+  if (options.review_type) params.set("review_type", options.review_type);
+  const qs = params.toString();
+  const res = await fetch(
+    `${API_BASE}/api/reviews${qs ? `?${qs}` : ""}`,
+  );
   if (!res.ok) throw new Error("Failed to fetch reviews");
-  const data = (await res.json()) as { posts?: Post[] };
-  return data.posts ?? [];
+  const data = (await res.json()) as {
+    posts?: Post[];
+    total?: number;
+    limit?: number;
+    offset?: number;
+  };
+  const posts = data.posts ?? [];
+  return {
+    posts,
+    total: data.total ?? posts.length,
+    limit: data.limit ?? posts.length,
+    offset: data.offset ?? 0,
+  };
 }
 
 /** 관리자용: 전체 목록 (pending 포함, credentials 필요) */

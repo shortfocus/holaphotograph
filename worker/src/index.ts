@@ -1503,23 +1503,74 @@ async function handleReviewImageUpload(
   return jsonResponse({ url: imageUrl, key }, 200, request);
 }
 
-/** 고객 후기 목록 (승인된 것만) - 공개 페이지 전용 */
+/** 고객 후기 목록 (승인된 것만) - 공개 페이지 전용
+ *  쿼리: limit(선택, 1~50), offset(기본 0), review_type(snap|lecture 선택)
+ *  응답: { posts, total, limit, offset }
+ */
 async function handleListApprovedReviews(
   request: Request,
   env: Env,
 ): Promise<Response> {
-  const { results } = await env.DB.prepare(
-    "SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type FROM customer_reviews WHERE status = ? ORDER BY created_at DESC",
+  const url = new URL(request.url);
+  const reviewTypeParam = url.searchParams.get("review_type");
+  const limitRaw = url.searchParams.get("limit");
+  const offsetRaw = url.searchParams.get("offset");
+
+  const reviewType =
+    reviewTypeParam === "snap" || reviewTypeParam === "lecture"
+      ? reviewTypeParam
+      : null;
+
+  const hasLimit = limitRaw !== null && limitRaw !== "";
+  const limit = hasLimit
+    ? Math.min(50, Math.max(1, parseInt(limitRaw!, 10) || 12))
+    : null;
+  const offset = Math.max(0, parseInt(offsetRaw || "0", 10) || 0);
+
+  // lecture: 과거 null 값도 강의 후기로 취급 (프론트 review_type ?? 'lecture' 와 동일)
+  let where = "status = ?";
+  const binds: (string | number)[] = ["approved"];
+  if (reviewType === "snap") {
+    where += " AND review_type = ?";
+    binds.push("snap");
+  } else if (reviewType === "lecture") {
+    where += " AND (review_type = ? OR review_type IS NULL)";
+    binds.push("lecture");
+  }
+
+  const countRow = await env.DB.prepare(
+    `SELECT COUNT(*) AS c FROM customer_reviews WHERE ${where}`,
   )
-    .bind("approved")
-    .all<Post>();
+    .bind(...binds)
+    .first<{ c: number }>();
+  const total = Number(countRow?.c ?? 0);
+
+  let sql =
+    `SELECT id, title, content, thumbnail_url, author_name, created_at, updated_at, review_type ` +
+    `FROM customer_reviews WHERE ${where} ORDER BY created_at DESC`;
+  const listBinds = [...binds];
+  if (limit !== null) {
+    sql += " LIMIT ? OFFSET ?";
+    listBinds.push(limit, offset);
+  }
+
+  const { results } = await env.DB.prepare(sql).bind(...listBinds).all<Post>();
   const origin = new URL(request.url).origin;
   const posts = results.map((p) => ({
     ...p,
     thumbnail_url: normalizeImageUrl(p.thumbnail_url, origin),
     content: rewriteImageUrlsInHtml(p.content ?? "", origin),
   }));
-  return jsonResponse({ posts }, 200, request);
+  return jsonResponse(
+    {
+      posts,
+      total,
+      limit: limit ?? posts.length,
+      offset,
+    },
+    200,
+    request,
+  );
 }
 
 interface LectureSignupRow {
