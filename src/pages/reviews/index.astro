@@ -118,7 +118,7 @@ import Layout from '../../layouts/Layout.astro';
         <button type="button" id="tab-lecture" class="reviews-tab reviews-tab-lecture flex-1 rounded-tr-lg px-4 py-3 text-center text-sm sm:py-3.5 sm:text-base" role="tab" aria-selected="true" aria-controls="panel-lecture" data-tab="lecture">강의 수강 후기 <span id="tab-lecture-count" class="tabular-nums opacity-80"></span></button>
       </div>
 
-      <!-- 탭 1: 스냅 촬영 후기 — 초기 12개 + 더보기 -->
+      <!-- 탭 1: 스냅 촬영 후기 — 초기 10개 + 더보기 -->
       <div id="panel-snap" class="reviews-panel-snap relative hidden rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-snap">
         <div id="reviews-loading-snap" class="reviews-loading" aria-live="polite" aria-busy="true">
           <div class="reviews-loading-spinner" aria-hidden="true"></div>
@@ -142,7 +142,7 @@ import Layout from '../../layouts/Layout.astro';
         </div>
       </div>
 
-      <!-- 탭 2: 강의 수강 후기 — 초기 12개 + 더보기 -->
+      <!-- 탭 2: 강의 수강 후기 — 초기 10개 + 더보기 -->
       <div id="panel-lecture" class="reviews-panel-lecture relative rounded-b-lg bg-white px-4 py-6 shadow sm:px-6 sm:py-8" role="tabpanel" aria-labelledby="tab-lecture">
         <div id="reviews-loading-lecture" class="reviews-loading" aria-live="polite" aria-busy="true">
           <div class="reviews-loading-spinner" aria-hidden="true"></div>
@@ -499,7 +499,7 @@ import Layout from '../../layouts/Layout.astro';
     if (trixEditor?.editor) trixEditor.editor.loadHTML('');
   });
 
-  const PAGE_SIZE = 12;
+  const PAGE_SIZE = 10;
   const moreSnapBtn = document.getElementById('reviews-more-snap') as HTMLButtonElement;
   const moreLectureBtn = document.getElementById('reviews-more-lecture') as HTMLButtonElement;
 
