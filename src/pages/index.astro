@@ -9,6 +9,89 @@ import Layout from "../layouts/Layout.astro";
     - 전시 안내: /images/display_07/* — 에셋은 public에 유지, 재노출 시 마크업 복구
   -->
 
+  <!-- 신간 안내 팝업 (책 출간) — 모집 정보 팝업보다 먼저 노출 -->
+  <div
+    id="book-promo-popup"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="book-promo-title"
+  >
+    <div
+      class="relative mt-8 flex max-h-[85vh] w-full max-w-sm flex-col overflow-hidden rounded-xl bg-[#0F172A] shadow-2xl ring-1 ring-white/10 sm:mt-12"
+    >
+      <div
+        class="relative flex shrink-0 items-center justify-center border-b border-slate-700/50 bg-[#1E2637] p-4"
+      >
+        <h2 id="book-promo-title" class="text-lg font-bold text-white sm:text-xl">
+          신간 안내
+        </h2>
+        <button
+          type="button"
+          id="book-promo-close"
+          class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+          aria-label="팝업 닫기"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path></svg
+          >
+        </button>
+      </div>
+      <div class="flex min-h-0 flex-1 flex-col items-center overflow-auto px-2 py-5">
+        <a
+          href="/notice?id=15"
+          id="book-promo-image-link"
+          class="flex w-full max-w-[320px] cursor-pointer flex-col items-center"
+          aria-label="RICOH GR IV 책 출간 공지 상세로 이동"
+        >
+          <img
+            src="/images/RICOH_GRIV.webp"
+            width="560"
+            height="788"
+            alt="RICOH GR IV 기초부터 응용까지 100% 활용 가이드 표지"
+            class="w-full rounded-lg object-contain shadow-lg ring-1 ring-white/10"
+            decoding="async"
+          />
+          <span class="mt-4 text-center text-base font-bold text-white">
+            RICOH 리코 GR IV
+          </span>
+          <span class="mt-1 text-center text-sm font-semibold text-slate-300">
+            기초부터 응용까지 100% 활용 가이드
+          </span>
+        </a>
+      </div>
+      <div
+        class="flex shrink-0 flex-col gap-2 border-t border-slate-700/50 p-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <label
+          class="flex cursor-pointer items-center gap-1.5 text-xs text-slate-400"
+        >
+          <input
+            type="checkbox"
+            id="book-promo-dont-show"
+            class="rounded border-slate-600 bg-slate-800 text-[#E11D48] focus:ring-[#E11D48]"
+          />
+          오늘 하루 안 보기
+        </label>
+        <button
+          type="button"
+          id="book-promo-close-btn"
+          class="cursor-pointer rounded-lg bg-[#E11D48] px-4 py-2 text-xs font-semibold text-white hover:bg-[#be123c]"
+        >
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 모집 정보 팝업 (gr_21~gr_23, 2026.11.14) -->
   <div
     id="gr-promo-popup"
@@ -310,7 +393,7 @@ import Layout from "../layouts/Layout.astro";
   </section>
 
   <div class="home-body">
-  <!-- 2-1. 수강생 후기 마퀴 (히어로 직후) -->
+  <!-- 2-1. 수강생 후기 마퀴 -->
   <section
     id="reviews-marquee"
     class="home-section home-section--tight reviews-marquee-section"
@@ -598,6 +681,32 @@ import Layout from "../layouts/Layout.astro";
   </section>
   </div>
 
+  <!-- 우측 side-rail과 동일 시점(히어로 이탈)에 좌측 floating 신간 안내 (데스크톱) -->
+  <aside
+    id="book-launch-float"
+    class="book-launch-float"
+    aria-label="책 출간 안내"
+  >
+    <a href="/notice?id=15" class="book-launch-float__link">
+      <span class="book-launch-float__eyebrow">신간 안내</span>
+      <span class="book-launch-float__cover">
+        <img
+          src="/images/RICOH_GRIV.webp"
+          alt="RICOH GR IV 기초부터 응용까지 100% 활용 가이드 표지"
+          width="320"
+          height="450"
+          loading="lazy"
+          decoding="async"
+        />
+      </span>
+      <span class="book-launch-float__body">
+        <span class="book-launch-float__title">RICOH 리코 GR IV</span>
+        <span class="book-launch-float__subtitle">기초부터 응용까지 100% 활용 가이드</span>
+        <span class="book-launch-float__cta">자세히 보기 →</span>
+      </span>
+    </a>
+  </aside>
+
   <!-- 본문 진입 시 우측 여백 빠른 링크 레일 (데스크톱) -->
   <aside id="side-rail" class="side-rail" aria-label="빠른 링크">
     <button
@@ -821,6 +930,21 @@ import Layout from "../layouts/Layout.astro";
       bar?.scrollIntoView({ behavior: "smooth", block: "end" });
       window.setTimeout(() => email?.focus({ preventScroll: true }), 450);
     });
+  })();
+
+  (function initBookLaunchFloat() {
+    const floatEl = document.getElementById("book-launch-float");
+    const hero = document.querySelector(".hero-section");
+    if (!floatEl || !hero) return;
+
+    // 우측 side-rail과 동일: 히어로가 화면에서 벗어나면 표시
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        floatEl.classList.toggle("is-visible", !entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: "-8% 0px 0px 0px" },
+    );
+    observer.observe(hero);
   })();
 
   const youtubeLongGrid = document.getElementById("youtube-long-grid")!;
@@ -1128,7 +1252,28 @@ import Layout from "../layouts/Layout.astro";
 
   let tryShowGrPromo: (() => void) | undefined;
 
-  // GR 모집 팝업 (메인 진입 시 노출)
+  function shouldShowDailyPopup(storageKey: string): boolean {
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (!raw) return true;
+      const data = JSON.parse(raw) as { date?: string };
+      if (!data.date) return true;
+      return data.date !== new Date().toDateString();
+    } catch {
+      return true;
+    }
+  }
+
+  function setDontShowToday(storageKey: string) {
+    try {
+      sessionStorage.setItem(
+        storageKey,
+        JSON.stringify({ date: new Date().toDateString() }),
+      );
+    } catch (_) {}
+  }
+
+  // GR 모집 팝업 (신간 팝업 다음에 노출)
   (function initGrPromoPopup() {
     const STORAGE_KEY = "holaphoto-gr-popup-seen-20261114";
     const popup = document.getElementById("gr-promo-popup");
@@ -1161,35 +1306,13 @@ import Layout from "../layouts/Layout.astro";
       popup?.classList.add("flex");
     }
 
-    function shouldShowPopup(): boolean {
-      try {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
-        if (!raw) return true;
-        const data = JSON.parse(raw) as { date?: string };
-        if (!data.date) return true;
-        const today = new Date().toDateString();
-        return data.date !== today;
-      } catch {
-        return true;
-      }
-    }
-
-    function setDontShowToday() {
-      try {
-        sessionStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ date: new Date().toDateString() }),
-        );
-      } catch (_) {}
-    }
-
     function close() {
-      if (dontShow?.checked) setDontShowToday();
+      if (dontShow?.checked) setDontShowToday(STORAGE_KEY);
       hidePopup();
     }
 
     tryShowGrPromo = () => {
-      if (shouldShowPopup()) showPopup();
+      if (shouldShowDailyPopup(STORAGE_KEY)) showPopup();
     };
 
     closeBtn?.addEventListener("click", close);
@@ -1200,8 +1323,46 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // 전시 안내 팝업: 비노출 (모집 팝업만 표시)
-  tryShowGrPromo?.();
+  // 신간 안내 팝업 → 닫힌 뒤 모집 정보 팝업
+  (function initBookPromoPopup() {
+    const STORAGE_KEY = "holaphoto-book-popup-seen-20261118";
+    const popup = document.getElementById("book-promo-popup");
+    const closeBtn = document.getElementById("book-promo-close");
+    const closeBtn2 = document.getElementById("book-promo-close-btn");
+    const dontShow = document.getElementById(
+      "book-promo-dont-show",
+    ) as HTMLInputElement | null;
+
+    function hidePopup() {
+      popup?.classList.add("hidden");
+      popup?.classList.remove("flex");
+    }
+
+    function showPopup() {
+      popup?.classList.remove("hidden");
+      popup?.classList.add("flex");
+    }
+
+    function closeAndShowNext() {
+      if (dontShow?.checked) setDontShowToday(STORAGE_KEY);
+      hidePopup();
+      tryShowGrPromo?.();
+    }
+
+    closeBtn?.addEventListener("click", closeAndShowNext);
+    closeBtn2?.addEventListener("click", closeAndShowNext);
+    popup?.addEventListener("click", (e) => {
+      if (e.target === popup) closeAndShowNext();
+      // 공지로 이동 시 모집 팝업은 띄우지 않음
+      if ((e.target as Element).closest("#book-promo-image-link")) hidePopup();
+    });
+
+    if (shouldShowDailyPopup(STORAGE_KEY)) {
+      showPopup();
+    } else {
+      tryShowGrPromo?.();
+    }
+  })();
 
   // 히어로 YouTube facade — 클릭 시에만 iframe 로드
   (function initHeroYoutubeFacade() {

@@ -68,10 +68,11 @@ const SITE = "https://holaphoto.com";
               class="inline-flex items-center gap-2 rounded-lg bg-[#E11D48] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#be123c]"
               href="#"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               aria-label="신청 폼 열기"
             >
-              <span aria-hidden="true">📋</span> 신청 폼 링크
+              <span id="notice-detail-form-icon" aria-hidden="true">📋</span>
+              <span id="notice-detail-form-label">신청 폼 링크</span>
               <span aria-hidden="true" class="text-white/90">→</span>
             </a>
           </div>
@@ -244,6 +245,19 @@ const SITE = "https://holaphoto.com";
       }
       if (formUrl) {
         detailFormLink.href = formUrl;
+        const formIcon = document.getElementById("notice-detail-form-icon");
+        const formLabel = document.getElementById("notice-detail-form-label");
+        const isInstagram = /instagram\.com/i.test(formUrl);
+        if (formIcon) formIcon.textContent = isInstagram ? "📷" : "📋";
+        if (formLabel) {
+          formLabel.textContent = isInstagram
+            ? "Instagram에서 보기"
+            : "신청 폼 링크";
+        }
+        detailFormLink.setAttribute(
+          "aria-label",
+          isInstagram ? "Instagram에서 보기" : "신청 폼 열기",
+        );
         detailFormCta?.classList.remove("hidden");
         // form_link 컬럼이 없을 때만 본문에서 링크 블록 제거 (하위 호환)
         if (!formUrlFromColumn) {
