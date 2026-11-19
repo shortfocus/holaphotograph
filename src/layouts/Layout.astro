@@ -250,8 +250,8 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
             <p class="font-semibold text-[#F1F5F9]">카메라 입문 & 실전 강의 준비 중</p>
             <p class="text-sm text-[#CBD5E1]">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
           </div>
-          <div class="flex w-full flex-col gap-2 sm:w-[31rem] sm:flex-shrink-0">
-            <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
+          <div class="w-full sm:w-auto sm:flex-shrink-0">
+            <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 type="email"
                 name="email"
@@ -259,7 +259,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
                 placeholder="이메일 주소"
                 required
                 autocomplete="email"
-                class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:min-w-0 sm:flex-[1.5]"
+                class="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#E11D48] focus:outline-none focus:ring-2 focus:ring-[#E11D48]/30 sm:min-w-0 sm:w-48"
               />
               <select
                 name="interest_brand"
@@ -278,8 +278,8 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
               >
                 강의 소식 받기
               </button>
+              <p id="lecture-signup-status" class="text-center text-sm leading-snug empty:hidden sm:text-left sm:whitespace-nowrap" aria-live="polite" role="status"></p>
             </form>
-            <p id="lecture-signup-status" class="min-h-6 text-center text-sm sm:text-left" aria-live="polite" role="status"></p>
           </div>
         </div>
       </div>
@@ -326,14 +326,15 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           e.preventDefault();
           const email = input.value.trim();
           const interestBrand = brandSelect?.value || null;
+          const statusBase = 'text-center text-sm leading-snug empty:hidden sm:text-left sm:whitespace-nowrap';
           if (!email) {
             status.textContent = '이메일을 입력해주세요.';
-            status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+            status.className = `${statusBase} text-amber-400`;
             return;
           }
           btn.disabled = true;
           status.textContent = '등록 중…';
-          status.className = 'min-h-6 text-center text-sm sm:text-left text-[#CBD5E1]';
+          status.className = `${statusBase} text-[#CBD5E1]`;
           try {
             const payload: { email: string; interest_brand?: string } = { email: email.toLowerCase() };
             if (interestBrand) payload.interest_brand = interestBrand;
@@ -345,15 +346,15 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
             const data = (await res.json().catch(() => ({}))) as { message?: string; error?: string };
             if (res.ok) {
               status.textContent = '✓ ' + (data.message || '등록되었습니다.');
-              status.className = 'min-h-6 text-center text-sm sm:text-left text-emerald-400 font-medium';
+              status.className = `${statusBase} text-emerald-400 font-medium`;
               input.value = '';
             } else {
               status.textContent = '✗ ' + (data.error || '등록에 실패했습니다. 다시 시도해주세요.');
-              status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+              status.className = `${statusBase} text-amber-400`;
             }
           } catch (_) {
             status.textContent = '✗ 네트워크 오류. 다시 시도해주세요.';
-            status.className = 'min-h-6 text-center text-sm sm:text-left text-amber-400';
+            status.className = `${statusBase} text-amber-400`;
           } finally {
             btn.disabled = false;
           }
