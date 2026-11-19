@@ -74,14 +74,14 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
   <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased', !adminFrame && !hideLectureBar && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
     {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
-      <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <nav class="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 lg:px-6 sm:py-4">
         <a href="/" id="header-logo-link" class="flex items-center" aria-label="올라포토 홈">
           <img
             src="/images/new_logo_1.png"
             alt="올라포토"
-            width="242"
-            height="112"
-            class="header-logo-wordmark h-14 w-auto shrink-0 object-contain"
+            width="628"
+            height="382"
+            class="header-logo-wordmark h-10 w-auto shrink-0 object-contain sm:h-14"
             decoding="async"
           />
         </a>
@@ -236,9 +236,10 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     </main>
     )}
     {!adminFrame && !hideLectureBar && (
-    <!-- 강의 소식 플로팅 CTA (토글 가능) -->
+    <>
+    {/* 강의 소식 플로팅 CTA (토글 가능) */}
     <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
-      <!-- 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 (bottom: 100%), CTA 오른쪽에 맞춤 -->
+      {/* 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 */}
       <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="플로팅 바 접기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg>
         <span>접기</span>
@@ -282,7 +283,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           </div>
         </div>
       </div>
-      <!-- 펼치기 탭: 접었을 때 플로팅 바 상단 경계에 하단이 딱 붙음 (접기 탭과 동일 방식) -->
+      {/* 펼치기 탭: 접었을 때 플로팅 바 상단 경계에 하단이 딱 붙음 */}
       <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="강의 소식 바 펼치기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
         <span>열기</span>
@@ -291,11 +292,9 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     <script>
       (function lectureBarToggle() {
         const STORAGE_KEY = 'lecture-bar-collapsed';
-        const bar = document.getElementById('lecture');
         const collapseBtn = document.getElementById('lecture-bar-collapse');
         const expandBtn = document.getElementById('lecture-bar-expand');
 
-        function isCollapsed() { return document.body.classList.contains('lecture-bar-collapsed'); }
         function setCollapsed(collapsed: boolean) {
           document.body.classList.toggle('lecture-bar-collapsed', collapsed);
           try { sessionStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch (_) {}
@@ -306,6 +305,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
         expandBtn?.addEventListener('click', () => setCollapsed(false));
       })();
     </script>
+    </>
     )}
 
     {!adminFrame && (
@@ -364,7 +364,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
 
     {!hideFooter && (
     <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
-      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
         <div class="text-center">
           <p class="text-xl font-semibold text-white sm:text-2xl">
             장비 선택부터 촬영까지, 실전 기반 가이드.

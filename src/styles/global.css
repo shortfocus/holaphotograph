@@ -152,10 +152,25 @@ body.nav-open {
   background-repeat: no-repeat;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
+  will-change: opacity, transform;
 }
 
 .hero-bg-slide.is-active {
   opacity: 1;
+  animation: hero-ken-burns 2.2s ease-out forwards;
+}
+
+@keyframes hero-ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+#hero-bg-slides {
+  will-change: transform;
 }
 
 /* 플로팅 바 접힌 상태: 히어로가 뷰포트 전체 사용 */
@@ -166,8 +181,8 @@ body.lecture-bar-collapsed .hero-section {
 /* 메인 본문: 히어로 이탈 후 우측 여백 빠른 링크 레일 */
 .side-rail {
   position: fixed;
-  /* 본문(max-w-6xl) 우측 여백의 가운데 */
-  right: max(1rem, calc((100vw - 72rem) / 4 - 1.5rem));
+  /* 본문(max-w-7xl) 우측 여백의 가운데 */
+  right: max(1rem, calc((100vw - 80rem) / 4 - 1.5rem));
   top: 50%;
   z-index: 35;
   display: none;
@@ -449,7 +464,7 @@ body.lecture-bar-collapsed .hero-section {
     animation: none;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 72rem;
+    max-width: 80rem;
     margin-inline: auto;
     padding-inline: 1rem;
     justify-content: center;
@@ -476,10 +491,131 @@ body.lecture-bar-collapsed .hero-section {
   50% { opacity: 1; }
 }
 .hero-animate {
-  animation: hero-fade-in-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: hero-fade-in-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .hero-glow {
   animation: hero-glow 4s ease-in-out infinite;
+}
+
+/* 히어로 스크롤 유도 */
+.hero-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.hero-scroll-cue.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hero-scroll-cue__dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #f43f5e;
+  animation: hero-scroll-pulse 1.8s ease-in-out infinite;
+}
+.hero-scroll-cue__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+@keyframes hero-scroll-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 0.35;
+  }
+}
+
+/* 스크롤 리빌 */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 1.25rem, 0);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 1rem, 0);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--stagger-i, 0) * 70ms);
+  will-change: opacity, transform;
+}
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* 가로 스크롤 카드·협업 CTA 마이크로 인터랙션 */
+.scroll-row-item {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+.home-collab-card {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.3s ease;
+}
+.home-collab-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-slide.is-active {
+    animation: none;
+  }
+  .hero-animate {
+    animation: none;
+    opacity: 1;
+  }
+  .hero-scroll-cue__dot {
+    animation: none;
+    opacity: 0.9;
+  }
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .scroll-row-item,
+  .home-collab-card,
+  .home-collab-card:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* 히어로 채널 아이콘: 동일 높이/너비 상자에 맞춤. 원본 로고 유지, 메일만 화이트 */
@@ -691,7 +827,7 @@ trix-editor.trix-content:empty:not(:focus)::before {
 /* 책 출간 좌측 floating (우측 side-rail과 동일: 히어로 이탈 후, 데스크톱) */
 .book-launch-float {
   position: fixed;
-  left: max(0.5rem, calc((100vw - 72rem) / 4 - 6.25rem));
+  left: max(0.5rem, calc((100vw - 80rem) / 4 - 6.25rem));
   top: 50%;
   z-index: 34;
   display: none;
@@ -825,7 +961,7 @@ trix-editor.trix-content:empty:not(:focus)::before {
   position: absolute;
   top: 0;
   left: 50%;
-  width: min(100% - 2rem, 72rem);
+  width: min(100% - 2rem, 80rem);
   height: 1px;
   transform: translateX(-50%);
   background: linear-gradient(

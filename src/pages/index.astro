@@ -248,7 +248,7 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- 2. 히어로 섹션 (리코 단일 슬라이드) -->
   <section
-    class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem]"
+    class="hero-section relative left-0 right-0 w-full min-w-full overflow-hidden bg-[#0F172A] pt-[4rem] sm:pt-[5.5rem]"
   >
     <div id="hero-bg-slides" class="absolute inset-0" aria-hidden="true">
       <div
@@ -282,7 +282,7 @@ import Layout from "../layouts/Layout.astro";
         class="hero-slide flex h-full min-h-0 shrink-0 items-center justify-center overflow-y-auto overflow-x-hidden py-2 sm:py-4 lg:py-6"
       >
         <div
-          class="relative mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-6 lg:flex-row lg:gap-16 lg:px-8"
+          class="relative mx-auto flex w-full min-w-0 max-w-7xl flex-col items-center justify-center gap-8 px-4 py-24 sm:px-5 lg:flex-row lg:gap-16 lg:px-6"
         >
           <div class="flex-1 text-center lg:text-left">
             <span
@@ -390,6 +390,15 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
     </div>
+    <button
+      type="button"
+      id="hero-scroll-cue"
+      class="hero-scroll-cue"
+      aria-label="아래로 스크롤"
+    >
+      <span class="hero-scroll-cue__dot" aria-hidden="true"></span>
+      <span class="hero-scroll-cue__label">Scroll</span>
+    </button>
   </section>
 
   <div class="home-body">
@@ -399,7 +408,7 @@ import Layout from "../layouts/Layout.astro";
     class="home-section home-section--tight reviews-marquee-section"
     aria-label="고객 후기"
   >
-    <div class="mx-auto mb-7 flex max-w-6xl items-end justify-between gap-4 px-4 sm:px-6">
+    <div class="reveal mx-auto mb-7 flex max-w-7xl items-end justify-between gap-4 px-4 sm:px-5 lg:px-6">
       <div>
         <p class="text-sm font-medium tracking-wide text-[#6B7280]">강의 · 스냅 촬영 후기</p>
         <h2 class="mt-1 text-xl font-bold tracking-tight text-[#0F172A] sm:text-2xl">고객 후기</h2>
@@ -412,22 +421,22 @@ import Layout from "../layouts/Layout.astro";
       </a>
     </div>
 
-    <div id="reviews-marquee-loading" class="px-4 sm:px-6">
-      <div class="mx-auto flex max-w-6xl gap-5 overflow-hidden">
+    <div id="reviews-marquee-loading" class="reveal px-4 sm:px-6">
+      <div class="mx-auto flex max-w-7xl gap-5 overflow-hidden">
         <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
         <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
         <div class="h-36 w-80 shrink-0 animate-pulse rounded-2xl bg-slate-200/80"></div>
       </div>
     </div>
 
-    <div id="reviews-marquee-empty" class="mx-auto hidden max-w-6xl px-4 text-center sm:px-6">
+    <div id="reviews-marquee-empty" class="reveal mx-auto hidden max-w-7xl px-4 text-center sm:px-5 lg:px-6">
       <p class="text-sm text-[#6B7280]">아직 등록된 고객 후기가 없습니다.</p>
       <a href="/reviews" class="mt-2 inline-block text-sm font-medium text-[#BE123C] hover:text-[#9f1239]">
         첫 후기 남기기 →
       </a>
     </div>
 
-    <div id="reviews-marquee-viewport" class="reviews-marquee-viewport hidden">
+    <div id="reviews-marquee-viewport" class="reveal reviews-marquee-viewport hidden">
       <div id="reviews-marquee-track" class="reviews-marquee-track"></div>
     </div>
   </section>
@@ -437,8 +446,8 @@ import Layout from "../layouts/Layout.astro";
     id="youtube-long"
     class="home-section"
   >
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-3">
+    <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
+      <h2 class="reveal section-title mb-3">
         <span class="block text-sm font-medium text-[#6B7280] sm:text-base"
           >GR COLLECTIVE 멘토 올라포토</span
         >
@@ -475,8 +484,8 @@ import Layout from "../layouts/Layout.astro";
     id="blog"
     class="home-section"
   >
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-3">
+    <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
+      <h2 class="reveal section-title mb-3">
         <span class="block text-sm font-medium text-[#6B7280] sm:text-base"
           >실전 촬영 기반 전문가 리뷰</span
         >
@@ -513,8 +522,8 @@ import Layout from "../layouts/Layout.astro";
     id="youtube-shorts"
     class="home-section"
   >
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="section-title mb-3">
+    <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
+      <h2 class="reveal section-title mb-3">
         <span class="block text-sm font-medium text-[#6B7280] sm:text-base"
           >Shorts로 보는 핵심 포인트</span
         >
@@ -548,14 +557,18 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- 7. 성과 지표 (Performance Section) -->
   <section class="home-section" aria-label="누적 성과">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <div class="home-stats-panel">
+    <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
+      <div
+        id="home-stats-panel"
+        class="reveal home-stats-panel"
+        data-stats-reveal
+      >
         <p
           class="section-title mb-8 text-center text-sm font-semibold uppercase tracking-wider text-[#6B7280]"
         >
           누적 성과
         </p>
-        <div class="grid gap-8 sm:grid-cols-3">
+        <div class="reveal reveal-stagger grid gap-8 sm:grid-cols-3">
           <div class="text-center">
             <p
               id="stats-youtube-subscribers"
@@ -595,19 +608,19 @@ import Layout from "../layouts/Layout.astro";
   >
     <div class="mx-auto max-w-3xl px-4 text-center sm:px-6">
       <h2
-        class="section-title mb-3 text-2xl font-bold text-[#111827] sm:text-3xl"
+        class="reveal section-title mb-3 text-2xl font-bold text-[#111827] sm:text-3xl"
       >
         협업 및 광고 문의
       </h2>
-      <p class="mb-12 text-[#6B7280]">브랜드 협업·광고 문의를 환영합니다</p>
+      <p class="reveal mb-12 text-[#6B7280]">브랜드 협업·광고 문의를 환영합니다</p>
       <div
-        class="flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center sm:gap-6"
+        class="reveal reveal-stagger flex flex-col items-stretch gap-4 sm:flex-row sm:justify-center sm:gap-6"
       >
         <a
           href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="home-collab-card group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="유튜브"
         >
           <img
@@ -625,7 +638,7 @@ import Layout from "../layouts/Layout.astro";
           href="https://blog.naver.com/holaphotograph"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="home-collab-card group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="네이버 블로그"
         >
           <img
@@ -643,7 +656,7 @@ import Layout from "../layouts/Layout.astro";
           href="https://www.instagram.com/snap.hola"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="home-collab-card group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
           aria-label="인스타그램"
         >
           <img
@@ -659,7 +672,7 @@ import Layout from "../layouts/Layout.astro";
         </a>
         <a
           href="mailto:holaphotographer@gmail.com"
-          class="group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm transition-all hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
+          class="home-collab-card group flex flex-1 flex-col items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm hover:border-[#E11D48] hover:bg-[#E11D48]/5 sm:max-w-[280px]"
         >
           <img
             src="/icons/contact.svg"
@@ -776,6 +789,36 @@ import Layout from "../layouts/Layout.astro";
     type YoutubeVideoItem,
   } from "../lib/api";
   import { FEATURED_BLOG } from "../data/featured-blog";
+  import { initHomeMotion } from "../scripts/home-motion";
+
+  type PendingStats = {
+    subs: number;
+    views: number;
+    naver: number;
+  };
+
+  let pendingStats: PendingStats | null = null;
+  let statsAnimated = false;
+
+  function runStatsCountUp() {
+    if (statsAnimated || !pendingStats) return;
+    statsAnimated = true;
+    const { subs, views, naver } = pendingStats;
+    const subEl = document.getElementById("stats-youtube-subscribers");
+    const viewsEl = document.getElementById("stats-youtube-views");
+    const naverEl = document.getElementById("stats-naver-visitors");
+    if (subEl) animateCount(subEl, subs);
+    if (viewsEl) viewsEl.textContent = formatCount(views);
+    if (naverEl) animateCount(naverEl, naver);
+  }
+
+  const homeMotion = initHomeMotion({
+    onVisible(el) {
+      if (el instanceof HTMLElement && el.dataset.statsReveal !== undefined) {
+        runStatsCountUp();
+      }
+    },
+  });
 
   (function initHeroBgSlideshow() {
     const slides = Array.from(
@@ -881,6 +924,8 @@ import Layout from "../layouts/Layout.astro";
 
         if (posts.length === 0) {
           empty.classList.remove("hidden");
+          empty.classList.remove("is-visible");
+          homeMotion.observe(empty);
           return;
         }
 
@@ -893,9 +938,13 @@ import Layout from "../layouts/Layout.astro";
 
         empty.classList.add("hidden");
         viewport.classList.remove("hidden");
+        viewport.classList.remove("is-visible");
+        homeMotion.observe(viewport);
       } catch {
         loading.classList.add("hidden");
         empty.classList.remove("hidden");
+        empty.classList.remove("is-visible");
+        homeMotion.observe(empty);
         const emptyMessage = empty.querySelector("p");
         if (emptyMessage) {
           emptyMessage.textContent = "고객 후기를 불러올 수 없습니다.";
@@ -1142,6 +1191,12 @@ import Layout from "../layouts/Layout.astro";
     `;
   }
 
+  function remountGridReveal(grid: HTMLElement) {
+    grid.classList.add("reveal", "reveal-stagger");
+    grid.classList.remove("is-visible");
+    homeMotion.observe(grid);
+  }
+
   function renderRssSection(
     grid: HTMLElement,
     items: BlogCardItem[],
@@ -1160,6 +1215,7 @@ import Layout from "../layouts/Layout.astro";
         )
         .join("");
     }
+    remountGridReveal(grid);
   }
 
   function renderYoutubeSection(
@@ -1183,6 +1239,7 @@ import Layout from "../layouts/Layout.astro";
         )
         .join("");
     }
+    remountGridReveal(grid);
   }
 
   async function load() {
@@ -1197,17 +1254,18 @@ import Layout from "../layouts/Layout.astro";
       ]);
 
       if (statsRes) {
-        const subEl = document.getElementById("stats-youtube-subscribers");
-        const viewsEl = document.getElementById("stats-youtube-views");
-        const naverEl = document.getElementById("stats-naver-visitors");
-
         const subs = parseInt(statsRes.youtubeSubscribers ?? "0", 10);
         const views = parseInt(statsRes.youtubeViewCount ?? "0", 10);
         const naver = parseInt(statsRes.naverBlogVisitors ?? "0", 10);
-
-        if (subEl && !isNaN(subs)) animateCount(subEl, subs);
-        if (viewsEl && !isNaN(views)) viewsEl.textContent = formatCount(views);
-        if (naverEl && !isNaN(naver)) animateCount(naverEl, naver);
+        pendingStats = {
+          subs: isNaN(subs) ? 0 : subs,
+          views: isNaN(views) ? 0 : views,
+          naver: isNaN(naver) ? 0 : naver,
+        };
+        const panel = document.getElementById("home-stats-panel");
+        if (panel?.classList.contains("is-visible")) {
+          runStatsCountUp();
+        }
       }
 
       const videos = youtubeRes.videos || [];
@@ -1245,6 +1303,9 @@ import Layout from "../layouts/Layout.astro";
         '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">Shorts를 불러올 수 없습니다</p>';
       blogGrid.innerHTML =
         '<p class="shrink-0 px-4 sm:px-6 text-[#E11D48]">블로그를 불러올 수 없습니다</p>';
+      remountGridReveal(youtubeLongGrid);
+      remountGridReveal(youtubeShortsGrid);
+      remountGridReveal(blogGrid);
     }
   }
 
