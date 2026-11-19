@@ -1022,6 +1022,13 @@ const YOUTUBE_LONG_ORDER = [
   "RBwjl-weU00", // 리코 GR3 매뉴얼 셋팅의 바이블 1편
 ];
 
+/** 빠르게 보는 장비 팁(숏츠) 고정 노출 (앞에 배치) */
+const YOUTUBE_SHORTS_PINNED = [
+  "A5QJaPUOYxE", // https://www.youtube.com/shorts/A5QJaPUOYxE
+];
+
+const YOUTUBE_SHORTS_LIMIT = 6;
+
 /** 숏츠 검색 키워드: 제목에 '후지필름' 포함 시만 노출 */
 
 /** 실전 영상 리뷰: 제목에 리뷰/언박싱/비교 등 포함 시 우선 배치 */
@@ -1089,7 +1096,7 @@ function buildVideoItem(it: {
   };
 }
 
-const YOUTUBE_CACHE_KV_KEY = "ytcache:latest";
+const YOUTUBE_CACHE_KV_KEY = "ytcache:latest:v2";
 const YOUTUBE_CACHE_TTL_SECONDS = 600; // 10분
 
 async function handleYoutubeLatest(
@@ -1140,9 +1147,13 @@ async function handleYoutubeLatest(
       .map((it) => it.id?.videoId)
       .filter(Boolean) as string[];
 
-    // 2회: 상세 한 번에 (preferred + 검색 ID, 최대 50)
+    // 2회: 상세 한 번에 (preferred + 핀 숏츠 + 검색 ID, 최대 50)
     const detailsIds = [
-      ...new Set([...YOUTUBE_LONG_ORDER, ...searchIds]),
+      ...new Set([
+        ...YOUTUBE_LONG_ORDER,
+        ...YOUTUBE_SHORTS_PINNED,
+        ...searchIds,
+      ]),
     ].slice(0, 50);
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${detailsIds.join(",")}&key=${key}`;
     const detailsRes = await fetch(detailsUrl);
@@ -1179,6 +1190,14 @@ async function handleYoutubeLatest(
       const tb = Date.parse(b.publishedAt ?? "") || 0;
       return tb - ta;
     });
+    const pinnedShorts: YoutubeVideoItem[] = [];
+    for (const vid of YOUTUBE_SHORTS_PINNED) {
+      const found = shortsList.find((s) => s.link.includes(vid));
+      if (found) pinnedShorts.push(found);
+    }
+    const restShorts = shortsList.filter(
+      (s) => !YOUTUBE_SHORTS_PINNED.some((vid) => s.link.includes(vid)),
+    );
     const videos = preferredVideos;
     const shortsApiSucceeded = true;
 
@@ -1187,7 +1206,7 @@ async function handleYoutubeLatest(
       : null;
     const body = {
       videos,
-      shorts: shortsList.slice(0, 5),
+      shorts: [...pinnedShorts, ...restShorts].slice(0, YOUTUBE_SHORTS_LIMIT),
       cacheExpiresAt: expiresAt,
     };
     if (kv && shortsApiSucceeded && expiresAt) {

@@ -536,18 +536,18 @@ import Layout from "../layouts/Layout.astro";
         <button type="button" id="youtube-shorts-next" class="scroll-section-next" aria-label="다음"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg> </button>
         <div
           id="youtube-shorts-grid"
-          class="scroll-row flex w-full min-w-0 gap-5 pb-2 pr-4 sm:pr-6"
+          class="scroll-row flex w-full min-w-0 gap-8 pb-2 pr-4 sm:pr-6"
         >
         <div
-          class="animate-pulse shrink-0 w-[180px] sm:w-[200px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]"
-        >
-        </div>
-        <div
-          class="animate-pulse shrink-0 w-[180px] sm:w-[200px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]"
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
         </div>
         <div
-          class="animate-pulse shrink-0 w-[180px] sm:w-[200px] rounded-lg overflow-hidden bg-gray-200 aspect-[9/16]"
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
+        >
+        </div>
+        <div
+          class="animate-pulse shrink-0 w-[209px] rounded-lg overflow-hidden bg-gray-200 aspect-[209/314]"
         >
         </div>
         </div>
@@ -1150,7 +1150,7 @@ import Layout from "../layouts/Layout.astro";
       options?.priority === "high" ? ' fetchpriority="high"' : "";
     const label = options?.label ?? "유튜브 보기 →";
     const isShort = Boolean(options?.isShort);
-    const cardWidth = isShort ? "w-[180px] sm:w-[200px]" : "w-[280px] sm:w-[340px]";
+    const cardWidth = isShort ? "w-[209px]" : "w-[280px] sm:w-[340px]";
     const viewStr = v.viewCount ? formatCount(v.viewCount) + " 회" : "";
     const heartSvg = `<svg class="w-3.5 h-3.5 shrink-0 inline-block" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
     const commentSvg = `<svg class="w-3.5 h-3.5 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>`;
@@ -1168,7 +1168,7 @@ import Layout from "../layouts/Layout.astro";
     const hasMeta = leftHtml || rightHtml;
     let thumb: string;
     if (isShort) {
-      const aspect = "aspect-[9/16]";
+      const aspect = "aspect-[209/314]";
       thumb = v.thumbnail_url
         ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover object-center opacity-0 transition-all duration-300 group-hover:scale-105" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
         : `<div class="${aspect} w-full bg-gray-200" />`;
@@ -1178,15 +1178,12 @@ import Layout from "../layouts/Layout.astro";
         ? `<div class="${aspect} w-full overflow-hidden bg-gray-200"><img src="${escapeHtml(v.thumbnail_url)}" alt="${escapeHtml(v.title)}" class="h-full w-full object-cover opacity-0 transition-all duration-300 group-hover:scale-105" loading="lazy"${fetchPriority} decoding="async" onload="this.classList.add('opacity-100')" /></div>`
         : `<div class="${aspect} bg-gray-200" />`;
     }
-    const metaPad = isShort ? "px-3 py-1.5" : "px-4 py-2";
-    const bodyPad = isShort ? "px-3 py-3" : "p-4";
-    const titleSize = isShort ? "text-sm" : "text-sm sm:text-base";
     return `
       <a href="${escapeHtml(v.link)}" target="_blank" rel="noopener" class="yt-card group scroll-row-item shrink-0 ${cardWidth} rounded-lg overflow-hidden bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]">
         ${thumb}
-        ${hasMeta ? `<div class="${metaPad} bg-gray-50 border-b border-gray-100 flex items-center justify-between gap-2 text-xs text-[#7A8291]"><span class="min-w-0 truncate">${leftHtml}</span><span class="flex items-center shrink-0">${rightHtml}</span></div>` : ""}
-        <div class="${bodyPad} bg-white">
-          <h3 class="font-semibold line-clamp-2 leading-snug ${titleSize} text-[#2C3242]">${escapeHtml(v.title)}</h3>
+        ${hasMeta ? `<div class="px-4 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between gap-2 text-xs text-[#7A8291]"><span class="min-w-0 truncate">${leftHtml}</span><span class="flex items-center shrink-0">${rightHtml}</span></div>` : ""}
+        <div class="p-4 bg-white">
+          <h3 class="font-semibold line-clamp-2 leading-snug text-sm text-[#2C3242]">${escapeHtml(v.title)}</h3>
           <p class="mt-1 text-xs text-[#E11D48] font-medium">${escapeHtml(label)}</p>
         </div>
       </a>
