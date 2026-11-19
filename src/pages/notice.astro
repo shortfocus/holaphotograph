@@ -12,13 +12,13 @@ const SITE = "https://holaphoto.com";
   ogDescription="올라포토 강의 안내 · X-E5 class, 노출 3요소 class"
 >
   <div
-    class="min-h-screen bg-[#F8FAFC] pt-[calc(4rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:pt-28 sm:pb-20"
+    class="min-h-screen bg-[#F7F4F5] pt-[calc(4rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] sm:pt-28 sm:pb-20"
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
       <!-- 목록 뷰 -->
       <div id="notice-list-view">
-        <h1 class="text-2xl font-bold text-[#111827] sm:text-3xl">공지사항</h1>
-        <p class="mt-2 text-slate-600 sm:text-lg">
+        <h1 class="text-2xl font-bold text-[#2C3242] sm:text-3xl">공지사항</h1>
+        <p class="mt-2 text-[#3F4756] sm:text-lg">
           올라포토 소식과 강의·이벤트 안내를 전해 드립니다.
         </p>
 
@@ -26,12 +26,12 @@ const SITE = "https://holaphoto.com";
           class="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm sm:overflow-hidden"
         >
           <h2
-            class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-base font-semibold text-[#111827] sm:px-6"
+            class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-base font-semibold text-[#2C3242] sm:px-6"
           >
             공지 게시판
           </h2>
           <div id="notice-list" class="divide-y divide-slate-100">
-            <p class="px-4 py-8 text-center text-slate-500 sm:px-6">
+            <p class="px-4 py-8 text-center text-[#7A8291] sm:px-6">
               로딩 중...
             </p>
           </div>
@@ -49,7 +49,7 @@ const SITE = "https://holaphoto.com";
         <a
           href="/notice"
           id="notice-back-link"
-          class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#111827]"
+          class="inline-flex items-center gap-1.5 text-sm font-medium text-[#7A8291] hover:text-[#2C3242]"
         >
           <span aria-hidden="true">←</span> 목록으로
         </a>
@@ -58,10 +58,10 @@ const SITE = "https://holaphoto.com";
         >
           <h1
             id="notice-detail-title"
-            class="text-xl font-bold text-[#111827] sm:text-2xl"
+            class="text-xl font-bold text-[#2C3242] sm:text-2xl"
           >
           </h1>
-          <p id="notice-detail-date" class="mt-2 text-sm text-slate-500"></p>
+          <p id="notice-detail-date" class="mt-2 text-sm text-[#7A8291]"></p>
           <div id="notice-detail-form-cta" class="notice-form-cta hidden mt-4">
             <a
               id="notice-detail-form-link"
@@ -78,7 +78,7 @@ const SITE = "https://holaphoto.com";
           </div>
           <div
             id="notice-detail-body"
-            class="notice-detail-body mt-6 min-h-[4rem] text-slate-700 prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg prose-p:text-slate-700 prose-li:text-slate-700 prose-a:text-[#E11D48] prose-strong:text-[#111827]"
+            class="notice-detail-body mt-6 min-h-[4rem] text-[#3F4756] prose prose-slate max-w-none prose-p:leading-relaxed prose-img:rounded-lg prose-p:text-[#3F4756] prose-li:text-[#3F4756] prose-a:text-[#E11D48] prose-strong:text-[#2C3242]"
           >
           </div>
         </article>
@@ -217,7 +217,7 @@ const SITE = "https://holaphoto.com";
     }
     detailTitle.textContent = "";
     detailDate.textContent = "";
-    detailBody.innerHTML = '<p class="text-slate-500">로딩 중...</p>';
+    detailBody.innerHTML = '<p class="text-[#7A8291]">로딩 중...</p>';
     try {
       const notice = await fetchNotice(id);
       if (!notice) {
@@ -294,7 +294,7 @@ const SITE = "https://holaphoto.com";
           : "https://holaphoto.com";
       content = content.replace(/src="\/images\//g, `src="${base}/images/`);
       detailBody.innerHTML =
-        content || '<p class="text-slate-500">내용이 없습니다.</p>';
+        content || '<p class="text-[#7A8291]">내용이 없습니다.</p>';
       requestAnimationFrame(() => {
         wrapNoticeImagesInLinks(detailBody);
         initMobileImageCarousel(detailBody);
@@ -315,8 +315,8 @@ const SITE = "https://holaphoto.com";
       .map(
         (n: Notice) => `
         <a href="/notice?id=${n.id}" class="notice-item flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left hover:bg-slate-50 sm:px-6" aria-label="공지 보기: ${escapeHtml(n.title)}">
-          <span class="font-medium text-[#111827]">${escapeHtml(n.title)}</span>
-          <span class="text-xs text-slate-500">${new Date(n.created_at).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</span>
+          <span class="font-medium text-[#2C3242]">${escapeHtml(n.title)}</span>
+          <span class="text-xs text-[#7A8291]">${new Date(n.created_at).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</span>
         </a>
       `,
       )
@@ -336,8 +336,8 @@ const SITE = "https://holaphoto.com";
 
     const link = (p: number, label: string, disabled?: boolean) =>
       disabled
-        ? `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-2 text-sm text-slate-400" aria-disabled="true">${escapeHtml(label)}</span>`
-        : `<a href="/notice?page=${p}" class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300" aria-label="${escapeHtml(label)}">${escapeHtml(label)}</a>`;
+        ? `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-2 text-sm text-[#7A8291]" aria-disabled="true">${escapeHtml(label)}</span>`
+        : `<a href="/notice?page=${p}" class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm text-[#3F4756] hover:bg-slate-50 hover:border-slate-300" aria-label="${escapeHtml(label)}">${escapeHtml(label)}</a>`;
 
     const currentLink = (p: number) =>
       `<span class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-[#E11D48] bg-[#E11D48] px-2 text-sm font-medium text-white" aria-current="page">${p}</span>`;
@@ -358,7 +358,7 @@ const SITE = "https://holaphoto.com";
       const notices = await fetchNotices();
       if (notices.length === 0) {
         listEl.innerHTML =
-          '<p class="px-4 py-8 text-center text-slate-500 sm:px-6">등록된 공지가 없습니다.</p>';
+          '<p class="px-4 py-8 text-center text-[#7A8291] sm:px-6">등록된 공지가 없습니다.</p>';
         paginationEl.classList.add("hidden");
         paginationEl.innerHTML = "";
         return;
@@ -424,10 +424,10 @@ const SITE = "https://holaphoto.com";
     content: "•";
     position: absolute;
     left: 0;
-    color: #64748b;
+    color: #7a8291;
   }
   #notice-detail-view .notice-detail-body strong {
-    color: #111827;
+    color: #2c3242;
     font-weight: 600;
   }
   #notice-detail-view .notice-detail-body a {
@@ -484,7 +484,7 @@ const SITE = "https://holaphoto.com";
     justify-content: center;
     border: none;
     border-radius: 9999px;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(44, 50, 66, 0.9);
     color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     cursor: pointer;

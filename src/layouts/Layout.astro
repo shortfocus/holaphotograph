@@ -71,7 +71,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <slot name="head" />
   </head>
-  <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F8FAFC] text-[#111827] antialiased', !adminFrame && !hideLectureBar && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
+  <body class:list={['flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#F7F4F5] text-[#3F4756] antialiased', !adminFrame && !hideLectureBar && 'pb-[var(--lecture-bar-height)]']} data-header-opaque={headerOpaque} data-admin-frame={adminFrame}>
     {!adminFrame && (
     <header id="main-header" class:list={[headerOpaque ? 'header-scrolled' : 'header-transparent', 'fixed top-0 left-0 right-0 z-50 transition-all duration-300']}>
       <nav class="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 lg:px-6 sm:py-4">
@@ -211,7 +211,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           </div>
           <a href="https://holaphoto.com" target="_blank" rel="noopener noreferrer" class="admin-site-link fixed left-0 bottom-0 z-10 w-56 border-t border-r border-gray-200 bg-white py-3 pl-4 pr-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">사이트로 이동 →</a>
         </aside>
-        <main class="flex-1 min-w-0 overflow-auto bg-[#F8FAFC]">
+        <main class="flex-1 min-w-0 overflow-auto bg-[#F7F4F5]">
           <slot />
         </main>
       </div>
@@ -238,17 +238,17 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     {!adminFrame && !hideLectureBar && (
     <>
     {/* 강의 소식 플로팅 CTA (토글 가능) */}
-    <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#0E172A]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+    <aside id="lecture" class="fixed bottom-0 left-0 right-0 z-40 flex min-h-[var(--lecture-bar-mobile)] flex-col items-center justify-center border-t border-slate-700/50 bg-[#2C3242]/95 backdrop-blur-sm px-4 pt-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.3)] transition-[min-height] duration-300 sm:min-h-[var(--lecture-bar-base)] sm:px-6 sm:pt-4 sm:pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
       {/* 접기 탭: 플로팅 바 상단 경계에 하단이 딱 붙음 */}
-      <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="플로팅 바 접기">
+      <button type="button" id="lecture-bar-collapse" class="lecture-bar-content lecture-bar-tab-stick absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#2C3242]/95 px-3 py-2 text-xs font-medium leading-none text-[#CBD5E1] shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-[#F1F5F9] sm:right-6" aria-label="플로팅 바 접기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg>
         <span>접기</span>
       </button>
       <div class="lecture-bar-content mx-auto flex w-full max-w-4xl flex-1 flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div class="text-center sm:text-left">
-            <p class="font-semibold text-white">카메라 입문 & 실전 강의 준비 중</p>
-            <p class="text-sm text-slate-400">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
+            <p class="font-semibold text-[#F1F5F9]">카메라 입문 & 실전 강의 준비 중</p>
+            <p class="text-sm text-[#CBD5E1]">기초부터 실전 촬영까지 단계별 강의 오픈 예정</p>
           </div>
           <div class="flex w-full flex-col gap-2 sm:w-[31rem] sm:flex-shrink-0">
             <form id="lecture-signup-form" class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
@@ -284,7 +284,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
         </div>
       </div>
       {/* 펼치기 탭: 접었을 때 플로팅 바 상단 경계에 하단이 딱 붙음 */}
-      <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#0E172A]/95 px-3 py-2 text-xs font-medium leading-none text-slate-400 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-white sm:right-6" aria-label="강의 소식 바 펼치기">
+      <button type="button" id="lecture-bar-expand" class="lecture-bar-tab absolute bottom-full right-4 z-10 flex h-9 min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-t-lg border border-b-0 border-slate-700/50 bg-[#2C3242]/95 px-3 py-2 text-xs font-medium leading-none text-[#CBD5E1] shadow-[0_-2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-colors hover:bg-slate-700/50 hover:text-[#F1F5F9] sm:right-6" aria-label="강의 소식 바 펼치기">
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
         <span>열기</span>
       </button>
@@ -333,7 +333,7 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
           }
           btn.disabled = true;
           status.textContent = '등록 중…';
-          status.className = 'min-h-6 text-center text-sm sm:text-left text-slate-400';
+          status.className = 'min-h-6 text-center text-sm sm:text-left text-[#CBD5E1]';
           try {
             const payload: { email: string; interest_brand?: string } = { email: email.toLowerCase() };
             if (interestBrand) payload.interest_brand = interestBrand;
@@ -363,13 +363,13 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
     )}
 
     {!hideFooter && (
-    <footer class="border-t border-slate-700/50 bg-[#0F172A] py-14 sm:py-20">
+    <footer class="border-t border-slate-700/50 bg-[#2C3242] py-10 sm:py-12">
       <div class="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6">
         <div class="text-center">
-          <p class="text-xl font-semibold text-white sm:text-2xl">
+          <p class="text-xl font-semibold text-[#F1F5F9] sm:text-2xl">
             장비 선택부터 촬영까지, 실전 기반 가이드.
           </p>
-          <div class="mt-6 flex justify-center gap-8">
+          <div class="mt-4 flex justify-center gap-8">
             <a href="https://youtube.com/channel/UCsD5VP6TvRMt-sq0q25HlIA?themeRefresh=1" target="_blank" rel="noopener noreferrer" class="footer-channel-icon" aria-label="유튜브">
               <img src="/icons/youtube.svg" alt="" aria-hidden="true" />
             </a>
@@ -384,9 +384,9 @@ const ogImage = propOgImage ?? `${SITE}/og-image.png`;
             </a>
           </div>
         </div>
-        <p class="mt-10 text-center text-sm text-slate-400">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
-        <p class="mt-1 text-center text-xs text-slate-400">
-          <a href="https://solidweb.kr" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-slate-300 hover:underline">Technical Partner – Solidweb</a>
+        <p class="mt-6 text-center text-sm text-[#CBD5E1]">© {new Date().getFullYear()} 올라포토. All rights reserved.</p>
+        <p class="mt-1 text-center text-xs text-[#CBD5E1]">
+          <a href="https://solidweb.kr" target="_blank" rel="noopener noreferrer" class="text-[#CBD5E1] hover:text-[#F1F5F9] hover:underline">Technical Partner – Solidweb</a>
         </p>
       </div>
     </footer>
