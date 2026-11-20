@@ -448,21 +448,8 @@ body.lecture-bar-collapsed .hero-section {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-@media (prefers-reduced-motion: reduce) {
-  .reviews-marquee-track {
-    animation: none;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 80rem;
-    margin-inline: auto;
-    padding-inline: 1rem;
-    justify-content: center;
-  }
-  .reviews-marquee-viewport {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-}
+/* 고객후기 마퀴는 장식용이라 모션 감소여도 가로 스크롤 레이아웃·애니메이션 유지
+   (윈도우 PC방 등에서 바둑판 세로 폴백이 나오던 문제 방지) */
 
 /* Hero 섹션 애니메이션 */
 @keyframes hero-fade-in-up {
@@ -480,6 +467,7 @@ body.lecture-bar-collapsed .hero-section {
   50% { opacity: 1; }
 }
 .hero-animate {
+  opacity: 0;
   animation: hero-fade-in-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .hero-glow {
@@ -588,6 +576,7 @@ body.lecture-bar-collapsed .hero-section {
   .hero-animate {
     animation: none;
     opacity: 1;
+    transform: none;
   }
   .hero-scroll-cue__dot {
     animation: none;
