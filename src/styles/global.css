@@ -833,6 +833,35 @@ trix-editor.trix-content:empty:not(:focus)::before {
     width: 14.5rem;
   }
 }
+/* 노트북~중간 모니터: 본문 여백 부족 시 배너를 콘텐츠 뒤로 연하게 */
+@media (min-width: 1024px) and (max-width: 1799px) {
+  .book-launch-float {
+    z-index: 1;
+  }
+  .book-launch-float.is-visible {
+    opacity: 0.7;
+  }
+  .book-launch-float__link {
+    box-shadow: none;
+    outline: none;
+  }
+  .book-launch-float__link:hover {
+    box-shadow: none;
+    transform: none;
+  }
+  .home-body > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+@media (min-width: 1800px) {
+  .book-launch-float {
+    z-index: 34;
+  }
+  .book-launch-float.is-visible {
+    opacity: 1;
+  }
+}
 .book-launch-float__link {
   display: flex;
   flex-direction: column;
