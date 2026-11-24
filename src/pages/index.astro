@@ -92,7 +92,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- 모집 정보 팝업 (gr_21~gr_23, 2026.11.14) -->
+  <!-- 모집 정보 팝업 (gr_24~gr_26, 2026.12.05) -->
   <div
     id="gr-promo-popup"
     class="fixed inset-0 z-[59] hidden items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
@@ -160,15 +160,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=14"
+                  href="/notice?id=16"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
                   aria-label="리코 GR4 카메라 클래스 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_21.webp"
+                    data-src="/images/gr_24.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 카메라 클래스 · 2026.11.14(토) 오전 11시~오후 12시 30분 · 즐거운 카메라 · 2만원"
+                    alt="리코 GR4 카메라 클래스 · 2026.12.5(토) 오전 11시~오후 12시 30분 · 즐거운 카메라 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -182,15 +182,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=14"
+                  href="/notice?id=16"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 P모드 잘 쓰는 법 공지 상세로 이동"
+                  aria-label="리코 GR4 명동성당 출사 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_22.webp"
+                    data-src="/images/gr_25.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 P모드 잘 쓰는 법 · 2026.11.14(토) 오후 1시 30분~오후 3시 · 즐거운 카메라 · 2만원"
+                    alt="리코 GR4 명동성당 출사 · 2026.12.5(토) 오후 2시~오후 4시 · 명동성당 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -204,15 +204,15 @@ import Layout from "../layouts/Layout.astro";
                 class="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden"
               >
                 <a
-                  href="/notice?id=14"
+                  href="/notice?id=16"
                   class="gr-promo-image-link flex min-w-0 max-w-full cursor-pointer"
-                  aria-label="리코 GR4 선유도 가을 출사 공지 상세로 이동"
+                  aria-label="리코 GR4 서울역 야경 출사 공지 상세로 이동"
                 >
                   <img
-                    data-src="/images/gr_23.webp"
+                    data-src="/images/gr_26.webp"
                     width="800"
                     height="1000"
-                    alt="리코 GR4 선유도 가을 출사 · 2026.11.14(토) 오후 4시 30분~6시 30분 · 선유도공원 · 2만원"
+                    alt="리코 GR4 서울역 야경 출사 · 2026.12.5(토) 오후 6시~오후 8시 · 서울로 7017 · 2만원"
                     class="gr-promo-img max-h-[60vh] w-full max-w-full rounded-lg object-contain object-center"
                     decoding="async"
                   />
@@ -1336,7 +1336,7 @@ import Layout from "../layouts/Layout.astro";
 
   // GR 모집 팝업 (신간 팝업 다음에 노출)
   (function initGrPromoPopup() {
-    const STORAGE_KEY = "holaphoto-gr-popup-seen-20261114";
+    const STORAGE_KEY = "holaphoto-gr-popup-seen-20261205";
     const popup = document.getElementById("gr-promo-popup");
     const closeBtn = document.getElementById("gr-promo-close");
     const closeBtn2 = document.getElementById("gr-promo-close-btn");
@@ -1453,7 +1453,7 @@ import Layout from "../layouts/Layout.astro";
     });
   })();
 
-  // GR 팝업 내부 슬라이드 (3장: gr_21~gr_23, 100/3% 이동)
+  // GR 팝업 내부 슬라이드 (3장: gr_24~gr_26, 100/3% 이동)
   (function initGrPromoSlider() {
     const track = document.querySelector(
       ".gr-promo-track",
